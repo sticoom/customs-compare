@@ -730,27 +730,20 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
 
         # 货源地中混入了 "照章征税"（跨列导致）
         if src and ("照章" in src or "免税" in src):
-            # 去掉括号数字代码和征免文字，只保留地名
             cleaned = re.sub(r"\(\d{4,6}\)", "", src)
             cleaned = re.sub(r"照章.*$", "", cleaned)
             cleaned = cleaned.strip()
             if cleaned:
                 item["domestic_source"] = cleaned
-            # 补征免：如果 duty 还是空的或只有代码
+            # 只有征免列为空或只有纯代码 "(1)" 时，才从货源地补入
             if "照章" in src:
                 if not duty:
                     item["duty_exemption"] = "照章征税(1)"
-                elif re.match(r"^\(1\)$", duty):
+                elif duty == "(1)":
                     item["duty_exemption"] = "照章征税(1)"
 
-        # 修征免字段：统一为标准格式 "照章征税(1)"
-        # PDF 中可能出现各种变体: "照章征税", "(1)", "(1)-照章征税", "照章征税(1)" 等
-        duty = item.get("duty_exemption", "")
-        if duty:
-            has_zhaozhang = "照章" in duty
-            has_code = "(1)" in duty or "1" in duty
-            if has_zhaozhang or has_code:
-                item["duty_exemption"] = "照章征税(1)"
+        # 不做盲目规范化 — 保留原始提取值，让比对引擎判断对错
+        # 例如 "(1)-照章" ≠ "照章征税(1)"，应如实展示为不通过
 
         # 修货源地：清除区域代码如 (33079)、(44199) 和征免代码 (1)
         src = item.get("domestic_source", "")
