@@ -1,0 +1,4 @@
+streamlit>=1.31.0
+PyMuPDF>=1.23.0
+openpyxl>=3.1.0
+zhipuai>=2.0.0
