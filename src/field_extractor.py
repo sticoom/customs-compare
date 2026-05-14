@@ -9,6 +9,9 @@ from src.config import (
     DOMESTIC_SOURCE_MAPPING,
 )
 
+# 数量及单位行的通用匹配：数字+中文字符（如 "16套"、"37千克"、"100件"）
+QTY_UNIT_RE = re.compile(r"^\d+(\.\d+)?[\u4e00-\u9fff]+$")
+
 
 # ============================================================
 # 报关单字段提取
@@ -163,8 +166,7 @@ def _parse_customs_item_content(item_no: str, product_code: str, content: str) -
     # 报关单列顺序：名称 → 规格型号 → 数量 → 目的国 → 单价 → 总价+CNY → 人民币 → 货源地 → 照章
     # 规则：spec_model 在商品名称之后、数量行之前
     #       货源地 在"人民币"之后、"照章"之前
-    qty_pattern = re.compile(r"^\d+(千克|件|个|套)$")
-    is_qty_line = [bool(qty_pattern.match(l)) for l in lines]
+    is_qty_line = [bool(QTY_UNIT_RE.match(l)) for l in lines]
 
     # 找第一个数量行的索引（spec_model 的边界）
     first_qty_idx = None
@@ -179,14 +181,14 @@ def _parse_customs_item_content(item_no: str, product_code: str, content: str) -
             break
 
         # 跳过纯数字行或已知的结构性行
-        if re.match(r"^\d+千克$", line) or re.match(r"^\d+件$", line) or re.match(r"^\d+个$", line):
+        if QTY_UNIT_RE.match(line):
             continue
         if re.match(r"^[\d,.]+$", line):  # 纯数字（价格）
             continue
         if line in ["照章", "人民币", "CNY"]:
             continue
         # 跳过数量+单位组合（如 "12套", "42套"）
-        if re.match(r"^\d+[套件个]$", line):
+        if QTY_UNIT_RE.match(line):
             continue
         # 跳过国家名称
         if line in ["德国", "美国", "英国", "法国", "日本", "韩国", "澳大利亚", "中国"]:
@@ -207,10 +209,10 @@ def _parse_customs_item_content(item_no: str, product_code: str, content: str) -
         item["product_name"] = name_lines[0]
     item["spec_model"] = " ".join(spec_lines)
 
-    # 提取数量/单位
+    # 提取数量/单位（使用通用模式匹配所有中文计量单位）
     qty_lines = []
     for line in lines:
-        if re.match(r"^\d+件$", line) or re.match(r"^\d+千克$", line) or re.match(r"^\d+个$", line):
+        if QTY_UNIT_RE.match(line):
             qty_lines.append(line)
     item["quantity_unit"] = " / ".join(qty_lines)
 
@@ -218,7 +220,7 @@ def _parse_customs_item_content(item_no: str, product_code: str, content: str) -
     last_qty_idx = -1
     first_price_idx = len(lines)
     for i, line in enumerate(lines):
-        if re.match(r"^\d+(千克|件|个|套)$", line):
+        if QTY_UNIT_RE.match(line):
             last_qty_idx = i
         if re.match(r"^\d+\.\d+$", line) and first_price_idx == len(lines):
             first_price_idx = i
@@ -490,8 +492,8 @@ def _parse_pre_recording_item(item_no: str, content: str) -> dict:
                 item["spec_model"] += " " + line
             continue
 
-        # 数量行（xx千克 / xx个 / xx件）
-        if re.match(r"^\d+千克$", line) or re.match(r"^\d+个$", line) or re.match(r"^\d+件$", line):
+        # 数量行（xx千克 / xx个 / xx件 / xx套 等）
+        if QTY_UNIT_RE.match(line):
             qty_lines.append(line)
             continue
 

@@ -210,45 +210,46 @@ def compare_country(val1: str, val2: str) -> bool:
 
 def compare_quantity_with_swap(customs_qty: str, pre_qty: str) -> dict:
     """
-    数量及单位比对（带行交换规则）
-    报关单第1行(件) = 预录单第3行(件)
-    报关单第2行(千克) = 预录单第1行(千克)
+    数量及单位比对（动态匹配所有单位）
+    按单位名称配对比较，不依赖固定单位列表
     """
     customs_lines = [l.strip() for l in customs_qty.split("/") if l.strip()]
     pre_lines = [l.strip() for l in pre_qty.split("/") if l.strip()]
 
-    details = []
+    # 按单位分类：提取 "数字+单位" 中的单位名
+    def extract_unit_val(line):
+        m = re.match(r"^(\d+\.?\d*)([\u4e00-\u9fff]+)$", line)
+        if m:
+            return m.group(2), line
+        return None, line
 
-    # 按单位分类
-    def extract_units(lines):
-        kg_val = ""
-        piece_val = ""
-        ge_val = ""
+    def group_by_unit(lines):
+        units = {}
         for line in lines:
-            if "千克" in line:
-                kg_val = line
-            elif "件" in line:
-                piece_val = line
-            elif "个" in line:
-                ge_val = line
-        return kg_val, piece_val, ge_val
+            unit_name, val = extract_unit_val(line)
+            if unit_name and unit_name not in units:
+                units[unit_name] = val
+        return units
 
-    c_kg, c_piece, _ = extract_units(customs_lines)
-    p_kg, p_piece, p_ge = extract_units(pre_lines)
+    c_units = group_by_unit(customs_lines)
+    p_units = group_by_unit(pre_lines)
 
-    # 比对：报关单的千克 vs 预录单的千克
-    kg_match = compare_exact(c_kg, p_kg) if c_kg and p_kg else True
-    # 比对：报关单的件 vs 预录单的件
-    piece_match = compare_exact(c_piece, p_piece) if c_piece and p_piece else True
+    # 合并所有出现的单位
+    all_unit_names = sorted(set(list(c_units.keys()) + list(p_units.keys())))
 
-    all_match = kg_match and piece_match
+    details = {}
+    all_match = True
+    for unit_name in all_unit_names:
+        c_val = c_units.get(unit_name, "")
+        p_val = p_units.get(unit_name, "")
+        match = compare_exact(c_val, p_val) if c_val and p_val else True
+        if c_val and p_val and not match:
+            all_match = False
+        details[unit_name] = {"customs": c_val, "pre": p_val, "match": match}
 
     return {
         "match": all_match,
-        "details": {
-            "千克": {"customs": c_kg, "pre": p_kg, "match": kg_match},
-            "件": {"customs": c_piece, "pre": p_piece, "match": piece_match},
-        },
+        "details": details,
     }
 
 

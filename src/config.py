@@ -321,6 +321,21 @@ CUSTOMS_ITEM_FIELDS = [
 # ============================================================
 # 规格型号特殊映射
 # ============================================================
+
+# 报关单原始列顺序（用于页面展示排序，非比对逻辑）
+CUSTOMS_ITEM_DISPLAY_ORDER = [
+    "product_code",       # 商品编码
+    "product_name_spec",  # 商品名称及规格型号
+    "quantity_unit",      # 数量及单位
+    "final_dest_country", # 最终目的国（地区）
+    "unit_price",         # 单价
+    "total_price",        # 总价
+    "currency",           # 币制
+    "origin_country",     # 原产国（地区）
+    "domestic_source",    # 境内货源地
+    "duty_exemption",     # 征免
+]
+
 SPEC_MODEL_MAPPING = {
     "境内自主品牌": "1",
     "不确定是否享惠": "2",
