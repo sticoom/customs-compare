@@ -130,6 +130,11 @@ def get_contract_no_from_customs(parsed_pdf) -> str:
         header = extract_pre_recording_header(page.text)
         if header.get("contract_no"):
             return header["contract_no"]
+    # 核对单兜底：在全文中搜索日期型合同号
+    for page in parsed_pdf.pages:
+        m = re.search(r'(?:^|\n|\s)(20\d{9,11})(?:\s|\n|$)', page.text)
+        if m and _is_valid_contract_no(m.group(1)):
+            return m.group(1)
     return ""
 
 
@@ -161,6 +166,11 @@ def get_contract_no_from_pre(parsed_pdf) -> str:
         header = extract_pre_recording_header(page.text)
         if header.get("contract_no") and _is_valid_contract_no(header["contract_no"]):
             return header["contract_no"]
+    # 核对单兜底：在全文中搜索日期型合同号（如 20260514003）
+    for page in parsed_pdf.pages:
+        m = re.search(r'(?:^|\n|\s)(20\d{9,11})(?:\s|\n|$)', page.text)
+        if m and _is_valid_contract_no(m.group(1)):
+            return m.group(1)
     return ""
 
 
@@ -418,6 +428,23 @@ with tab_compare:
                     "pre_continuation_pages": p_cont,
                     "customs_filenames": [pdf.filename for pdf in c_pdfs],
                     "pre_filenames": [pdf.filename for pdf in p_pdfs],
+                })
+
+            # 兜底：如果按合同号配对后某一方为空，或完全没有配对结果，
+            # 则将所有未匹配的文件合在一起比对
+            if not pairs:
+                all_c = customs_parsed
+                all_p = pre_parsed
+                c_pages, contract_pages, _, _ = collect_pages_from_pdfs(all_c, customs=True)
+                _, _, p_pages, p_cont = collect_pages_from_pdfs(all_p, pre=True)
+                pairs.append({
+                    "contract_no": "",
+                    "customs_pages": c_pages,
+                    "contract_pages": contract_pages,
+                    "pre_pages": p_pages,
+                    "pre_continuation_pages": p_cont,
+                    "customs_filenames": [pdf.filename for pdf in all_c],
+                    "pre_filenames": [pdf.filename for pdf in all_p],
                 })
 
             # 逐组比对
