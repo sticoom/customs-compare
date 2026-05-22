@@ -432,9 +432,9 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
         "商品名称": "product_name",
         "规格型号": "product_name",
         "数量": "quantity",
-        "单价": "price",
-        "总价": "price",
-        "币制": "price",
+        "单价": "unit_price_col",
+        "总价": "total_price_col",
+        "币制": "currency_col",
         "原产国": "origin_country",
         "目的国": "dest_country",
         "境内货源地": "source",
@@ -459,10 +459,12 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
     for s in header_spans:
         for keyword, col_id in header_keywords.items():
             if keyword in s["text"]:
-                # 避免重复设置（如"单价/总价/币制"只设一次 price）
                 if col_id not in col_positions:
                     col_positions[col_id] = s["x"]
-                break
+                # 对非价格列保持 break（防止 "项号商品编号" 匹配多个不同列）
+                # 对价格列不 break（允许一个 span 同时设置 单价/总价/币制）
+                if col_id not in ("unit_price_col", "total_price_col", "currency_col"):
+                    break
 
     # 如果"商品编号"没有单独的列头，但"项号商品编号"合在一起
     if "product_code" not in col_positions and "item_no" in col_positions:
@@ -485,9 +487,25 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
                         col_positions["product_code"] = s["x"] + 30
                     break
 
+    # 检测价格列是分开的还是合并的（同一 x 坐标）
+    _price_x_vals = set()
+    for _k in ("unit_price_col", "total_price_col", "currency_col"):
+        if _k in col_positions:
+            _price_x_vals.add(round(col_positions[_k]))
+
+    _separate_price_cols = len(_price_x_vals) >= 2  # 至少2个不同的 x → 分开
+    if not _separate_price_cols:
+        # 合并价格列为单个 "price" 列
+        _any_price_x = col_positions.get("unit_price_col") or col_positions.get("total_price_col") or col_positions.get("currency_col")
+        if _any_price_x is not None:
+            col_positions["price"] = _any_price_x
+        for _k in ("unit_price_col", "total_price_col", "currency_col"):
+            col_positions.pop(_k, None)
+
     # 如果"数量"和"单价/总价/币制"合在一个 span 里（续页常见），
     # 需要从数据中推断 price 列的位置
-    if "price" not in col_positions and "quantity" in col_positions:
+    _price_col_name = "unit_price_col" if _separate_price_cols else "price"
+    if _price_col_name not in col_positions and "quantity" in col_positions:
         # 找数据中看起来像价格的 span（纯数字带小数点，如 60.2900）
         data_spans_after_header = [sp for sp in spans if sp["y"] > header_y + 5]
         qty_x = col_positions["quantity"]
@@ -501,10 +519,10 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
         if price_candidates:
             # 取中位数作为 price 列位置
             price_candidates.sort()
-            col_positions["price"] = price_candidates[len(price_candidates) // 2]
+            col_positions[_price_col_name] = price_candidates[len(price_candidates) // 2]
         elif "origin_country" in col_positions:
             # 退而求其次：在 quantity 和 origin_country 之间取中点
-            col_positions["price"] = (qty_x + col_positions["origin_country"]) / 2
+            col_positions[_price_col_name] = (qty_x + col_positions["origin_country"]) / 2
 
     if "item_no" not in col_positions:
         return []
@@ -662,14 +680,22 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
                 "product_name": (cols.get("product_name") or [""])[0],
                 "spec_model": " ".join(cols.get("product_name", [])[1:]),
                 "quantity_unit": " / ".join(cols.get("quantity", [])),
-                "unit_price": cols.get("price", [""])[0] if cols.get("price") else "",
-                "total_price": cols.get("price", ["", ""])[1] if len(cols.get("price", [])) >= 2 else "",
-                "currency": cols.get("price", ["", "", ""])[2] if len(cols.get("price", [])) >= 3 else "",
                 "origin_country": " ".join(cols.get("origin_country", [])),
                 "final_dest_country": " ".join(cols.get("dest_country", [])),
                 "domestic_source": " ".join(cols.get("source", [])),
                 "duty_exemption": " ".join(cols.get("duty", [])),
             }
+
+            # 价格字段：分开列 vs 合并列
+            if _separate_price_cols:
+                item["unit_price"] = (cols.get("unit_price_col") or [""])[0]
+                item["total_price"] = (cols.get("total_price_col") or [""])[0]
+                item["currency"] = (cols.get("currency_col") or [""])[0]
+            else:
+                _pd = cols.get("price", [])
+                item["unit_price"] = _pd[0] if len(_pd) >= 1 else ""
+                item["total_price"] = _pd[1] if len(_pd) >= 2 else ""
+                item["currency"] = _pd[2] if len(_pd) >= 3 else ""
 
             if "人民币" in item.get("currency", ""):
                 item["currency"] = "人民币"
@@ -719,14 +745,22 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
                 "product_name": (cols.get("product_name") or [""])[0],
                 "spec_model": " ".join(cols.get("product_name", [])[1:]),
                 "quantity_unit": " / ".join(cols.get("quantity", [])),
-                "unit_price": cols.get("price", [""])[0] if cols.get("price") else "",
-                "total_price": cols.get("price", ["", ""])[1] if len(cols.get("price", [])) >= 2 else "",
-                "currency": cols.get("price", ["", "", ""])[2] if len(cols.get("price", [])) >= 3 else "",
                 "origin_country": " ".join(cols.get("origin_country", [])),
                 "final_dest_country": " ".join(cols.get("dest_country", [])),
                 "domestic_source": " ".join(cols.get("source", [])),
                 "duty_exemption": " ".join(cols.get("duty", [])),
             }
+
+            # 价格字段：分开列 vs 合并列
+            if _separate_price_cols:
+                item["unit_price"] = (cols.get("unit_price_col") or [""])[0]
+                item["total_price"] = (cols.get("total_price_col") or [""])[0]
+                item["currency"] = (cols.get("currency_col") or [""])[0]
+            else:
+                _pd = cols.get("price", [])
+                item["unit_price"] = _pd[0] if len(_pd) >= 1 else ""
+                item["total_price"] = _pd[1] if len(_pd) >= 2 else ""
+                item["currency"] = _pd[2] if len(_pd) >= 3 else ""
 
             if "人民币" in item.get("currency", ""):
                 item["currency"] = "人民币"

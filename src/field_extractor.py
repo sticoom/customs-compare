@@ -799,7 +799,7 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
                        pre_continuation_pages: list = None) -> dict:
     """
     主提取入口
-    customs_pages: [PageInfo, ...] - 报关单页
+    customs_pages: [PageInfo, ...] - 报关单页（可能包含 customs_declaration 和 pre_recording 类型的页面）
     pre_pages: [PageInfo, ...] - 预录单页
     contract_pages: [PageInfo, ...] - 合同页
     pre_continuation_pages: [PageInfo, ...] - 预录单续页（unknown类型但含商品数据）
@@ -811,12 +811,59 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
         "buyer": "...",  # 来自合同页
     }
     """
-    customs_text = "\n\n".join([p.text for p in customs_pages])
+    # 将报关单页面按类型分组处理
+    customs_decl_pages = [p for p in customs_pages if p.doc_type == "customs_declaration"]
+    pre_rec_in_customs = [p for p in customs_pages if p.doc_type == "pre_recording"]
+    other_customs_pages = [p for p in customs_pages if p.doc_type not in ("customs_declaration", "pre_recording")]
+
     contract_text = "\n\n".join([p.text for p in contract_pages])
 
-    # 报关单用文本正则提取（排版简单，效果好）
+    # 报关单页面用文本正则提取（排版简单，效果好）
+    customs_text = "\n\n".join([p.text for p in customs_decl_pages])
     customs_header = extract_customs_header(customs_text)
     customs_items = extract_customs_items(customs_text)
+
+    # 如果报关单 PDF 包含核对单页面（pre_recording），也提取其商品数据
+    # 核对单通常包含完整的商品项号列表，可补充报关单缺失的项号
+    if pre_rec_in_customs:
+        from src.pdf_parser import (
+            extract_pre_recording_fields_by_position,
+            extract_pre_recording_items_by_position,
+        )
+        # 如果报关单页面没有表头信息，用核对单页面的表头
+        if not customs_header or not customs_header.get("sender_unit"):
+            hedui_header = extract_pre_recording_header(pre_rec_in_customs[0].text)
+            if hedui_header:
+                for k, v in hedui_header.items():
+                    if v and (k not in customs_header or not customs_header[k]):
+                        customs_header[k] = v
+        # 从核对单页面提取商品
+        existing_nos = {it["item_no"] for it in customs_items}
+        for page in pre_rec_in_customs:
+            items = extract_pre_recording_items_by_position(page)
+            if not items:
+                items = _extract_items_from_hedui(page.text)
+            if not items:
+                items = _extract_items_from_continuation(page.text)
+            for item in items:
+                if item["item_no"] not in existing_nos:
+                    customs_items.append(item)
+                    existing_nos.add(item["item_no"])
+        # 按项号排序
+        customs_items.sort(key=lambda x: int(x["item_no"]) if x.get("item_no", "").isdigit() else 999)
+
+    # 处理 other_customs_pages（unknown 类型等）
+    if other_customs_pages:
+        other_text = "\n\n".join([p.text for p in other_customs_pages])
+        other_items = extract_customs_items(other_text)
+        if not other_items:
+            other_items = _extract_items_from_continuation(other_text)
+        existing_nos = {it["item_no"] for it in customs_items}
+        for item in other_items:
+            if item["item_no"] not in existing_nos:
+                customs_items.append(item)
+                existing_nos.add(item["item_no"])
+        customs_items.sort(key=lambda x: int(x["item_no"]) if x.get("item_no", "").isdigit() else 999)
 
     # 预录单用位置感知提取（双列排版，纯文本会错乱）
     pre_header = {}

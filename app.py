@@ -188,15 +188,15 @@ def collect_pages_from_pdfs(pdfs, customs=False, pre=False):
             elif page.doc_type == "unknown":
                 if "项号" in page.text and "商品编号" in page.text:
                     pre_continuation_pages.append(page)
-    if customs and not customs_pages:
-        # 没有标准的 customs_declaration 页面时，依次尝试：
-        # 1. 将 pre_recording 页面作为报关单数据（报关单PDF本身可能是预录单格式）
+    if customs:
+        # 始终将 pre_recording 页面（核对单）加入报关单数据
+        # 报关单 PDF 的第一页通常是核对单，包含完整的商品项号列表
         for pdf in pdfs:
             for page in pdf.pages:
-                if page.doc_type == "pre_recording":
+                if page.doc_type == "pre_recording" and page not in customs_pages:
                     customs_pages.append(page)
-        # 2. 如果还是没有，再尝试 unknown 页面
         if not customs_pages:
+            # 没有任何报关单或核对单页面，尝试 unknown 页面
             for pdf in pdfs:
                 for page in pdf.pages:
                     if page.doc_type == "unknown":
