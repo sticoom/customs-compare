@@ -103,20 +103,35 @@ def identify_doc_type(text: str) -> str:
     """
     # 先检查报关单（必须在预录单之前，因为两者可能都含"出口货物报关单"）
     if "中华人民共和国海关出口货物报关单" in text or "海关出口货物报关单" in text:
-        # 检查出口口岸是否为空 → 报关单
-        export_port_match = re.search(r"出口口岸\s*\n?\s*[-\s]*\n", text)
-        has_empty_export_port = bool(export_port_match) or re.search(r"出口口岸\s*-", text)
-
-        # 检查出境关别是否不为空 → 预录单
+        # 1. 出境关别有值 → 预录单
         exit_customs_match = re.search(r"出境关别\s*\(?\d*\)?\s*\n?\s*[\u4e00-\u9fff]+海关", text)
-
         if exit_customs_match:
             return "pre_recording"
-        elif has_empty_export_port:
-            return "customs_declaration"
-        # 如果都不明确，优先按"整合申报"/"仅供核对"判断
+
+        # 2. "整合申报" / "仅供核对" → 预录单
         if "仅供核对" in text or "整合申报" in text:
             return "pre_recording"
+
+        # 3. 预录单特有标签（境内发货人、监管方式、境外收货人）→ 预录单
+        if "境内发货人" in text or "监管方式" in text or "境外收货人" in text:
+            return "pre_recording"
+
+        # 4. 报关单特有标签（经营单位）→ 报关单
+        #    报关单也有"预录入编号"字段（空值），需通过标签区分
+        if "经营单位" in text:
+            return "customs_declaration"
+
+        # 5. 预录入编号在项号之前 → 预录单（兜底，部分旧格式预录单只有此标识）
+        pre_input_pos = text.find("预录入编号")
+        xianghao_pos = text.find("项号")
+        if pre_input_pos >= 0 and (xianghao_pos < 0 or pre_input_pos < xianghao_pos):
+            return "pre_recording"
+
+        # 6. 出口口岸为空 → 报关单
+        export_port_match = re.search(r"出口口岸\s*\n?\s*[-\s]*\n", text)
+        has_empty_export_port = bool(export_port_match) or re.search(r"出口口岸\s*-", text)
+        if has_empty_export_port:
+            return "customs_declaration"
         return "customs_declaration"
 
     # 合同页
@@ -496,15 +511,14 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
 
     # ---- 第二步：动态计算列边界 ----
     # 列边界 = [(col_id, x_start, x_end), ...]
-    # x_start = 当前列的 x_center - 10
-    # x_end = 下一列的 x_center - 5（或页面右边）
+    # 使用相邻列中点作为分界，避免列间重叠导致数据错列
     sorted_cols = sorted(col_positions.items(), key=lambda c: c[1])
 
     col_boundaries = []
     for i, (col_id, x_center) in enumerate(sorted_cols):
         x_start = x_center - 15
         if i + 1 < len(sorted_cols):
-            x_end = sorted_cols[i + 1][1] - 5
+            x_end = (x_center + sorted_cols[i + 1][1]) / 2
         else:
             x_end = 900  # 页面右边
         col_boundaries.append((col_id, x_start, x_end))

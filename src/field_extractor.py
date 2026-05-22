@@ -285,6 +285,215 @@ def _parse_customs_item_content(item_no: str, product_code: str, content: str) -
     return item
 
 
+def _extract_items_from_continuation(text: str) -> list:
+    """
+    从没有表头的续页中提取商品条目（文本回退模式）
+    适用于预录单续页：项号\n商品编码\n名称\n规格型号\n... 的垂直排列格式
+    """
+    items = []
+    # 匹配: 项号(1-3位) + 10位商品编码 + 内容直到下一个项号
+    item_pattern = re.compile(
+        r"(?:^|\n)\s*(\d{1,3})\s*\n\s*(\d{8,10})\s*\n(.+?)(?=\n\s*\d{1,3}\s*\n\s*\d{8,10}|\Z)",
+        re.DOTALL,
+    )
+    for match in item_pattern.finditer(text):
+        item_no = match.group(1)
+        product_code = match.group(2)
+        content = match.group(3).strip()
+        # 截断到税费征收情况或页脚
+        footer_match = re.search(r"税费征收情况|兹申明|申报单位|报关人员|自报自缴", content)
+        if footer_match:
+            content = content[:footer_match.start()].strip()
+        if content:
+            item = _parse_customs_item_content(item_no, product_code, content)
+            items.append(item)
+    return items
+
+
+def _extract_items_from_hedui(text: str) -> list:
+    """
+    从核对单格式（"仅供核对用"标记）中提取商品条目
+    核对单的列头是垂直排列（同一x不同y），数据区域在文本末尾以特定顺序出现
+    数据顺序：项号, 品名, 数量(多个), 总价, 币制, 单价, 原产国代码, 原产国,
+             目的国, 征免, 货源地, 目的国代码, 征免代码, 商品编码, 规格型号
+    """
+    if "仅供核对" not in text:
+        return []
+
+    lines = text.split('\n')
+    lines = [l.strip() for l in lines if l.strip()]
+
+    # 找到数据区域起点：小数字(1-3位)后跟中文产品名，后续有数量行
+    data_start = None
+    for i in range(len(lines) - 2):
+        if re.match(r'^\d{1,3}$', lines[i]):
+            next_line = lines[i + 1] if i + 1 < len(lines) else ""
+            if (re.match(r'^[\u4e00-\u9fff]', next_line)
+                    and '|' not in next_line
+                    and next_line not in ('人民币', '照章', '照章征税', '照章征税(1)')):
+                has_qty = any(QTY_UNIT_RE.match(lines[j])
+                             for j in range(i + 2, min(i + 8, len(lines))))
+                if has_qty:
+                    data_start = i
+                    break
+
+    if data_start is None:
+        return []
+
+    # 收集数据行直到页脚
+    footer_pats = ('税费征收', '合计总价', '录入员', '兹声明', '兹申明', '录入单位')
+    data_lines = []
+    for i in range(data_start, len(lines)):
+        if any(lines[i].startswith(fp) for fp in footer_pats):
+            break
+        data_lines.append(lines[i])
+
+    if not data_lines:
+        return []
+
+    # 按项号分组
+    item_groups = []
+    current_lines = []
+    for i, line in enumerate(data_lines):
+        is_item_start = (
+            re.match(r'^\d{1,3}$', line)
+            and i + 1 < len(data_lines)
+            and re.match(r'^[\u4e00-\u9fff]', data_lines[i + 1])
+            and '|' not in data_lines[i + 1]
+            and data_lines[i + 1] not in ('人民币', '照章', '照章征税')
+        )
+        if is_item_start:
+            if current_lines:
+                item_groups.append(current_lines)
+            current_lines = [line]
+        else:
+            current_lines.append(line)
+
+    if current_lines:
+        item_groups.append(current_lines)
+
+    items = []
+    for group in item_groups:
+        item = _parse_hedui_item(group)
+        if item.get("product_code") or item.get("product_name"):
+            items.append(item)
+
+    return items
+
+
+def _parse_hedui_item(lines: list) -> dict:
+    """解析核对单中单个商品的数据行"""
+    item = {
+        "item_no": "",
+        "product_code": "",
+        "product_name": "",
+        "spec_model": "",
+        "quantity_unit": "",
+        "unit_price": "",
+        "total_price": "",
+        "currency": "",
+        "origin_country": "",
+        "final_dest_country": "",
+        "domestic_source": "",
+        "duty_exemption": "",
+    }
+
+    if not lines:
+        return item
+
+    remaining = list(lines)
+
+    # item_no: 第一个1-3位数字
+    if re.match(r'^\d{1,3}$', remaining[0]):
+        item["item_no"] = remaining[0]
+        remaining = remaining[1:]
+
+    spec_parts = []
+    qty_lines = []
+    price_lines = []
+    countries = {'中国', '美国', '德国', '英国', '法国', '日本', '韩国', '澳大利亚',
+                 '加拿大', '意大利', '西班牙', '荷兰', '比利时', '瑞士', '新加坡'}
+
+    for line in remaining:
+        # 商品编码 (8-10位数字)
+        if re.match(r'^\d{8,10}$', line) and not item["product_code"]:
+            item["product_code"] = line
+            continue
+
+        # 数量行
+        if QTY_UNIT_RE.match(line):
+            qty_lines.append(line)
+            continue
+
+        # 价格行 (小数)
+        if re.match(r'^\d+\.\d+$', line):
+            price_lines.append(line)
+            continue
+
+        # 币制（CJK radical ⼈ U+2F46 可能替代 人 U+4EBA）
+        normalized = line.replace('\u2f08', '人').replace('\u2f46', '人')
+        if normalized in ('人民币', '美元', '欧元', '港币', '日元', '英镑'):
+            item["currency"] = normalized
+            continue
+
+        # 规格型号 (含 | 的行)
+        if '|' in line:
+            spec_parts.append(line)
+            continue
+
+        # 征免
+        if '照章' in line or '全免' in line:
+            duty = re.sub(r'\(\d+\)', '', line).strip()
+            item["duty_exemption"] = duty if duty else line
+            continue
+
+        # 境内货源地 (含括号数字+地名)
+        if re.search(r'\(\d{4,6}\)', line):
+            cleaned = re.sub(r'\(\d{4,6}\)', '', line).strip()
+            if cleaned:
+                item["domestic_source"] = cleaned
+            continue
+
+        # 国家名：第一次→原产国，第二次→目的国
+        if line in countries:
+            if not item["origin_country"]:
+                item["origin_country"] = line
+            elif not item["final_dest_country"]:
+                item["final_dest_country"] = line
+            continue
+
+        # 产品名 (第一个中文开头的非特殊行)
+        if re.match(r'^[\u4e00-\u9fff]', line) and not item["product_name"]:
+            item["product_name"] = line
+            continue
+
+        # 跳过纯代码如 (CHN), (USA), (1)
+        if re.match(r'^\([A-Z0-9]+\)$', line):
+            continue
+
+    # 组装
+    item["quantity_unit"] = " / ".join(qty_lines)
+    item["spec_model"] = " ".join(spec_parts)
+
+    # 区分单价/总价：小数位>=3的是单价，<3的是总价
+    if len(price_lines) >= 2:
+        for p in price_lines:
+            dec_len = len(p.split('.')[1]) if '.' in p else 0
+            if dec_len >= 3:
+                item["unit_price"] = p
+            else:
+                item["total_price"] = p
+    elif len(price_lines) == 1:
+        p = price_lines[0]
+        dec_len = len(p.split('.')[1]) if '.' in p else 0
+        if dec_len >= 3:
+            item["unit_price"] = p
+        else:
+            item["total_price"] = p
+
+    return item
+
+
 def _extract_items_loose(item_text: str) -> list:
     """宽松模式提取商品条目"""
     items = []
@@ -623,6 +832,12 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
         # 所有预录单页面提取商品明细
         for page in pre_pages:
             items = extract_pre_recording_items_by_position(page)
+            if not items:
+                # 续页可能没有表头行，位置感知提取失败，回退到文本提取
+                items = _extract_items_from_continuation(page.text)
+            if not items:
+                # 核对单格式（列头垂直排列），用专门的文本解析器
+                items = _extract_items_from_hedui(page.text)
             pre_items.extend(items)
 
     # 预录单续页（多页预录单的后续页，不含标题但含商品数据）
@@ -630,6 +845,10 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
         from src.pdf_parser import extract_pre_recording_items_by_position
         for page in pre_continuation_pages:
             items = extract_pre_recording_items_by_position(page)
+            if not items:
+                items = _extract_items_from_continuation(page.text)
+            if not items:
+                items = _extract_items_from_hedui(page.text)
             pre_items.extend(items)
 
     result = {

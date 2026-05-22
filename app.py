@@ -5,6 +5,7 @@ Streamlit 主入口
 import streamlit as st
 import tempfile
 import os
+import re
 from src.pdf_parser import parse_multiple_pdfs, get_page_text_by_type, extract_pre_recording_fields_by_position
 from src.field_extractor import extract_all_fields, extract_customs_header, extract_pre_recording_header
 from src.comparator import run_comparison, STATUS_PASS, STATUS_FAIL, STATUS_FUZZY, STATUS_MANUAL
@@ -125,25 +126,40 @@ def get_contract_no_from_customs(parsed_pdf) -> str:
         header = extract_customs_header(page.text)
         if header.get("contract_no"):
             return header["contract_no"]
+        # 核对单页面也可能是 customs 文件的一部分，尝试文本正则提取
+        header = extract_pre_recording_header(page.text)
+        if header.get("contract_no"):
+            return header["contract_no"]
     return ""
+
+
+def _is_valid_contract_no(val: str) -> bool:
+    """合同协议号应该是纯数字或含字母数字的组合，非空且不像标签名"""
+    if not val or not val.strip():
+        return False
+    v = val.strip()
+    # 合同号通常是纯数字（如 20260521006）或字母数字混合（如 FBA603N147833NB0）
+    return bool(re.match(r"^[A-Za-z0-9]+$", v))
 
 
 def get_contract_no_from_pre(parsed_pdf) -> str:
     """从预录单 PDF 中提取合同协议号"""
+    # 优先用文本正则提取（更可靠），位置感知可能因布局差异出错
+    for page in parsed_pdf.pages:
+        if page.doc_type == "pre_recording":
+            header = extract_pre_recording_header(page.text)
+            if header.get("contract_no") and _is_valid_contract_no(header["contract_no"]):
+                return header["contract_no"]
+    # 回退到位置感知提取
     for page in parsed_pdf.pages:
         if page.doc_type == "pre_recording":
             header = extract_pre_recording_fields_by_position(page)
-            if header.get("contract_no"):
+            if header.get("contract_no") and _is_valid_contract_no(header["contract_no"]):
                 return header["contract_no"]
-            header = extract_pre_recording_header(page.text)
-            if header.get("contract_no"):
-                return header["contract_no"]
+    # 最后尝试所有页面
     for page in parsed_pdf.pages:
-        header = extract_pre_recording_fields_by_position(page)
-        if header.get("contract_no"):
-            return header["contract_no"]
         header = extract_pre_recording_header(page.text)
-        if header.get("contract_no"):
+        if header.get("contract_no") and _is_valid_contract_no(header["contract_no"]):
             return header["contract_no"]
     return ""
 
@@ -163,15 +179,31 @@ def collect_pages_from_pdfs(pdfs, customs=False, pre=False):
                 if "项号" in page.text and "商品编号" in page.text:
                     pre_continuation_pages.append(page)
     if customs and not customs_pages:
+        # 没有标准的 customs_declaration 页面时，依次尝试：
+        # 1. 将 pre_recording 页面作为报关单数据（报关单PDF本身可能是预录单格式）
         for pdf in pdfs:
             for page in pdf.pages:
-                if page.doc_type == "unknown":
+                if page.doc_type == "pre_recording":
                     customs_pages.append(page)
+        # 2. 如果还是没有，再尝试 unknown 页面
+        if not customs_pages:
+            for pdf in pdfs:
+                for page in pdf.pages:
+                    if page.doc_type == "unknown":
+                        customs_pages.append(page)
     if pre and not pre_pages:
+        # 没有标准的 pre_recording 页面时，依次尝试：
+        # 1. 将 customs_declaration 页面作为预录单数据（预录单PDF中可能包含报关单格式的页面）
         for pdf in pdfs:
             for page in pdf.pages:
-                if page.doc_type == "unknown":
+                if page.doc_type == "customs_declaration":
                     pre_pages.append(page)
+        # 2. 如果还是没有，再尝试 unknown 页面
+        if not pre_pages:
+            for pdf in pdfs:
+                for page in pdf.pages:
+                    if page.doc_type == "unknown":
+                        pre_pages.append(page)
     return customs_pages, contract_pages, pre_pages, pre_continuation_pages
 
 
