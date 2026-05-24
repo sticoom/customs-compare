@@ -8,7 +8,7 @@
 # ============================================================
 AI_CONFIG = {
     # 当前使用智谱免费模型，后续可改为 "deepseek", "openai" 等
-    "provider": "zhipu",
+    "provider": "deepseek",
     # 智谱 AI
     "zhipu": {
         "text_model": "glm-4-flash",      # 免费文本模型
@@ -20,8 +20,8 @@ AI_CONFIG = {
     "deepseek": {
         "text_model": "deepseek-chat",
         "vision_model": "deepseek-vl2",
-        "api_key": "",
-        "base_url": "https://api.deepseek.com/v1",
+        "api_key": "sk-1c71fbfd1d004b688b1c6ff223b7637d",
+        "base_url": "https://api.deepseek.com",
     },
 }
 

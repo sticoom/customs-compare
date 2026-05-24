@@ -115,9 +115,10 @@ def extract_customs_items(text: str) -> list:
         item_text = text[item_section_match.end():tax_match.start()]
 
     # 按项号分割（项号从1开始）
-    # 匹配模式：行首的数字（项号）+ 后续内容直到下一个项号或结尾
+    # 匹配模式：行首的数字（项号）+ 10位商品编码 + 可选商品名称 + 后续内容直到下一个项号或结尾
+    # 支持两种格式：编码独占一行 或 编码+名称同行（核对单格式）
     item_pattern = re.compile(
-        r"(?:^|\n)\s*(\d+)\s*\n\s*(\d{10})\s*\n(.+?)(?=\n\s*\d+\s*\n\s*\d{10}|\Z)",
+        r"(?:^|\n)\s*(\d+)\s*\n\s*(\d{10})\s*(.*?)\s*\n(.+?)(?=\n\s*\d+\s*\n\s*\d{10}|\Z)",
         re.DOTALL,
     )
 
@@ -130,7 +131,11 @@ def extract_customs_items(text: str) -> list:
     for match in matches:
         item_no = match.group(1)
         product_code = match.group(2)
-        content = match.group(3).strip()
+        product_name_inline = match.group(3).strip()
+        content = match.group(4).strip()
+        # 如果编码行有商品名称，将其拼接到内容前面
+        if product_name_inline:
+            content = product_name_inline + "\n" + content
 
         item = _parse_customs_item_content(item_no, product_code, content)
         items.append(item)
@@ -288,18 +293,25 @@ def _parse_customs_item_content(item_no: str, product_code: str, content: str) -
 def _extract_items_from_continuation(text: str) -> list:
     """
     从没有表头的续页中提取商品条目（文本回退模式）
-    适用于预录单续页：项号\n商品编码\n名称\n规格型号\n... 的垂直排列格式
+    适用于两种格式：
+    1. 标准格式：项号\n商品编码\n名称\n规格型号\n...
+    2. 核对单格式：项号\n商品编码 商品名称\n规格型号\n...
     """
     items = []
-    # 匹配: 项号(1-3位) + 10位商品编码 + 内容直到下一个项号
+    # 匹配: 项号(1-3位) + 8-10位商品编码 + 可选商品名称 + 内容直到下一个项号
+    # 核对单格式中编码和名称在同一行，如 "3924900000 置物架"
     item_pattern = re.compile(
-        r"(?:^|\n)\s*(\d{1,3})\s*\n\s*(\d{8,10})\s*\n(.+?)(?=\n\s*\d{1,3}\s*\n\s*\d{8,10}|\Z)",
+        r"(?:^|\n)\s*(\d{1,3})\s*\n\s*(\d{8,10})\s*(.*?)\s*\n(.+?)(?=\n\s*\d{1,3}\s*\n\s*\d{8,10}|\Z)",
         re.DOTALL,
     )
     for match in item_pattern.finditer(text):
         item_no = match.group(1)
         product_code = match.group(2)
-        content = match.group(3).strip()
+        product_name_inline = match.group(3).strip()  # 编码同行可能有的商品名称
+        content = match.group(4).strip()
+        # 如果编码行有商品名称，将其拼接到内容前面
+        if product_name_inline:
+            content = product_name_inline + "\n" + content
         # 截断到税费征收情况或页脚
         footer_match = re.search(r"税费征收情况|兹申明|申报单位|报关人员|自报自缴", content)
         if footer_match:
@@ -443,8 +455,7 @@ def _parse_hedui_item(lines: list) -> dict:
 
         # 征免
         if '照章' in line or '全免' in line:
-            duty = re.sub(r'\(\d+\)', '', line).strip()
-            item["duty_exemption"] = duty if duty else line
+            item["duty_exemption"] = line  # 保留完整值（含代码）
             continue
 
         # 境内货源地 (含括号数字+地名)
@@ -467,8 +478,13 @@ def _parse_hedui_item(lines: list) -> dict:
             item["product_name"] = line
             continue
 
-        # 跳过纯代码如 (CHN), (USA), (1)
+        # 纯代码如 (CHN), (USA), (1) - 征免代码合并到 duty_exemption
         if re.match(r'^\([A-Z0-9]+\)$', line):
+            code = line[1:-1]  # 去掉括号
+            if re.match(r'^\d{1,2}$', code) and item["duty_exemption"]:
+                # 小数字代码(1-2位) → 征免代码，合并到 duty_exemption
+                if f"({code})" not in item["duty_exemption"]:
+                    item["duty_exemption"] = item["duty_exemption"] + f"({code})"
             continue
 
     # 组装
@@ -823,6 +839,25 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
     customs_header = extract_customs_header(customs_text)
     customs_items = extract_customs_items(customs_text)
 
+    # Fallback: 标准提取失败时，尝试续页/核对单格式提取
+    if not customs_items:
+        customs_items = _extract_items_from_continuation(customs_text)
+    if not customs_items:
+        customs_items = _extract_items_from_hedui(customs_text)
+
+    # 逐页补充：核对单格式的续页中，"项号"在页面底部，
+    # extract_customs_items 只提取"项号"之后的内容，会漏掉上方的数据。
+    # 因此逐页用 _extract_items_from_continuation 补充缺失的项号。
+    existing_nos = {it["item_no"] for it in customs_items}
+    for page in customs_decl_pages:
+        page_items = _extract_items_from_continuation(page.text)
+        for item in page_items:
+            if item["item_no"] not in existing_nos:
+                customs_items.append(item)
+                existing_nos.add(item["item_no"])
+    if len(customs_items) > len(existing_nos) - 1:
+        customs_items.sort(key=lambda x: int(x["item_no"]) if x.get("item_no", "").isdigit() else 999)
+
     # 如果报关单 PDF 包含核对单页面（pre_recording），也提取其商品数据
     # 核对单通常包含完整的商品项号列表，可补充报关单缺失的项号
     if pre_rec_in_customs:
@@ -876,6 +911,11 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
         )
         # 用第一个预录单页面提取表头
         pre_header = extract_pre_recording_fields_by_position(pre_pages[0])
+
+        # "仅供核对用"格式的文本兜底：位置提取不稳定的字段用正则补全
+        if "仅供核对" in pre_pages[0].text:
+            pre_header = _hedui_text_fallback(pre_header, pre_pages[0].text)
+
         # 所有预录单页面提取商品明细
         for page in pre_pages:
             items = extract_pre_recording_items_by_position(page)
@@ -885,6 +925,22 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
             if not items:
                 # 核对单格式（列头垂直排列），用专门的文本解析器
                 items = _extract_items_from_hedui(page.text)
+
+            # 位置感知提取可能因列边界问题丢失字段（如总价），
+            # 用文本提取结果补充缺失字段
+            if items:
+                text_items = _extract_items_from_continuation(page.text)
+                if not text_items:
+                    text_items = _extract_items_from_hedui(page.text)
+                if text_items:
+                    text_map = {it["item_no"]: it for it in text_items}
+                    for item in items:
+                        fallback = text_map.get(item["item_no"])
+                        if fallback:
+                            for key in list(item.keys()):
+                                if not item[key] and fallback.get(key):
+                                    item[key] = fallback[key]
+
             pre_items.extend(items)
 
     # 预录单续页（多页预录单的后续页，不含标题但含商品数据）
@@ -896,6 +952,21 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
                 items = _extract_items_from_continuation(page.text)
             if not items:
                 items = _extract_items_from_hedui(page.text)
+
+            # 文本提取补充缺失字段
+            if items:
+                text_items = _extract_items_from_continuation(page.text)
+                if not text_items:
+                    text_items = _extract_items_from_hedui(page.text)
+                if text_items:
+                    text_map = {it["item_no"]: it for it in text_items}
+                    for item in items:
+                        fallback = text_map.get(item["item_no"])
+                        if fallback:
+                            for key in list(item.keys()):
+                                if not item[key] and fallback.get(key):
+                                    item[key] = fallback[key]
+
             pre_items.extend(items)
 
     result = {
@@ -911,3 +982,297 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
         result["customs_header"]["buyer"] = result["buyer"]
 
     return result
+
+
+def _hedui_text_fallback(fields: dict, text: str) -> dict:
+    """
+    "仅供核对用"格式专用文本正则兜底。
+    该格式的值在文本中以固定模式出现，用特定正则逐字段提取。
+    仅填充 fields 中为空或值明显不合理的字段。
+    """
+    lines = text.split("\n")
+    # 过滤空行
+    lines = [l.strip() for l in lines if l.strip()]
+
+    # 收集所有非标签、非噪声的值行
+    _noise = {
+        "征免", "境内货源地", "最终目的国(地区)", "原产国(地区)", "单价/总价/币制",
+        "数量及单位", "商品名称及规格型号", "商品编号", "项号",
+        "中华人民共和国海关出口货物报关单", "页码/页数", "仅供核对用", "仅供核对使用",
+        "核对单，仅供核对使用", "海关编号", "预录入编号", "备案号", "申报日期",
+        "出口日期", "出境关别", "境内发货人", "提运单号", "运输工具名称及航次号",
+        "运输方式", "境外收货人", "许可证号", "征免性质", "监管方式", "生产销售单位",
+        "离境口岸", "指运港", "运抵国（地区）", "运抵国(地区)", "贸易国（地区）",
+        "贸易国(地区)", "合同协议号", "杂费", "保费", "运费", "成交方式",
+        "净重(千克)", "毛重(千克)", "件数", "包装种类", "随附单证及编号",
+        "标记唛码及备注", "特殊关系确认", "价格影响确认", "支付特许权使用费确认",
+        "公式定价确认", "暂定价格确认", "自报自缴", "水运中转", "申报单位",
+        "电话", "报关人员证号", "报关人员", "兹申明", "申报单位（签章）",
+        "海关批注及签章",
+    }
+
+    def _is_line_noise(line):
+        clean = re.sub(r"\([A-Za-z0-9]+\)", "", line).strip()
+        if not clean:
+            return True
+        if clean in _noise:
+            return True
+        for n in _noise:
+            if n in clean:
+                return True
+        if re.match(r"^\d+/\d+$", clean):
+            return True
+        if clean.startswith("*"):
+            return True
+        if re.match(r"^打印时间", clean):
+            return True
+        return False
+
+    value_lines = [l for l in lines if not _is_line_noise(l)]
+
+    # 合并相邻的括号代码行和值行
+    # 例如 "(3104)" + "北仑海关" → "(3104)北仑海关"
+    merged = []
+    i = 0
+    while i < len(value_lines):
+        line = value_lines[i]
+        # 如果当前行是纯括号代码（如 "(3104)"），和下一行合并
+        if re.match(r"^\([A-Za-z0-9]+\)$", line) and i + 1 < len(value_lines):
+            next_line = value_lines[i + 1]
+            # 不合并两个代码行
+            if not re.match(r"^\([A-Za-z0-9]+\)$", next_line):
+                merged.append(f"{line}{next_line}")
+                i += 2
+                continue
+        merged.append(line)
+        i += 1
+
+    # 对每个字段，用特定模式在合并后的值行中查找
+    field_patterns = {
+        "sender_unit": [
+            # 发货人：含"公司"的中文名（通常是第一个出现的）
+            r"^([\u4e00-\u9fff][\u4e00-\u9fff\w]+公司)$",
+        ],
+        "buyer": [
+            # 境外收货人：英文名（含大写字母和括号）
+            r"^([A-Z][A-Z\s\(\)]+LIMITED\s*[A-Z]*)$",
+            r"^([A-Z][A-Z\s\(\)]+CO\.\s*[Ll]td\.?)$",
+            r"^([A-Z][A-Z\s\(\)]+INC\.?)$",
+        ],
+        "business_unit": [
+            # 生产销售单位：含"公司"的中文名
+            r"^([\u4e00-\u9fff][\u4e00-\u9fff\w]+公司)$",
+        ],
+        "contract_no": [
+            # 合同协议号：纯数字日期格式（如 20260521006, 20260514003）优先
+            r"^(\d{10,12})$",
+            # FBA/FCL等大写字母开头的编号（如 FBA603N147833NB0）
+            r"^([A-Z]{2,}[A-Z0-9]+)$",
+        ],
+        "exit_customs": [
+            r"^(\([\d]+\)([\u4e00-\u9fff]+海关))$",
+            r"^\(([\u4e00-\u9fff]+海关)\)$",
+            r"^([\u4e00-\u9fff]+海关)$",
+        ],
+        "transport_mode": [
+            r"^([\u4e00-\u9fff]+运输)$",
+        ],
+        "trade_mode": [
+            r"^(\(\d+\))?([\u4e00-\u9fff]+贸易)$",
+            r"^([\u4e00-\u9fff]+贸易)$",
+        ],
+        "duty_nature": [
+            r"^(\(\d+\))?([\u4e00-\u9fff]+征税)$",
+            r"^([\u4e00-\u9fff]+征税)$",
+        ],
+        "trade_country": [
+            r"^(\(\w+\))?(中国[\u4e00-\u9fff]+)$",
+            r"^([\u4e00-\u9fff]+)$",  # 通用国家名
+        ],
+        "dest_country": [
+            r"^([\u4e00-\u9fff]{2,4})$",  # 国家名
+        ],
+        "dest_port": [
+            r"^([\u4e00-\u9fff]{2,4})$",  # 港口名
+        ],
+        "deal_mode": [
+            r"^(FOB|CIF|CFR|FCA|CPT|CIP|DAP|DDP|EXW|FAS)$",
+        ],
+        "package_type": [
+            r"^(纸制或纤维板制盒/箱|木箱|纸箱|托盘|裸装|散装)",
+        ],
+        "attached_docs": [
+            r"^(随附单证\d*:.*+)$",
+        ],
+        "marks_remarks": [
+            r"^(备注[：:].+)$",
+        ],
+    }
+
+    # 按字段逐个匹配
+    used_indices = set()
+
+    # 特殊处理：合同协议号优先选纯数字日期格式（如20260514003），
+    # 再选FBA格式（如FBA603N147833NB0），排除提运单号（如18632-DLM250748）
+    if not _is_valid_field_value("contract_no", fields.get("contract_no", "")):
+        numeric_match = ("", -1)
+        alpha_match = ("", -1)
+        for idx, line in enumerate(merged):
+            if idx in used_indices:
+                continue
+            if re.match(r"^\d{10,12}$", line) and _is_valid_field_value("contract_no", line):
+                if numeric_match[1] < 0:
+                    numeric_match = (line, idx)
+            if re.match(r"^[A-Z]{2,}[A-Z0-9]+$", line) and _is_valid_field_value("contract_no", line):
+                if alpha_match[1] < 0:
+                    alpha_match = (line, idx)
+        if numeric_match[0]:
+            fields["contract_no"] = numeric_match[0]
+            used_indices.add(numeric_match[1])
+        elif alpha_match[0]:
+            fields["contract_no"] = alpha_match[0]
+            used_indices.add(alpha_match[1])
+
+    # 特殊处理的字段：需要按出现顺序区分重复值
+    company_count = 0  # 用于区分发货人和生产销售单位
+    country_count = 0   # 用于区分运抵国和指运港
+
+    for field_id, patterns in field_patterns.items():
+        current_val = fields.get(field_id, "")
+
+        # 跳过已经正确提取的字段（验证当前值是否合理）
+        if _is_valid_field_value(field_id, current_val):
+            continue
+
+        # 在 merged 值行中搜索
+        for idx, line in enumerate(merged):
+            if idx in used_indices:
+                continue
+            for pattern in patterns:
+                m = re.match(pattern, line)
+                if m:
+                    val = m.group(m.lastindex or 0) if m.lastindex else m.group(0)
+
+                    # 验证替换值也必须合理
+                    if not _is_valid_field_value(field_id, val):
+                        continue
+
+                    # 特殊处理：发货人和生产销售单位都是公司名
+                    if field_id == "sender_unit":
+                        if company_count == 0:
+                            fields[field_id] = val
+                            used_indices.add(idx)
+                            company_count += 1
+                        break
+                    elif field_id == "business_unit":
+                        company_count += 1
+                        if company_count >= 2:
+                            fields[field_id] = val
+                            used_indices.add(idx)
+                        break
+                    else:
+                        fields[field_id] = val
+                        used_indices.add(idx)
+                        break
+            else:
+                continue
+            break
+
+    # 件数/毛重/净重：查找纯数字值
+    _fill_numeric_fields(fields, merged, used_indices)
+
+    return fields
+
+
+def _is_valid_field_value(field_id: str, value: str) -> bool:
+    """检查字段值是否合理（用于判断位置提取的结果是否需要被覆盖）"""
+    if not value or value == "-":
+        return False
+
+    # 字段 → 合理值的特征
+    validators = {
+        "sender_unit": lambda v: bool(re.search(r"[\u4e00-\u9fff]", v) and "公司" in v or "企业" in v or "厂" in v or "部" in v),
+        "buyer": lambda v: bool(re.search(r"[A-Za-z]", v)),
+        "business_unit": lambda v: bool(re.search(r"[\u4e00-\u9fff]", v) and "公司" in v or "企业" in v or "厂" in v),
+        "contract_no": lambda v: bool(re.search(r"[A-Z0-9-]", v) and len(v) <= 30 and "箱" not in v and "袋" not in v and "公司" not in v),
+        "exit_customs": lambda v: "海关" in v,
+        "transport_mode": lambda v: bool(re.search(r"[\u4e00-\u9fff]+运输|[\u4e00-\u9fff]+航运", v)),
+        "trade_mode": lambda v: bool(re.search(r"贸易|加工|保税", v)) and "公司" not in v and "海关" not in v and "香港" not in v and len(v) <= 10,
+        "duty_nature": lambda v: bool(re.search(r"征税|免税|退税", v)) and len(v) <= 10,
+        "trade_country": lambda v: len(v) <= 8 and bool(re.search(r"^[\u4e00-\u9fff（）()A-Z]+$", v)) and "公司" not in v and "海关" not in v and "贸易" not in v and "征税" not in v and "运输" not in v,
+        "dest_country": lambda v: len(v) <= 6 and bool(re.search(r"^[\u4e00-\u9fff]+$", v)) and "公司" not in v and "海关" not in v and "贸易" not in v and "征税" not in v and "运输" not in v,
+        "dest_port": lambda v: len(v) <= 8 and bool(re.search(r"^[\u4e00-\u9fff]+$", v)) and "贸易" not in v and "征税" not in v and "海关" not in v and "公司" not in v,
+        "deal_mode": lambda v: v in ("FOB", "CIF", "CFR", "FCA", "CPT", "CIP", "DAP", "DDP", "EXW", "FAS"),
+        "package_type": lambda v: bool(re.search(r"纸制|木箱|纸箱|托盘|裸装|散装", v)),
+        "quantity": lambda v: bool(re.match(r"^\d+$", v)),
+        "gross_weight": lambda v: bool(re.match(r"^[\d.]+$", v)),
+        "net_weight": lambda v: bool(re.match(r"^[\d.]+$", v)),
+        "attached_docs": lambda v: "随附单证" in v or v.strip() != "",
+        "marks_remarks": lambda v: "备注" in v or "N/M" in v or v.strip() != "",
+    }
+
+    validator = validators.get(field_id)
+    if validator:
+        return validator(value)
+    return True  # 未知字段，保留当前值
+
+
+def _fill_numeric_fields(fields: dict, merged_lines: list, used_indices: set):
+    """从文本行中提取件数、毛重、净重等数值字段"""
+    # 收集所有纯数字行（排除已使用的）
+    numbers = []
+    for idx, line in enumerate(merged_lines):
+        if idx in used_indices:
+            continue
+        # 纯整数（可能是件数、毛重、净重）
+        if re.match(r"^\d+$", line):
+            numbers.append((idx, line, int(line)))
+        # 小数（可能是重量）
+        elif re.match(r"^\d+\.\d+$", line):
+            numbers.append((idx, line, float(line)))
+
+    # 按数值大小和出现位置判断字段
+    # 件数通常是中等大小的整数（10-10000）
+    # 毛重 > 净重 > 0
+    # 假设件数、毛重、净重在文本中相邻出现
+
+    int_nums = [(idx, line, val) for idx, line, val in numbers
+                if isinstance(val, int) and val > 1 and val < 100000]
+
+    # 如果件数未提取，找最可能的值
+    if not fields.get("quantity") or not re.match(r"^\d+$", fields.get("quantity", "")):
+        # 件数通常是三个数值（件数、毛重、净重）中的第一个，且通常最小
+        if len(int_nums) >= 3:
+            # 取第一组三个连续整数
+            for i in range(len(int_nums) - 2):
+                if int_nums[i+1][0] - int_nums[i][0] <= 2 and int_nums[i+2][0] - int_nums[i+1][0] <= 2:
+                    fields["quantity"] = str(int_nums[i][2])
+                    used_indices.add(int_nums[i][0])
+                    # 毛重和净重
+                    if not fields.get("gross_weight") or not re.match(r"^[\d.]+$", fields.get("gross_weight", "")):
+                        fields["gross_weight"] = str(int_nums[i+1][2])
+                        used_indices.add(int_nums[i+1][0])
+                    if not fields.get("net_weight") or not re.match(r"^[\d.]+$", fields.get("net_weight", "")):
+                        fields["net_weight"] = str(int_nums[i+2][2])
+                        used_indices.add(int_nums[i+2][0])
+                    break
+        elif len(int_nums) >= 1:
+            # 只有一个整数，可能是件数
+            fields["quantity"] = str(int_nums[0][2])
+            used_indices.add(int_nums[0][0])
+
+    # 如果毛重/净重未提取，从小数中查找
+    float_nums = [(idx, line, val) for idx, line, val in numbers if isinstance(val, float)]
+    if not fields.get("gross_weight") and float_nums:
+        # 第一个较大的小数可能是毛重
+        for idx, line, val in float_nums:
+            if idx not in used_indices and val > 10:
+                fields["gross_weight"] = line
+                used_indices.add(idx)
+                break
+    if not fields.get("net_weight") and float_nums:
+        for idx, line, val in float_nums:
+            if idx not in used_indices and val > 5:
+                fields["net_weight"] = line
+                used_indices.add(idx)
+                break

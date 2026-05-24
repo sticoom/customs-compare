@@ -67,7 +67,9 @@ def parse_pdf(pdf_bytes: bytes, filename: str = "") -> ParsedPDF:
             # 检查是否是"明确"识别的（含出境关别或出口口岸）
             has_exit_customs = bool(re.search(r"出境关别\s*\(?\d*\)?\s*\n?\s*[\u4e00-\u9fff]+海关", p.text))
             has_export_port = bool(re.search(r"出口口岸\s*\n?\s*[-\s]*\n", p.text)) or bool(re.search(r"出口口岸\s*-", p.text))
-            if has_exit_customs or has_export_port:
+            # "仅供核对"格式：虽然没有出境关别值，但已明确为预录单
+            has_hedui = "仅供核对" in p.text or "核对单" in p.text
+            if has_exit_customs or has_export_port or has_hedui:
                 primary_type = p.doc_type
                 break
 
@@ -246,44 +248,17 @@ def extract_horizontal_lines(page_info: PageInfo) -> list:
 
 def extract_pre_recording_fields_by_position(page_info: PageInfo) -> dict:
     """
-    用位置感知方式从预录单中提取字段
-    利用预录单的双列表格布局：标签行(y) → 值行(y+10~15)
+    用位置感知方式从预录单中提取字段。
+    支持两种布局：
+    1. 标准预录单：标签在上，值在下方 y+5~20
+    2. "仅供核对用"格式：标签和值散布在页面各处，但值与标签在同一 x 列
     """
     spans = extract_spans_with_positions(page_info)
     fields = {}
 
-    # 按 y 坐标分组（容差 5px）形成行
-    rows = {}
-    for s in spans:
-        y_key = round(s["y"] / 5) * 5  # 5px 精度分组
-        if y_key not in rows:
-            rows[y_key] = []
-        rows[y_key].append(s)
+    # 检测是否为"仅供核对用"格式
+    is_hedui = "仅供核对" in page_info.text
 
-    # 按 y 排序
-    sorted_y = sorted(rows.keys())
-
-    # 构建行列表：每行是 [(text, x), ...]
-    row_list = []
-    for y in sorted_y:
-        row_spans = sorted(rows[y], key=lambda s: s["x"])
-        row_texts = []
-        current_x = -1
-        for s in row_spans:
-            if current_x >= 0 and s["x"] - current_x > 20:
-                # 同一行中有明显间隔，作为新单元格
-                pass
-            row_texts.append((s["text"], s["x"]))
-            current_x = s["x1"]
-        row_list.append((y, row_texts))
-
-    # 构建 label → value 映射
-    # 预录单的布局：label 行后面紧跟 value 行
-    # 我们搜索已知的标签，然后在下一行对应 x 位置找值
-
-    label_value_map = {}  # label_text → value_text
-
-    # 方法：扫描所有 span，找到标签，然后在下方（y+8~20）相同 x 位置找值
     span_list = sorted(spans, key=lambda s: (s["y"], s["x"]))
 
     # 预录单标签 → 字段 ID 映射
@@ -319,12 +294,164 @@ def extract_pre_recording_fields_by_position(page_info: PageInfo) -> dict:
         "deal_mode", "duty_nature", "duty_exemption",
     }
 
+    def _is_known_label(clean_text):
+        """检查文本是否匹配已知标签"""
+        for lbl in label_to_field:
+            if lbl in clean_text or lbl == clean_text:
+                return True
+        return False
+
+    def _get_x_bounds(span, all_spans):
+        """计算标签对应的 x 搜索范围"""
+        x_center = span["x"]
+        y_label = span["y"]
+
+        if is_hedui:
+            # "仅供核对用"格式：值在同一 x 列，宽度 ±25px
+            return x_center - 10, x_center + 80
+
+        # 标准格式：右边界取同行右侧最近标签
+        x_max = x_center + 160
+        for other in all_spans:
+            if abs(other["y"] - y_label) < 3 and other["x"] > x_center + 20:
+                other_clean = re.sub(r"\(\d+\)", "", other["text"]).strip()
+                for lbl in label_to_field:
+                    if lbl in other_clean:
+                        if other["x"] - 5 < x_max:
+                            x_max = other["x"] - 5
+                        break
+        return x_center - 5, x_max
+
+    # "仅供核对用"格式的额外排除文本（非值字段标签/元数据）
+    _hedui_noise_labels = {
+        "预录入编号", "海关编号", "备案号", "申报日期", "出口日期",
+        "提运单号", "运输工具名称及航次号", "许可证号", "杂费", "保费", "运费",
+        "特殊关系确认", "价格影响确认", "支付特许权使用费确认",
+        "公式定价确认", "暂定价格确认", "自报自缴", "水运中转",
+        "申报单位", "电话", "报关人员证号", "报关人员",
+        "兹申明", "申报单位（签章）", "海关批注及签章",
+        "商品编号", "项号", "商品名称及规格型号", "数量及单位",
+        "单价/总价/币制", "原产国(地区)", "原产国（地区）",
+        "最终目的国(地区)", "最终目的国（地区）",
+        "境内货源地", "征免",
+        "中华人民共和国海关出口货物报关单", "页码/页数",
+        "仅供核对用", "打印时间",
+    }
+
+    def _is_noise_span(text):
+        """检查是否为非值文本（标签、元数据、噪声等）"""
+        clean = re.sub(r"\([A-Za-z0-9]+\)", "", text).strip()
+        if not clean:
+            return True
+        # 精确匹配噪声标签
+        for noise in _hedui_noise_labels:
+            if noise in clean or clean in noise:
+                return True
+        # 含中文冒号的行（如 "预录入编号："）
+        if re.search(r"[：:]$", clean):
+            return True
+        # 页码格式
+        if re.match(r"^\d+/\d+$", clean):
+            return True
+        # 纯日期/编号格式（如 20260514003）
+        if re.match(r"^\d{8,}$", clean):
+            return True
+        # 条码
+        if clean.startswith("*"):
+            return True
+        # 纯代码
+        if re.match(r"^\([A-Za-z0-9]+\)$", text.strip()):
+            return True
+        return False
+
+    def _find_value_by_column(label_span, all_spans, field_id):
+        """
+        "仅供核对用"格式专用：在同一 x 列中找最近的非标签 span 作为值。
+        值可能在标签上方或下方，距离不固定（10px ~ 500px）。
+        """
+        x_center = label_span["x"]
+        y_label = label_span["y"]
+
+        # 动态计算 x 搜索范围：取该标签到右侧最近标签的中点
+        # 如果没有右侧标签，使用 x_center + 35
+        x_max = x_center + 35
+        y_label_approx = round(y_label / 3) * 3
+        for other in all_spans:
+            if abs(other["y"] - y_label) < 5 and other["x"] > x_center + 5:
+                other_clean = re.sub(r"\([A-Za-z0-9]+\)", "", other["text"]).strip()
+                if _is_known_label(other_clean):
+                    mid = (x_center + other["x"]) / 2
+                    if mid < x_max:
+                        x_max = mid
+        x_min = x_center - 5
+
+        candidates = []
+        for other in all_spans:
+            if other is label_span:
+                continue
+            y_diff = other["y"] - y_label
+            if abs(y_diff) < 2:
+                continue
+            if not (other["x"] >= x_min and other["x"] < x_max):
+                continue
+
+            other_text = other["text"].strip()
+
+            # 跳过噪声
+            if _is_noise_span(other_text):
+                continue
+            # 跳过已知标签
+            other_clean = re.sub(r"\([A-Za-z0-9]+\)", "", other_text).strip()
+            if _is_known_label(other_clean):
+                continue
+
+            candidates.append(other)
+
+        if not candidates:
+            # 如果精确列范围无结果，稍微扩大（x_center -10 到 x_center + 45）
+            for other in all_spans:
+                if other is label_span:
+                    continue
+                y_diff = other["y"] - y_label
+                if abs(y_diff) < 2:
+                    continue
+                if not (other["x"] >= x_center - 10 and other["x"] < x_center + 45):
+                    continue
+                other_text = other["text"].strip()
+                if _is_noise_span(other_text):
+                    continue
+                other_clean = re.sub(r"\([A-Za-z0-9]+\)", "", other_text).strip()
+                if _is_known_label(other_clean):
+                    continue
+                candidates.append(other)
+
+        if not candidates:
+            return "", ""
+
+        # 按绝对 y 距离排序，取最近的
+        candidates.sort(key=lambda c: abs(c["y"] - y_label))
+
+        # 取最靠近的同一行（y 容差 ±3px）的 span 组合为值
+        closest = candidates[0]
+        closest_y = closest["y"]
+        same_row = [c for c in candidates if abs(c["y"] - closest_y) < 3]
+        same_row.sort(key=lambda c: c["x"])
+
+        # 组装值文本
+        value_parts = []
+        code_part = ""
+        for c in same_row:
+            txt = c["text"].strip()
+            if re.match(r"^\([A-Za-z0-9]+\)$", txt):
+                code_part = txt
+            else:
+                value_parts.append(txt)
+        value = " ".join(value_parts)
+        return value, code_part
+
     for span in span_list:
         text = span["text"]
-        # 检查是否匹配已知标签
-        # 只移除字母数字代码括号如 (0110)、(HKG)，保留中文括号如 (地区)、(千克)
         clean_text = re.sub(r"\([A-Za-z0-9]+\)", "", text).strip()
-        # 从原始文本中提取标签内嵌的代码（如 "监管方式(0110)" → "(0110)"）
         embedded_codes = re.findall(r"\([A-Za-z0-9]+\)", text)
         label_inline_code = ""
         if embedded_codes:
@@ -340,64 +467,69 @@ def extract_pre_recording_fields_by_position(page_info: PageInfo) -> dict:
             x_center = span["x"]
             y_label = span["y"]
             value = ""
-
-            # 计算右边界：取同行右侧最近标签的 x - 5
-            x_max = x_center + 160
-            for other in span_list:
-                if abs(other["y"] - y_label) < 3 and other["x"] > x_center + 20:
-                    other_clean = re.sub(r"\(\d+\)", "", other["text"]).strip()  # 只移除数字代码
-                    # 检查是否是已知标签
-                    for lbl in label_to_field:
-                        if lbl in other_clean:
-                            if other["x"] - 5 < x_max:
-                                x_max = other["x"] - 5
-                            break
-
-            x_min = x_center - 5
-
-            # 找标签同行的代码 span（如 "(0110)"、"(HKG)"、"(3)" 等）
-            # 预录单中这些代码在标签右侧同一行，是值的组成部分
             inline_code = ""
-            for other in span_list:
-                if abs(other["y"] - y_label) < 3 and other["x"] > x_center and other["x"] < x_max:
-                    if re.match(r"^\([A-Za-z0-9]+\)$", other["text"].strip()):
-                        if other["text"].strip() != text.strip():
-                            inline_code = other["text"].strip()
 
-            # 精确搜索：标签正下方 y+5~20
-            candidates = []
-            for other in span_list:
-                if other["y"] > y_label + 3 and other["y"] < y_label + 20:
-                    if other["x"] >= x_min and other["x"] < x_max:
-                        other_clean = re.sub(r"\([A-Za-z0-9]+\)", "", other["text"]).strip()
-                        # 跳过其他已知标签
-                        is_label = False
-                        for lbl in label_to_field:
-                            if lbl in other_clean:
-                                is_label = True
-                                break
-                        # 跳过纯代码（已在上面通过 inline_code 收集）
+            if is_hedui:
+                # "仅供核对用"格式：x 列匹配
+                value, col_code = _find_value_by_column(span, span_list, matched_field)
+                if col_code:
+                    inline_code = col_code
+            else:
+                # 标准格式
+                x_min, x_max = _get_x_bounds(span, span_list)
+
+                # 找标签同行的代码 span
+                for other in span_list:
+                    if abs(other["y"] - y_label) < 3 and other["x"] > x_center and other["x"] < x_max:
                         if re.match(r"^\([A-Za-z0-9]+\)$", other["text"].strip()):
-                            continue
-                        if not is_label and other_clean and other_clean != "-":
-                            candidates.append((other["y"], other["x"], other["text"]))
+                            if other["text"].strip() != text.strip():
+                                inline_code = other["text"].strip()
 
-            # 只取最靠近标签的那一行
-            if candidates:
-                candidates.sort(key=lambda c: (c[0], c[1]))
-                first_y = candidates[0][0]
-                value_parts = [c[2] for c in candidates if abs(c[0] - first_y) < 3]
-                value = " ".join(value_parts)
+                # 精确搜索：标签正下方 y+5~20
+                candidates = []
+                for other in span_list:
+                    if other["y"] > y_label + 3 and other["y"] < y_label + 20:
+                        if other["x"] >= x_min and other["x"] < x_max:
+                            other_clean = re.sub(r"\([A-Za-z0-9]+\)", "", other["text"]).strip()
+                            if _is_known_label(other_clean):
+                                continue
+                            if re.match(r"^\([A-Za-z0-9]+\)$", other["text"].strip()):
+                                continue
+                            if other_clean and other_clean != "-":
+                                candidates.append((other["y"], other["x"], other["text"]))
 
-            # 如果标签本身后面就跟着值（同行）
-            if not value:
-                label_text_only = re.sub(r"\(.*?\)", "", text).strip()
-                remainder = text.replace(label_text_only, "").strip()
-                if remainder:
-                    value = remainder.strip("() ")
+                # 扩大搜索 ±50px
+                if not candidates:
+                    for other in span_list:
+                        y_diff = other["y"] - y_label
+                        if abs(y_diff) > 3 and abs(y_diff) < 50:
+                            if other["x"] >= x_min and other["x"] < x_max:
+                                other_clean = re.sub(r"\([A-Za-z0-9]+\)", "", other["text"]).strip()
+                                if _is_known_label(other_clean):
+                                    continue
+                                if re.match(r"^\([A-Za-z0-9]+\)$", other["text"].strip()):
+                                    continue
+                                if re.match(r"^\d+/\d+$", other_clean):
+                                    continue
+                                if other_clean.startswith("*"):
+                                    continue
+                                if other_clean and other_clean != "-":
+                                    candidates.append((other["y"], other["x"], other["text"]))
+
+                if candidates:
+                    candidates.sort(key=lambda c: (c[0], c[1]))
+                    first_y = candidates[0][0]
+                    value_parts = [c[2] for c in candidates if abs(c[0] - first_y) < 3]
+                    value = " ".join(value_parts)
+
+                # 标签同行值
+                if not value:
+                    label_text_only = re.sub(r"\(.*?\)", "", text).strip()
+                    remainder = text.replace(label_text_only, "").strip()
+                    if remainder:
+                        value = remainder.strip("() ")
 
             # 拼上代码（仅 fixed 类型字段需要）
-            # 代码来源有两个：标签同行右侧的独立代码 span，或标签文本内嵌的代码
             if matched_field in fields_need_inline_code:
                 code = inline_code or label_inline_code
                 if code and value:
@@ -410,7 +542,6 @@ def extract_pre_recording_fields_by_position(page_info: PageInfo) -> dict:
     # 后处理：清理常见格式问题
     for fid in fields:
         v = fields[fid]
-        # 清理包装种类中的分割符
         v = v.replace("/ ", "/").replace(" /", "/").replace("  ", " ").strip()
         fields[fid] = v
 

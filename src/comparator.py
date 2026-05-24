@@ -36,7 +36,7 @@ def compare_exact(val1: str, val2: str) -> bool:
 
 
 def compare_fixed(val: str, fixed_value: str) -> bool:
-    """固定值校验：检查值中是否包含固定值的核心内容（关键字 + 代码缺一不可）"""
+    """固定值校验：检查值中是否包含固定值的核心内容（关键字匹配即可，代码部分可选）"""
     nv = normalize_value(val)
     fv = normalize_value(fixed_value)
     if not nv:
@@ -45,17 +45,13 @@ def compare_fixed(val: str, fixed_value: str) -> bool:
     if nv == fv:
         return True
     # 提取括号内的代码和关键字
-    code_match = re.search(r"\((\w+)\)", fv)
     keyword = re.sub(r"\([^)]*\)", "", fv).strip()
-    if code_match:
-        code = code_match.group(1)
-        # 关键字和代码必须同时存在
-        has_keyword = keyword in nv if keyword else True
-        has_code = code in nv
-        return has_keyword and has_code
-    # 无代码时仅检查关键字
+    # 关键字匹配即通过（代码部分是参考编号，提取时经常缺失）
     if keyword and keyword in nv:
         return True
+    # 无关键字时（纯代码如 "(1)"），直接检查代码是否在值中
+    if not keyword:
+        return fv in nv
     return False
 
 
@@ -278,6 +274,14 @@ def compare_headers(customs_header: dict, pre_header: dict) -> list:
                 status = STATUS_EMPTY
             elif compare_exact(customs_val, pre_val):
                 status = STATUS_PASS
+            # 数值字段：件数/毛重/净重 用数值比较（"194" vs "194.0"）
+            elif fid in ("quantity", "gross_weight", "net_weight"):
+                try:
+                    c_num = float(str(customs_val).replace(",", ""))
+                    p_num = float(str(pre_val).replace(",", ""))
+                    status = STATUS_PASS if c_num == p_num else STATUS_FAIL
+                except (ValueError, TypeError):
+                    status = STATUS_FAIL
             else:
                 status = STATUS_FAIL
         elif check_type == "fixed":

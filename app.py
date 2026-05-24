@@ -214,6 +214,16 @@ def collect_pages_from_pdfs(pdfs, customs=False, pre=False):
                 for page in pdf.pages:
                     if page.doc_type == "unknown":
                         pre_pages.append(page)
+    if pre and pre_pages:
+        # 核对单 PDF 中：pre_recording 页面是首页，续页被分类为 customs_declaration
+        # 需要将这些续页作为 pre_continuation_pages 加入，否则会丢失大量项号
+        pre_page_ids = {id(p) for p in pre_pages}
+        for pdf in pdfs:
+            for page in pdf.pages:
+                if page.doc_type == "customs_declaration" and id(page) not in pre_page_ids:
+                    # 检查是否包含商品数据（排除被 collect 到 customs 侧的页面）
+                    if re.search(r"\n\d{1,3}\s*\n\s*\d{8,10}", page.text):
+                        pre_continuation_pages.append(page)
     return customs_pages, contract_pages, pre_pages, pre_continuation_pages
 
 
