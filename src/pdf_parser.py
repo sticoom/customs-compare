@@ -655,6 +655,49 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
             # 退而求其次：在 quantity 和 origin_country 之间取中点
             col_positions[_price_col_name] = (qty_x + col_positions["origin_country"]) / 2
 
+    # 修正：当 origin_country / dest_country 与 price 列共享同一 x 位置时，
+    # 用数据 span 的实际位置推断它们真正的列边界
+    _merged_price_x = col_positions.get("price") or col_positions.get("unit_price_col")
+    if _merged_price_x is not None:
+        data_spans_after_header = [sp for sp in spans if sp["y"] > header_y + 5]
+        _source_x = col_positions.get("source", 690)
+        # 找数据中价格和国家名的 x 分布
+        _price_data_xs = []
+        _country_data_xs = []
+        for ds in data_spans_after_header:
+            txt = ds["text"].strip()
+            if re.match(r"^\d+\.\d{2,4}$", txt) or re.match(r"^\d+\.\d{1,2}$", txt):
+                if ds["x"] > _merged_price_x - 5:
+                    _price_data_xs.append(ds["x"])
+            elif re.match(r"^[\u4e00-\u9fff]{2,3}$", txt):
+                # 只收集在 price 和 source 列之间的中文词（排除货源地）
+                if ds["x"] > _merged_price_x and ds["x"] < _source_x - 20:
+                    _country_data_xs.append(ds["x"])
+
+        # 用数据 x 位置修正列位置
+        if _price_data_xs:
+            _price_data_xs.sort()
+            col_positions[_price_col_name] = _price_data_xs[len(_price_data_xs) // 2]
+
+        # 用价格数据的最大 x 作为国家列的分界下限
+        _price_max_x = max(_price_data_xs) + 30 if _price_data_xs else _merged_price_x + 60
+
+        if _country_data_xs:
+            _country_data_xs = [x for x in _country_data_xs if x >= _price_max_x]
+            _country_data_xs.sort()
+            _unique_country_xs = sorted(set(round(x) for x in _country_data_xs))
+            if "origin_country" in col_positions and col_positions["origin_country"] == _merged_price_x:
+                if len(_unique_country_xs) >= 2:
+                    col_positions["origin_country"] = _unique_country_xs[0]
+                    col_positions["dest_country"] = _unique_country_xs[1]
+                elif len(_unique_country_xs) == 1:
+                    col_positions["origin_country"] = _unique_country_xs[0]
+                    col_positions.pop("dest_country", None)
+        elif "origin_country" in col_positions and col_positions["origin_country"] == _merged_price_x:
+            # 没有找到国家级数据，移除这些无效列
+            col_positions.pop("origin_country", None)
+            col_positions.pop("dest_country", None)
+
     if "item_no" not in col_positions:
         return []
 
@@ -710,8 +753,13 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
     item_start_ys = []
     for s in data_spans:
         text = s["text"].strip()
+        if not (item_x_start <= s["x"] < item_x_end):
+            continue
         # 项号: 纯数字, 1-3位 (01, 02, 1, 2, 10, etc.)
-        if item_x_start <= s["x"] < item_x_end and re.match(r"^\d{1,3}$", text):
+        if re.match(r"^\d{1,3}$", text):
+            item_start_ys.append(s["y"])
+        # 项号+商品编码合并的 span（如 "1       8304000000"）
+        elif re.match(r"^\d{1,3}\s+\d{8,10}$", text):
             item_start_ys.append(s["y"])
 
     if not item_start_ys:
@@ -773,11 +821,20 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
         item_slot_map = []  # [(item_no_text, slot_idx), ...]
         for s in data_spans:
             text = s["text"].strip()
-            if item_x_start <= s["x"] < item_x_end and re.match(r"^\d{1,3}$", text):
-                # 找到这个项号在哪个 slot
+            if not (item_x_start <= s["x"] < item_x_end):
+                continue
+            # 纯数字项号
+            if re.match(r"^\d{1,3}$", text):
                 for si, (y_top, y_bottom) in enumerate(row_slots):
                     if y_top < s["y"] < y_bottom:
                         item_slot_map.append((text, si))
+                        break
+            # 项号+商品编码合并的 span
+            elif re.match(r"^(\d{1,3})\s+(\d{8,10})$", text):
+                m = re.match(r"^(\d{1,3})\s+(\d{8,10})$", text)
+                for si, (y_top, y_bottom) in enumerate(row_slots):
+                    if y_top < s["y"] < y_bottom:
+                        item_slot_map.append((m.group(1), si))
                         break
 
         # 按 slot 分组
@@ -796,6 +853,16 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
                 col = get_col_id(s["x"])
                 if col:
                     stext = s["text"].strip()
+                    # 处理项号+商品编码合并的 span（如 "1       8304000000"）
+                    merged_m = re.match(r"^(\d{1,3})\s+(\d{8,10})$", stext)
+                    if merged_m:
+                        if "item_no" not in cols:
+                            cols["item_no"] = []
+                        cols["item_no"].append(merged_m.group(1))
+                        if "product_code" not in cols:
+                            cols["product_code"] = []
+                        cols["product_code"].append(merged_m.group(2))
+                        continue
                     # 修正列分配
                     if col == "item_no" and re.match(r"^\d{6,}$", stext):
                         col = "product_code"
@@ -862,6 +929,16 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
                 col = get_col_id(s["x"])
                 if col:
                     stext = s["text"].strip()
+                    # 处理项号+商品编码合并的 span
+                    merged_m = re.match(r"^(\d{1,3})\s+(\d{8,10})$", stext)
+                    if merged_m:
+                        if "item_no" not in cols:
+                            cols["item_no"] = []
+                        cols["item_no"].append(merged_m.group(1))
+                        if "product_code" not in cols:
+                            cols["product_code"] = []
+                        cols["product_code"].append(merged_m.group(2))
+                        continue
                     if col == "item_no" and re.match(r"^\d{6,}$", stext):
                         col = "product_code"
                     elif col == "product_code" and not re.match(r"^\d{6,}$", stext):
@@ -909,27 +986,30 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
 
         # 货源地中混入了 "照章征税"（跨列导致）
         if src and ("照章" in src or "免税" in src):
-            cleaned = re.sub(r"\(\d{4,6}\)", "", src)
+            cleaned = re.sub(r"[（(]\d{4,6}[）)]", "", src)
             cleaned = re.sub(r"照章.*$", "", cleaned)
             cleaned = cleaned.strip()
             if cleaned:
                 item["domestic_source"] = cleaned
             # 只有征免列为空或只有纯代码 "(1)" 时，才从货源地补入
             if "照章" in src:
-                if not duty:
-                    item["duty_exemption"] = "照章征税(1)"
-                elif duty == "(1)":
+                if not duty or duty in ("(1)", "（1）"):
                     item["duty_exemption"] = "照章征税(1)"
 
         # 不做盲目规范化 — 保留原始提取值，让比对引擎判断对错
         # 例如 "(1)-照章" ≠ "照章征税(1)"，应如实展示为不通过
 
-        # 修货源地：清除区域代码如 (33079)、(44199) 和征免代码 (1)
+        # 修货源地：清除区域代码如 (33079)、（44199） 和征免代码 (1)、（1）
         src = item.get("domestic_source", "")
         if src:
-            src = re.sub(r"\(\d{4,6}\)", "", src)
-            src = re.sub(r"\(1\)\s*$", "", src)
+            src = re.sub(r"[（(]\d{4,6}[）)]", "", src)
+            src = re.sub(r"[（(]1[）)]\s*$", "", src)
             src = src.strip()
             item["domestic_source"] = src
+
+        # 修征免：补全只有代码的征免字段
+        duty = item.get("duty_exemption", "")
+        if duty in ("(1)", "（1）"):
+            item["duty_exemption"] = "照章征税(1)"
 
     return items
