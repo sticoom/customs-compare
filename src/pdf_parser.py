@@ -338,7 +338,7 @@ def extract_pre_recording_fields_by_position(page_info: PageInfo) -> dict:
         "仅供核对用", "打印时间",
     }
 
-    def _is_noise_span(text):
+    def _is_noise_span(text, field_id=None):
         """检查是否为非值文本（标签、元数据、噪声等）"""
         clean = re.sub(r"\([A-Za-z0-9]+\)", "", text).strip()
         if not clean:
@@ -353,8 +353,8 @@ def extract_pre_recording_fields_by_position(page_info: PageInfo) -> dict:
         # 页码格式
         if re.match(r"^\d+/\d+$", clean):
             return True
-        # 纯日期/编号格式（如 20260514003）
-        if re.match(r"^\d{8,}$", clean):
+        # 纯数字编号格式（如海关编号 4403961BEF）— 但合同协议号本身就是纯数字
+        if field_id != "contract_no" and re.match(r"^\d{8,}$", clean):
             return True
         # 条码
         if clean.startswith("*"):
@@ -398,7 +398,7 @@ def extract_pre_recording_fields_by_position(page_info: PageInfo) -> dict:
             other_text = other["text"].strip()
 
             # 跳过噪声
-            if _is_noise_span(other_text):
+            if _is_noise_span(other_text, field_id):
                 continue
             # 跳过已知标签
             other_clean = re.sub(r"\([A-Za-z0-9]+\)", "", other_text).strip()
@@ -418,7 +418,7 @@ def extract_pre_recording_fields_by_position(page_info: PageInfo) -> dict:
                 if not (other["x"] >= x_center - 10 and other["x"] < x_center + 45):
                     continue
                 other_text = other["text"].strip()
-                if _is_noise_span(other_text):
+                if _is_noise_span(other_text, field_id):
                     continue
                 other_clean = re.sub(r"\([A-Za-z0-9]+\)", "", other_text).strip()
                 if _is_known_label(other_clean):
@@ -546,6 +546,250 @@ def extract_pre_recording_fields_by_position(page_info: PageInfo) -> dict:
         fields[fid] = v
 
     return fields
+
+
+def _extract_items_vertical_layout(spans, page_info):
+    """
+    从纵向列头布局的核对单中提取商品明细。
+    纵向布局：所有商品表列头（项号、商品编号等）垂直排列在同一个 x 位置，
+    数据在右侧相邻列中。
+    """
+    # 1. 检测纵向布局：查找已知的表格列头关键词
+    vertical_header_keywords = [
+        ("项号", "item_no"),
+        ("商品编号", "product_code"),
+        ("商品名称及规格型号", "product_name_spec"),
+        ("数量及单位", "quantity"),
+        ("单价/总价/币制", "price"),
+        ("原产国(地区)", "origin_country"),
+        ("原产国（地区）", "origin_country"),
+        ("最终目的国(地区)", "dest_country"),
+        ("最终目的国（地区）", "dest_country"),
+        ("境内货源地", "source"),
+        ("征免", "duty"),
+    ]
+
+    # Find all header spans
+    header_entries = []  # (x, y, col_id, text)
+    for s in spans:
+        text = s["text"].strip()
+        for keyword, col_id in vertical_header_keywords:
+            if keyword in text:
+                header_entries.append((s["x"], s["y"], s["y1"], col_id, text))
+                break
+
+    if len(header_entries) < 3:
+        return []
+
+    # Group by x position to find dominant x (vertical column)
+    from collections import defaultdict
+    x_groups = defaultdict(list)
+    for x, y, y1, col_id, text in header_entries:
+        rx = round(x, 0)
+        x_groups[rx].append((x, y, y1, col_id, text))
+
+    # Find the x position with most headers
+    best_x = max(x_groups, key=lambda k: len(x_groups[k]))
+    if len(x_groups[best_x]) < 3:
+        return []
+
+    header_x = best_x
+
+    # Build header map: col_id → y (deduplicate, keep first match)
+    header_map = {}
+    for x, y, y1, col_id, text in x_groups[best_x]:
+        if col_id not in header_map:
+            header_map[col_id] = y
+
+    # 2. Collect data spans to the right of headers
+    x_min = header_x + 5
+    x_max = header_x + 80
+
+    # Header keyword texts to exclude from data
+    header_texts = {"项号", "商品编号", "商品名称及规格型号", "数量及单位",
+                    "单价/总价/币制", "原产国(地区)", "原产国（地区）",
+                    "最终目的国(地区)", "最终目的国（地区）", "境内货源地", "征免"}
+
+    noise_labels = {
+        "预录入编号", "海关编号", "备案号", "申报日期", "出口日期",
+        "提运单号", "运输工具名称及航次号", "许可证号",
+        "标记唛码及备注", "中华人民共和国海关出口货物报关单",
+        "页码/页数", "仅供核对用", "打印时间",
+        "特殊关系确认", "价格影响确认", "支付特许权使用费确认",
+        "公式定价确认", "暂定价格确认", "自报自缴", "水运中转",
+        "申报单位", "报关人员", "兹申明", "海关批注及签章",
+    }
+
+    data_spans = []
+    for s in spans:
+        text = s["text"].strip()
+        if not text:
+            continue
+        if not (x_min <= s["x"] <= x_max):
+            continue
+        # Skip header keywords
+        if any(text == ht for ht in header_texts):
+            continue
+        if any(kw in text for _, kw in vertical_header_keywords if kw not in ("征免",)):
+            continue
+        # Skip noise
+        if any(noise in text for noise in noise_labels):
+            continue
+
+        y_center = (s["y"] + s["y1"]) / 2
+        data_spans.append({
+            "text": text,
+            "x": s["x"],
+            "y": s["y"],
+            "y1": s["y1"],
+            "y_center": y_center,
+        })
+
+    # 3. Assign each data span to closest header by y distance
+    col_data = defaultdict(list)
+    for ds in data_spans:
+        best_col = None
+        best_dist = 100
+        for col_id, header_y in header_map.items():
+            dist = abs(ds["y_center"] - header_y)
+            if dist < best_dist:
+                best_dist = dist
+                best_col = col_id
+        if best_col:
+            col_data[best_col].append(ds)
+
+    # 4. Find item numbers to determine item boundaries
+    item_nos = []
+    for ds in sorted(col_data.get("item_no", []), key=lambda d: d["y_center"]):
+        text = ds["text"].strip()
+        if re.match(r"^\d{1,3}$", text):
+            item_nos.append({"no": str(int(text)), "y": ds["y_center"]})
+
+    if not item_nos:
+        return []
+
+    # For now handle as single item group (vertical layout typically has 1 item per page)
+    items = []
+
+    # Process product_code: handle merged "8304000000置物架" format
+    product_code = ""
+    product_name = ""
+    for ds in sorted(col_data.get("product_code", []), key=lambda d: d["y_center"]):
+        text = ds["text"].strip()
+        m = re.match(r"^(\d{8,10})(.+)$", text)
+        if m:
+            product_code = m.group(1)
+            product_name = m.group(2).strip()
+        elif re.match(r"^\d{8,10}$", text):
+            product_code = text
+        else:
+            product_name = text
+
+    # Process product_name_spec
+    spec_model = ""
+    for ds in sorted(col_data.get("product_name_spec", []), key=lambda d: d["y_center"]):
+        text = ds["text"].strip()
+        if "|" in text:
+            spec_model = text
+        elif not product_name:
+            product_name = text
+
+    # Process quantity: collect all quantity+unit pairs
+    qty_parts = []
+    for ds in sorted(col_data.get("quantity", []), key=lambda d: d["x"]):
+        text = ds["text"].strip()
+        if re.match(r"\d+", text):
+            qty_parts.append(text)
+    quantity_unit = " / ".join(qty_parts)
+
+    # Process price: separate numbers (unit_price, total_price) from text (currency)
+    price_numbers = []
+    price_text = []
+    for ds in sorted(col_data.get("price", []), key=lambda d: d["x"]):
+        text = ds["text"].strip()
+        if re.match(r"^\d+\.\d+$", text):
+            price_numbers.append(text)
+        else:
+            price_text.append(text)
+
+    unit_price = price_numbers[0] if len(price_numbers) >= 1 else ""
+    total_price = price_numbers[1] if len(price_numbers) >= 2 else ""
+    currency = " ".join(price_text)
+    if "人民币" in currency:
+        currency = "人民币"
+
+    # Process origin_country
+    origin_parts = []
+    for ds in sorted(col_data.get("origin_country", []), key=lambda d: d["x"]):
+        origin_parts.append(ds["text"].strip())
+    origin_country = "".join(origin_parts)
+
+    # Process dest_country
+    dest_parts = []
+    for ds in sorted(col_data.get("dest_country", []), key=lambda d: d["x"]):
+        dest_parts.append(ds["text"].strip())
+    dest_country = "".join(dest_parts)
+
+    # Process source and duty — may be merged in a single span
+    source_raw = " ".join(ds["text"].strip() for ds in sorted(col_data.get("source", []), key=lambda d: d["x"]))
+    duty_raw = " ".join(ds["text"].strip() for ds in sorted(col_data.get("duty", []), key=lambda d: d["x"]))
+
+    domestic_source = ""
+    duty_exemption = ""
+
+    # Check if duty column contains merged source+duty text like "(33079)金华照章征税"
+    if duty_raw and re.search(r"[（(]\d{4,6}[）)]", duty_raw):
+        # Extract source name: text between code and duty keyword
+        src_match = re.search(r"[（(]\d{4,6}[）)]([\u4e00-\u9fff]+)", duty_raw)
+        if src_match:
+            domestic_source = src_match.group(1).strip()
+        duty_match = re.search(r"(照章\w*)", duty_raw)
+        if duty_match:
+            duty_exemption = duty_match.group(1)
+    else:
+        domestic_source = source_raw
+        duty_exemption = duty_raw
+
+    # Also check source column for any remaining data
+    if not domestic_source and source_raw:
+        domestic_source = source_raw
+        domestic_source = re.sub(r"[（(]\d{4,6}[）)]", "", domestic_source).strip()
+
+    # Clean up duty: combine with code "(1)" if needed
+    duty_code = ""
+    for ds in col_data.get("duty", []):
+        if re.match(r"^\(\d+\)$", ds["text"].strip()):
+            duty_code = ds["text"].strip()
+            break
+
+    if duty_exemption and duty_code:
+        if not duty_exemption.endswith(duty_code):
+            duty_exemption = duty_exemption + duty_code
+    elif duty_code and not duty_exemption:
+        duty_exemption = "照章征税" + duty_code
+
+    # Clean domestic_source: remove any trailing duty text
+    domestic_source = re.sub(r"照章.*$", "", domestic_source).strip()
+
+    # Build item(s)
+    for item_info in item_nos:
+        item = {
+            "item_no": item_info["no"],
+            "product_code": product_code,
+            "product_name": product_name,
+            "spec_model": spec_model,
+            "quantity_unit": quantity_unit,
+            "unit_price": unit_price,
+            "total_price": total_price,
+            "currency": currency,
+            "origin_country": origin_country,
+            "final_dest_country": dest_country,
+            "domestic_source": domestic_source,
+            "duty_exemption": duty_exemption,
+        }
+        items.append(item)
+
+    return items
 
 
 def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
@@ -697,6 +941,12 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
             # 没有找到国家级数据，移除这些无效列
             col_positions.pop("origin_country", None)
             col_positions.pop("dest_country", None)
+
+    # 纵向布局检测：如果列头太少（<3），说明列头可能是垂直排列的
+    if len(col_positions) < 3:
+        vertical_items = _extract_items_vertical_layout(spans, page_info)
+        if vertical_items:
+            return vertical_items
 
     if "item_no" not in col_positions:
         return []
