@@ -901,6 +901,7 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
 
     # 修正：当 origin_country / dest_country 与 price 列共享同一 x 位置时，
     # 用数据 span 的实际位置推断它们真正的列边界
+    _data_refined_cols = set()  # 记录由数据驱动修正的列
     _merged_price_x = col_positions.get("price") or col_positions.get("unit_price_col")
     if _merged_price_x is not None:
         data_spans_after_header = [sp for sp in spans if sp["y"] > header_y + 5]
@@ -922,6 +923,7 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
         if _price_data_xs:
             _price_data_xs.sort()
             col_positions[_price_col_name] = _price_data_xs[len(_price_data_xs) // 2]
+            _data_refined_cols.add(_price_col_name)
 
         # 用价格数据的最大 x 作为国家列的分界下限
         _price_max_x = max(_price_data_xs) + 30 if _price_data_xs else _merged_price_x + 60
@@ -934,8 +936,10 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
                 if len(_unique_country_xs) >= 2:
                     col_positions["origin_country"] = _unique_country_xs[0]
                     col_positions["dest_country"] = _unique_country_xs[1]
+                    _data_refined_cols.update(["origin_country", "dest_country"])
                 elif len(_unique_country_xs) == 1:
                     col_positions["origin_country"] = _unique_country_xs[0]
+                    _data_refined_cols.add("origin_country")
                     col_positions.pop("dest_country", None)
         elif "origin_country" in col_positions and col_positions["origin_country"] == _merged_price_x:
             # 没有找到国家级数据，移除这些无效列
@@ -960,7 +964,17 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
     for i, (col_id, x_center) in enumerate(sorted_cols):
         x_start = x_center - 15
         if i + 1 < len(sorted_cols):
-            x_end = (x_center + sorted_cols[i + 1][1]) / 2
+            next_x = sorted_cols[i + 1][1]
+            if abs(next_x - x_center) < 10:
+                # 同一位置的合并列头（如"原产国/目的国"合在一个 span）→ 零宽，
+                # 后续由数据驱动修正或文本回退填充
+                x_end = x_center
+            elif col_id in _data_refined_cols or sorted_cols[i + 1][0] in _data_refined_cols:
+                # 数据驱动定位的列：位置已基于实际数据，用中点即可
+                x_end = (x_center + next_x) / 2
+            else:
+                # 表头定位的列：延伸到下一列起始，消除间隙
+                x_end = next_x - 15
         else:
             x_end = 900  # 页面右边
         col_boundaries.append((col_id, x_start, x_end))
