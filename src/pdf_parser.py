@@ -796,7 +796,7 @@ def _assign_price_fields(item: dict, price_data: list) -> None:
     """
     从"单价/总价/币制"合并列的数据中正确分配单价、总价和币制。
     预录单中该列数据实际顺序为：总价→币制→单价（与列标题顺序不同）。
-    使用小数位数区分：单价通常≥3位小数，总价≤2位小数。
+    使用数值大小区分：总价=单价×数量≥单价，因此较小值=单价，较大值=总价。
     """
     _price_vals = []
     for p in price_data:
@@ -808,12 +808,10 @@ def _assign_price_fields(item: dict, price_data: list) -> None:
                 item["currency"] = p.strip()
 
     if len(_price_vals) >= 2:
-        for p in _price_vals:
-            dec_len = len(p.split(".")[1]) if "." in p else 0
-            if dec_len >= 3:
-                item["unit_price"] = p
-            else:
-                item["total_price"] = p
+        # 按数值排序：较小=单价，较大=总价
+        _sorted = sorted(_price_vals, key=lambda x: float(x.replace(",", "")))
+        item["unit_price"] = _sorted[0]
+        item["total_price"] = _sorted[-1]
     elif len(_price_vals) == 1:
         item["unit_price"] = _price_vals[0]
 
