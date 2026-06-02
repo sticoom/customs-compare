@@ -792,6 +792,35 @@ def _extract_items_vertical_layout(spans, page_info):
     return items
 
 
+def _assign_price_fields(item: dict, price_data: list) -> None:
+    """
+    从"单价/总价/币制"合并列的数据中正确分配单价、总价和币制。
+    预录单中该列数据实际顺序为：总价→币制→单价（与列标题顺序不同）。
+    使用小数位数区分：单价通常≥3位小数，总价≤2位小数。
+    """
+    _price_vals = []
+    for p in price_data:
+        p_stripped = p.strip().replace(",", "")
+        if re.match(r"^[\d,.]+$", p_stripped):
+            _price_vals.append(p_stripped)
+        else:
+            if not item.get("currency"):
+                item["currency"] = p.strip()
+
+    if len(_price_vals) >= 2:
+        for p in _price_vals:
+            dec_len = len(p.split(".")[1]) if "." in p else 0
+            if dec_len >= 3:
+                item["unit_price"] = p
+            else:
+                item["total_price"] = p
+    elif len(_price_vals) == 1:
+        item["unit_price"] = _price_vals[0]
+
+    if not item.get("currency") and len(price_data) >= 3:
+        item["currency"] = price_data[2].strip()
+
+
 def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
     """
     用位置感知方式从预录单中提取商品明细
@@ -1155,9 +1184,7 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
                 item["currency"] = (cols.get("currency_col") or [""])[0]
             else:
                 _pd = cols.get("price", [])
-                item["unit_price"] = _pd[0] if len(_pd) >= 1 else ""
-                item["total_price"] = _pd[1] if len(_pd) >= 2 else ""
-                item["currency"] = _pd[2] if len(_pd) >= 3 else ""
+                _assign_price_fields(item, _pd)
 
             if "人民币" in item.get("currency", ""):
                 item["currency"] = "人民币"
@@ -1230,9 +1257,7 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
                 item["currency"] = (cols.get("currency_col") or [""])[0]
             else:
                 _pd = cols.get("price", [])
-                item["unit_price"] = _pd[0] if len(_pd) >= 1 else ""
-                item["total_price"] = _pd[1] if len(_pd) >= 2 else ""
-                item["currency"] = _pd[2] if len(_pd) >= 3 else ""
+                _assign_price_fields(item, _pd)
 
             if "人民币" in item.get("currency", ""):
                 item["currency"] = "人民币"
