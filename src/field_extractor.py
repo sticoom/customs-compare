@@ -1030,6 +1030,54 @@ def _hedui_text_fallback(fields: dict, text: str) -> dict:
 
     value_lines = [l for l in lines if not _is_line_noise(l)]
 
+    # ---- 标签定位提取（核对单格式：值在标签前面） ----
+    # 核对单文本中，值出现在对应标签的上方/前面
+    # 例如："中国香港\n贸易国（地区）(HKG)" → trade_country = "中国香港"
+    _label_field_map = {
+        "贸易国": "trade_country",
+        "运抵国": "dest_country",
+        "指运港": "dest_port",
+        "离境口岸": "exit_port",
+        "出境关别": "exit_customs",
+        "监管方式": "trade_mode",
+        "征免性质": "duty_nature",
+        "运输方式": "transport_mode",
+        "成交方式": "deal_mode",
+        "包装种类": "package_type",
+    }
+    _label_value_clean = {
+        "exit_customs": lambda v: re.sub(r"^\(?\d+\)?", "", v).strip() if re.match(r"^\(\d+\)", v) else v,
+        "trade_mode": lambda v: re.sub(r"^\(\d+\)", "", v).strip(),
+        "duty_nature": lambda v: re.sub(r"^\(\d+\)", "", v).strip(),
+        "transport_mode": lambda v: re.sub(r"^\(\d+\)", "", v).strip(),
+        "deal_mode": lambda v: re.sub(r"^\(\d+\)", "", v).strip(),
+        "package_type": lambda v: re.sub(r"^\(\d+\)", "", v).strip(),
+    }
+    # 记录已被标签定位使用的行索引，避免重复匹配
+    _label_used = set()
+    for i, line in enumerate(lines):
+        for label, field_id in _label_field_map.items():
+            if label not in line:
+                continue
+            if _is_valid_field_value(field_id, fields.get(field_id, "")):
+                continue
+            # 向前找值：值在标签之前
+            for j in range(i - 1, max(i - 6, -1), -1):
+                if j in _label_used:
+                    continue
+                prev = lines[j].strip() if j >= 0 else ""
+                if not prev or _is_line_noise(prev):
+                    continue
+                # 清理括号中的代码
+                val = re.sub(r"\([A-Za-z0-9]+\)$", "", prev).strip()
+                cleaner = _label_value_clean.get(field_id)
+                if cleaner:
+                    val = cleaner(val)
+                if val and _is_valid_field_value(field_id, val):
+                    fields[field_id] = val
+                    _label_used.add(j)
+                break
+
     # 合并相邻的括号代码行和值行
     # 例如 "(3104)" + "北仑海关" → "(3104)北仑海关"
     merged = []
@@ -1198,7 +1246,7 @@ def _is_valid_field_value(field_id: str, value: str) -> bool:
         "exit_customs": lambda v: "海关" in v,
         "transport_mode": lambda v: bool(re.search(r"[\u4e00-\u9fff]+运输|[\u4e00-\u9fff]+航运", v)),
         "trade_mode": lambda v: bool(re.search(r"贸易|加工|保税", v)) and "公司" not in v and "海关" not in v and "香港" not in v and len(v) <= 10,
-        "duty_nature": lambda v: bool(re.search(r"征税|免税|退税", v)) and len(v) <= 10,
+        "duty_nature": lambda v: bool(re.search(r"征税|免税|退税", v)) and len(v) <= 6,
         "trade_country": lambda v: len(v) <= 8 and bool(re.search(r"^[\u4e00-\u9fff（）()A-Z]+$", v)) and "公司" not in v and "海关" not in v and "贸易" not in v and "征税" not in v and "运输" not in v,
         "dest_country": lambda v: len(v) <= 6 and bool(re.search(r"^[\u4e00-\u9fff]+$", v)) and "公司" not in v and "海关" not in v and "贸易" not in v and "征税" not in v and "运输" not in v,
         "dest_port": lambda v: len(v) <= 8 and bool(re.search(r"^[\u4e00-\u9fff]+$", v)) and "贸易" not in v and "征税" not in v and "海关" not in v and "公司" not in v,
