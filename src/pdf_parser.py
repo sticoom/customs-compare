@@ -1106,7 +1106,9 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
     # 按 item 分组
     items = []
 
-    if row_slots:
+    # 当 row_slots 数量不足以覆盖所有 item 时，回退到 y 坐标分组
+    # 否则落在 slot 外的 item 会被丢弃
+    if row_slots and len(row_slots) >= len(item_start_ys):
         # 使用水平线精确分组
         # 找到每个项号所在的 slot
         item_slot_map = []  # [(item_no_text, slot_idx), ...]
@@ -1153,6 +1155,16 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
                         if "product_code" not in cols:
                             cols["product_code"] = []
                         cols["product_code"].append(merged_m.group(2))
+                        continue
+                    # 处理商品编码+商品名称合并的 span（如 "4202920000 收纳箱"）
+                    code_name_m = re.match(r"^(\d{8,10})\s+(.+)$", stext)
+                    if code_name_m:
+                        if "product_code" not in cols:
+                            cols["product_code"] = []
+                        cols["product_code"].append(code_name_m.group(1))
+                        if "product_name" not in cols:
+                            cols["product_name"] = []
+                        cols["product_name"].append(code_name_m.group(2))
                         continue
                     # 修正列分配
                     if col == "item_no" and re.match(r"^\d{6,}$", stext):
@@ -1227,6 +1239,16 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
                         if "product_code" not in cols:
                             cols["product_code"] = []
                         cols["product_code"].append(merged_m.group(2))
+                        continue
+                    # 处理商品编码+商品名称合并的 span（如 "4202920000 收纳箱"）
+                    code_name_m = re.match(r"^(\d{8,10})\s+(.+)$", stext)
+                    if code_name_m:
+                        if "product_code" not in cols:
+                            cols["product_code"] = []
+                        cols["product_code"].append(code_name_m.group(1))
+                        if "product_name" not in cols:
+                            cols["product_name"] = []
+                        cols["product_name"].append(code_name_m.group(2))
                         continue
                     if col == "item_no" and re.match(r"^\d{6,}$", stext):
                         col = "product_code"

@@ -940,6 +940,12 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
                             for key in list(item.keys()):
                                 if not item[key] and fallback.get(key):
                                     item[key] = fallback[key]
+                    # 将文本提取中发现但位置提取遗漏的 item 补充进来
+                    existing_nos = {it["item_no"] for it in items}
+                    for ti in text_items:
+                        if ti["item_no"] not in existing_nos:
+                            items.append(ti)
+                            existing_nos.add(ti["item_no"])
 
             pre_items.extend(items)
 
