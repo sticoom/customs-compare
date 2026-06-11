@@ -306,6 +306,9 @@ def _extract_items_from_continuation(text: str) -> list:
     )
     for match in item_pattern.finditer(text):
         item_no = match.group(1)
+        # 去掉前导零，统一格式（"01"→"1"）
+        if item_no.isdigit():
+            item_no = str(int(item_no))
         product_code = match.group(2)
         product_name_inline = match.group(3).strip()  # 编码同行可能有的商品名称
         content = match.group(4).strip()
@@ -415,9 +418,9 @@ def _parse_hedui_item(lines: list) -> dict:
 
     remaining = list(lines)
 
-    # item_no: 第一个1-3位数字
+    # item_no: 第一个1-3位数字（去掉前导零）
     if re.match(r'^\d{1,3}$', remaining[0]):
-        item["item_no"] = remaining[0]
+        item["item_no"] = str(int(remaining[0]))
         remaining = remaining[1:]
 
     spec_parts = []
