@@ -1,4 +1,43 @@
+---
+version: "2.0"
+last_verified: "2026-06-16"
+tags: [pdf, customs, declaration, reconciliation, streamlit]
+dependencies:
+  - python >= 3.10
+  - streamlit >= 1.30
+  - pymupdf (fitz) >= 1.23
+  - openpyxl >= 3.1
+github: https://github.com/sticoom/customs-compare
+---
+
 # 报关单 vs 预录单 智能比对工具
+
+> **TL;DR** — 用户上传报关单 + 预录单 PDF，系统按合同协议号自动配对，逐字段校验并生成比对报告。核心难点：预录单「仅供核对用」格式文本乱序，必须用 span 坐标提取。
+
+## 文档导航
+
+本 CLAUDE.md 放**业务逻辑 + 强制规则**。历史踩坑单独维护：
+
+| 想知道什么 | 读哪个文件 |
+|----------|-----------|
+| 以前出过什么事、根因、修复方法、速查表 | [docs/memory.md](docs/memory.md) |
+| 独立诊断脚本（出问题时第一选择） | [scripts/diagnose.py](scripts/diagnose.py) |
+
+排障流程：**先查 `docs/memory.md` 速查表 → 命中后看详细记录 → 仍未解决时跑 `scripts/diagnose.py`**
+
+## 强制规则
+
+### MUST DO
+
+- ✅ 改完字段提取/比对逻辑后，**必须**跑 `python scripts/diagnose.py <报关单PDF> <预录单PDF>` 验证至少 3 份样本
+- ✅ 改完必须用文本/ASCII 展示 before/after 给用户看（不能只说"改好了"）
+- ✅ 发现新坑必须追加到 `docs/memory.md` 末尾，**不删除已有记录**——编号连续递增，同时在速查表加一行
+
+### MUST NOT
+
+- ❌ 禁止依赖 AI 视觉模型兜底（DeepSeek VL2 API 不兼容，详见 memory.md 架构性项 C）
+- ❌ 禁止用纯文本正则提取「仅供核对用」预录单表头，必须用 span x/y 坐标（详见 memory.md 架构性项 A）
+- ❌ 禁止合同协议号正则匹配 FBA 提运单号格式（详见 memory.md 架构性项 B）
 
 ## 项目概述
 
@@ -68,123 +107,32 @@ app.py → 展示结果 + excel_exporter.py 导出报告
 
 ## 两种 PDF 格式及其差异
 
-### 报关单（排版规整）
-- 标签和值分行排列，文本提取顺序正确
-- 正则直接匹配即可，如 `r"发货单位\s*\n?\s*(.+?)(?:\n|$)"`
-- 可能含多页（合同页、装箱单、发票等附加页面）
+### 报关单
 
-### 预录单（两种格式）
+**老格式（排版规整）**：标签和值分行紧邻，文本提取顺序正确，正则直接匹配（`r"发货单位\s*\n?\s*(.+?)(?:\n|$)"`）。
 
-**标准格式**（少見）：排版类似报关单，正则可提取
+**新模板（4列网格，20260625 起）**：
+- 标签名不同（境内发货人/生产销售单位/境外收货人，非老的发货单位/经营单位）
+- 表头是 4 列网格：标签行 + 值行 x 对齐，但标签和值隔几行（get_text 按块输出），老正则完全失效
+- 用 `extract_customs_header_by_grid`（span 坐标，标签正下方 dy<14 取值）；doc_type 靠"海关编号有值"判定（规则0）
+- 商品行字段顺序：名称→规格→数量→重量→单价→总价→CNY→原产国→目的国→货源地→照章征税（原产/目的/货源地在 CNY 行**之后**）
+- 详见 memory.md #15 #20
 
-**"仅供核对用"格式**（常见，核心难点）：
+### 预录单（三种格式）
+
+**标准格式（少见）**：排版类似报关单，正则可提取。
+
+**"仅供核对用"纵向倒排（常见）**：
 - 页面含"仅供核对"/"核对单"标记
-- PDF 排版是旋转/倒排的：标签在页面底部（y≈750-785），值散布在上方（y≈40-750）
-- 文本提取后顺序完全打乱，标签和值混在一起
-- 同一逻辑行的内容可能在不同 y 位置（如"照章征税"和"(1)"在相同 y 但不同 x）
-- **必须用 span 坐标匹配，不能仅靠文本正则**
+- 标签在页面底部（y≈750-785），值散布在上方（y≈40-750），文本顺序打乱
+- 用 `extract_pre_recording_fields_by_position` + `_hedui_text_fallback`（span 坐标）
+- 详见架构性项 A
 
-## 易错点与修复记录
-
-### 1. 预录单表头提取失败（仅供核对用格式）
-
-**现象**：发货单位、买方、经营单位等关键字段全部为空
-
-**根因**：预录单文本是乱序的，正则无法匹配。初始版本只用正则，完全无法提取。
-
-**修复**：实现两层提取策略：
-1. `extract_pre_recording_fields_by_position` — 用 span 的 x/y 坐标定位标签，在标签的 x 列范围内找值
-2. `_hedui_text_fallback` — 文本正则兜底，处理坐标提取遗漏的字段
-
-**关键细节**：
-- x 列宽度用相邻标签的 x 中点动态计算，不是固定值
-- 噪声标签（如"预录入编号："、"20260514003"）需要排除，否则会误匹配为值
-- 值验证函数 `_is_valid_field_value` 防止公司名匹配为国家等问题
-
-### 2. 合同协议号与提运单号混淆
-
-**现象**：合同协议号提取为 "18632-DLM250748" 或 "FBA603N147833NB0"，实际应为 "20260514003" 或 "20260521006"
-
-**根因**：正则模式 `r"^(\d{5,}-[A-Z]{2,}\d+)$"` 同时匹配了提运单号格式
-
-**修复**：
-- 移除会匹配提运单号的正则模式
-- 特殊处理：优先匹配 10-12 位纯数字日期格式（如 20260514003），其次才匹配 FBA 格式
-- 扫描全部文本行而非只看相邻行
-
-### 3. 多页预录单续页分类错误
-
-**现象**：FBA603旧.pdf 有 4 页（1/4 到 4/4），page 1-3 被误判为 customs_declaration，导致 36 条商品只提取到 6 条
-
-**根因**：
-- Page 0 有"仅供核对"标记 → 正确识别为 pre_recording
-- Page 1-3 没有"仅供核对"，但有"出口货物报关单"标题 → 被判为 customs_declaration
-- post-processing 找 primary_type 时要求匹配"出境关别"或"出口口岸"正则，但核对单格式的文本中这些字段值在乱序位置，正则匹配不上
-
-**修复**：在 primary_type 判定中增加"仅供核对"/"核对单"标记检测：
-```python
-has_hedui = "仅供核对" in p.text or "核对单" in p.text
-if has_exit_customs or has_export_port or has_hedui:
-    primary_type = p.doc_type
-```
-
-### 4. 商品明细总价为空
-
-**现象**：36 条预录单商品中，部分条目的总价为空（如 item 16, 17, 20），但单价正常
-
-**根因**：位置感知提取的列边界过窄。价格列 header 在 x=429.4，下一列（原产国）在 x=509.9，中点为 469.65。但实际总价值在 x=471.0，超出边界 1.35px。
-
-**修复**：位置感知提取后，用文本提取（`_extract_items_from_continuation`）结果补充缺失字段：
-```python
-for key in list(item.keys()):
-    if not item[key] and fallback.get(key):
-        item[key] = fallback[key]
-```
-
-### 5. 固定值比对过于严格
-
-**现象**：包装种类"纸制或纤维板制盒/箱" vs 固定值"(22)纸制或纤维板制盒/箱" → 失败。成交方式"FOB" vs "(3)FOB" → 失败。
-
-**根因**：`compare_fixed` 要求关键字 AND 代码同时存在，但预录单提取的值通常不含代码（代码和值在不同 span，提取时未合并）
-
-**修复**：改为关键词匹配即可通过，代码部分可选：
-```python
-if keyword and keyword in nv:
-    return True
-```
-效果："照章征税" 匹配 "照章征税(1)" ✅，"照章" 不匹配 "照章征税(1)" ❌（因为"照章征税"不在"照章"中）
-
-### 6. 数值字段字符串比较失败
-
-**现象**：毛重 "194" vs "194.0" → 不匹配
-
-**修复**：在 `compare_headers` 中对件数/毛重/净重用数值比较：
-```python
-elif fid in ("quantity", "gross_weight", "net_weight"):
-    c_num = float(str(customs_val).replace(",", ""))
-    p_num = float(str(pre_val).replace(",", ""))
-    status = STATUS_PASS if c_num == p_num else STATUS_FAIL
-```
-
-### 7. 征免字段值不完整
-
-**现象**：预录单商品明细的征免只显示"照章"或"照章征税"，缺少"(1)"代码
-
-**根因**：
-- `_parse_hedui_item` 中主动用 `re.sub(r'\(\d+\)', '', line)` 剥离了代码
-- "(1)" 作为独立文本行被 `^\([A-Z0-9]+\)$` 匹配后直接跳过
-
-**修复**：
-- 保留完整值（不再剥离代码）
-- 将纯数字代码行 "(1)" 合并到已提取的 duty_exemption 字段
-
-### 8. DeepSeek VL2 API 不兼容
-
-**现象**：调用 DeepSeek VL2 视觉模型时报错 `unknown variant image_url, expected text`
-
-**根因**：DeepSeek 标准聊天 API 不支持图片输入，VL2 需要单独的 API 端点
-
-**修复**：移除 AI 视觉兜底，完全依赖纯 Python 提取（位置感知 + 文本正则），效果反而更稳定
+**"仅供核对用"横向倒排（0060228GDM 类）**：
+- 无"仅供核对"文字标记，但核心标签在页底（y>500），靠几何判据 is_hedui 识别（#16）
+- **商品横向铺成多列**：项号(1-N)在页面最底部一行，每个商品占一列(x)；各字段在项号**上方**、纵向分散在不同 y
+- 用 `extract_pre_recording_items_horizontal`（项号定列 + 列内文本模式识别 + 数量行级去重），在 `extract_pre_recording_items_by_position` 开头 dispatch
+- 详见 memory.md #19
 
 ## 配对逻辑
 
@@ -212,4 +160,8 @@ elif fid in ("quantity", "gross_weight", "net_weight"):
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
+
+# 独立诊断（不依赖 Streamlit）
+python scripts/diagnose.py <报关单PDF> <预录单PDF>            # 可读文本
+python scripts/diagnose.py <报关单PDF> <预录单PDF> --json     # JSON
 ```

@@ -346,9 +346,12 @@ def compare_items(customs_items: list, pre_items: list) -> list:
                 elif fid in ("unit_price", "total_price"):
                     # 价格数值比对
                     try:
-                        c_num = float(c_val.replace(",", ""))
-                        p_num = float(p_val.replace(",", ""))
-                        status = STATUS_PASS if c_num == p_num else STATUS_FAIL
+                        c_num = float(c_val.replace(",", "")) if c_val else None
+                        p_num = float(p_val.replace(",", "")) if p_val else None
+                        if c_num is not None and p_num is not None:
+                            status = STATUS_PASS if c_num == p_num else STATUS_FAIL
+                        else:
+                            status = STATUS_EMPTY
                     except (ValueError, AttributeError):
                         status = STATUS_FAIL if c_val and p_val else STATUS_EMPTY
                 else:

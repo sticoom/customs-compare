@@ -12,6 +12,16 @@ from src.config import (
 # 数量及单位行的通用匹配：数字+中文字符（如 "16套"、"37千克"、"100件"）
 QTY_UNIT_RE = re.compile(r"^\d+(\.\d+)?[\u4e00-\u9fff]+$")
 
+# 统一价格匹配：支持整数(5)、小数(25.28)、千分位(1,234.56)、多位小数(25.2800)
+PRICE_RE = re.compile(r"^\d[\d,]*\.?\d*$")
+
+
+def _is_empty_item(item: dict) -> bool:
+    """检查商品项是否完全没有有效数据"""
+    core_fields = ("product_code", "product_name", "quantity_unit",
+                   "unit_price", "total_price")
+    return not any(item.get(f) for f in core_fields)
+
 
 # ============================================================
 # 报关单字段提取
@@ -140,6 +150,7 @@ def extract_customs_items(text: str) -> list:
         item = _parse_customs_item_content(item_no, product_code, content)
         items.append(item)
 
+    items = [it for it in items if not _is_empty_item(it)]
     return items
 
 
@@ -227,7 +238,7 @@ def _parse_customs_item_content(item_no: str, product_code: str, content: str) -
     for i, line in enumerate(lines):
         if QTY_UNIT_RE.match(line):
             last_qty_idx = i
-        if re.match(r"^\d+\.\d+$", line) and first_price_idx == len(lines):
+        if PRICE_RE.match(line) and first_price_idx == len(lines):
             first_price_idx = i
     # 也找 "数字 CNY" 格式的价格行
     for i, line in enumerate(lines):
@@ -244,7 +255,7 @@ def _parse_customs_item_content(item_no: str, product_code: str, content: str) -
 
     # 提取价格
     for i, line in enumerate(lines):
-        if re.match(r"^\d+\.\d+$", line):
+        if PRICE_RE.match(line):
             if not item["unit_price"]:
                 item["unit_price"] = line
             else:
@@ -261,27 +272,28 @@ def _parse_customs_item_content(item_no: str, product_code: str, content: str) -
     if "人民币" in content or "CNY" in content:
         item["currency"] = "人民币"
 
-    # 提取境内货源地：在"人民币"行之后、"照章"行之前的内容
+    # 币制行(CNY/人民币)之后、征免行(照章*)之前的非空内容，顺序为：
+    # 原产国 → 目的国 → 境内货源地（如 中国/加拿大/宁波其他）。
+    # 兼容 20260625 报关单用"CNY"+"照章征税"全称（旧代码写死"人民币"+"照章"会漏）。
     rmb_idx = None
     duty_idx = None
     for i, line in enumerate(lines):
-        if line == "人民币" and rmb_idx is None:
+        if line in ("人民币", "CNY") and rmb_idx is None:
             rmb_idx = i
-        if line == "照章" and duty_idx is None:
+        if line.startswith("照章") and duty_idx is None:
             duty_idx = i
 
-    if rmb_idx is not None and duty_idx is not None:
-        # 人民币和照章之间的非空行就是货源地
-        for i in range(rmb_idx + 1, duty_idx):
-            if lines[i].strip():
-                item["domestic_source"] = lines[i].strip()
-                break
-    elif rmb_idx is not None:
-        # 没有照章行，取人民币后面第一个非空行
-        for i in range(rmb_idx + 1, len(lines)):
-            if lines[i].strip() and lines[i].strip() != "照章":
-                item["domestic_source"] = lines[i].strip()
-                break
+    if rmb_idx is not None:
+        end = duty_idx if duty_idx is not None else len(lines)
+        tail = [lines[i].strip() for i in range(rmb_idx + 1, end)
+                if lines[i].strip() and not lines[i].strip().startswith("照章")]
+        if len(tail) >= 1 and not item.get("origin_country"):
+            item["origin_country"] = tail[0]
+        if len(tail) >= 2 and not item.get("dest_country"):
+            item["dest_country"] = tail[1]
+            item["final_dest_country"] = tail[1]
+        if len(tail) >= 3 and not item.get("domestic_source"):
+            item["domestic_source"] = tail[2]
 
     # 提取征免
     if "照章" in content:
@@ -322,6 +334,7 @@ def _extract_items_from_continuation(text: str) -> list:
         if content:
             item = _parse_customs_item_content(item_no, product_code, content)
             items.append(item)
+    items = [it for it in items if not _is_empty_item(it)]
     return items
 
 
@@ -393,6 +406,7 @@ def _extract_items_from_hedui(text: str) -> list:
         if item.get("product_code") or item.get("product_name"):
             items.append(item)
 
+    items = [it for it in items if not _is_empty_item(it)]
     return items
 
 
@@ -533,6 +547,7 @@ def _extract_items_loose(item_text: str) -> list:
             item = _parse_customs_item_content(item_no, product_code, content)
             items.append(item)
 
+    items = [it for it in items if not _is_empty_item(it)]
     return items
 
 
@@ -671,6 +686,7 @@ def extract_pre_recording_items(text: str) -> list:
         if item.get("product_code"):
             items.append(item)
 
+    items = [it for it in items if not _is_empty_item(it)]
     return items
 
 
@@ -839,7 +855,21 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
 
     # 报关单页面用文本正则提取（排版简单，效果好）
     customs_text = "\n\n".join([p.text for p in customs_decl_pages])
-    customs_header = extract_customs_header(customs_text)
+    # 优先用网格坐标提取表头（适配 20260625001 这类标签行+值行新排版），
+    # 提取不到关键字段时回退到文本正则（老排版）。详见 docs/memory.md #15。
+    from src.pdf_parser import extract_customs_header_by_grid
+    customs_header = {}
+    for _p in customs_decl_pages:
+        for _k, _v in extract_customs_header_by_grid(_p).items():
+            if _v and not customs_header.get(_k):
+                customs_header[_k] = _v
+    if customs_header.get("sender_unit") or customs_header.get("contract_no"):
+        # 网格命中：用文本正则补遗漏字段
+        for _k, _v in extract_customs_header(customs_text).items():
+            if _v and not customs_header.get(_k):
+                customs_header[_k] = _v
+    else:
+        customs_header = extract_customs_header(customs_text)
     customs_items = extract_customs_items(customs_text)
 
     # Fallback: 标准提取失败时，尝试续页/核对单格式提取

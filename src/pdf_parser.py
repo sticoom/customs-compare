@@ -5,6 +5,16 @@ import fitz  # PyMuPDF
 import re
 from dataclasses import dataclass, field
 
+# 统一价格匹配：支持整数(5)、小数(25.28)、千分位(1,234.56)、多位小数(25.2800)
+PRICE_RE = re.compile(r"^\d[\d,]*\.?\d*$")
+
+
+def _is_empty_item(item: dict) -> bool:
+    """检查商品项是否完全没有有效数据"""
+    core_fields = ("product_code", "product_name", "quantity_unit",
+                   "unit_price", "total_price")
+    return not any(item.get(f) for f in core_fields)
+
 
 @dataclass
 class PageInfo:
@@ -73,6 +83,17 @@ def parse_pdf(pdf_bytes: bytes, filename: str = "") -> ParsedPDF:
                 primary_type = p.doc_type
                 break
 
+    # fallback：新模板(如 20260625 录入单)首页 identify_doc_type 已正确判为 pre/customs，
+    # 但既无"出境关别值"、也无"出口口岸"、也无"仅供核对"标记，上方强证据路径全部 miss，
+    # primary_type 保持 None → 续页(只有商品、被判 customs)无法被纠正回主类型，污染报关单侧。
+    # 此时信任 identify_doc_type 的判定：取首个 pre/customs 页作为 primary_type。
+    # 详见 docs/memory.md #15。
+    if primary_type is None:
+        for p in parsed.pages:
+            if p.doc_type in ("pre_recording", "customs_declaration"):
+                primary_type = p.doc_type
+                break
+
     # 如果找到了主类型，将不明确的续页归入同一类型
     if primary_type:
         for p in parsed.pages:
@@ -105,6 +126,13 @@ def identify_doc_type(text: str) -> str:
     """
     # 先检查报关单（必须在预录单之前，因为两者可能都含"出口货物报关单"）
     if "中华人民共和国海关出口货物报关单" in text or "海关出口货物报关单" in text:
+        # 0. 海关编号已签发（有合法值）→ 报关单（最可靠判据，优先级最高）
+        #    预录单/核对单的海关编号为空，或后跟标签词（备案号/预录入编号/null），
+        #    不会误命中。修复 20260625001 这类用"境内发货人/监管方式"标签排版
+        #    的报关单被规则 3 误判为预录单的问题。详见 docs/memory.md #15。
+        if re.search(r"海关编号[:：\s]*[0-9][0-9A-Z]{5,}", text):
+            return "customs_declaration"
+
         # 1. 出境关别有值 → 预录单
         exit_customs_match = re.search(r"出境关别\s*\(?\d*\)?\s*\n?\s*[\u4e00-\u9fff]+海关", text)
         if exit_customs_match:
@@ -208,6 +236,69 @@ def extract_spans_with_positions(page_info: PageInfo) -> list:
     return spans
 
 
+def extract_customs_header_by_grid(page_info: PageInfo) -> dict:
+    """
+    网格排版报关单表头提取（标签行 + 值行，按 x 列上下对齐）。
+
+    适用于 20260625001 这类新排版报关单：标签与值分行排列，同一字段的标签
+    和值 x 对齐、y 相差约一行；空值省略不显示。文本正则会因标签值不紧贴、
+    空值错位而失效，必须用坐标。详见 docs/memory.md #15。
+
+    返回: {field_id: value}
+    """
+    # 新排版报关单用的是「境内发货人/监管方式/征免性质」这套标签（与预录单
+    # pre_field 一致），而非老排版的「发货单位/经营单位」。
+    LABEL_MAP = {
+        "境内发货人": "sender_unit",
+        "境外收货人": "buyer",
+        "生产销售单位": "business_unit",
+        "合同协议号": "contract_no",
+        "包装种类": "package_type",
+        "运输方式": "transport_mode",
+        "监管方式": "trade_mode",
+        "贸易国": "trade_country",
+        "贸易国（地区）": "trade_country",
+        "件数": "quantity",
+        "毛重（千克）": "gross_weight",
+        "毛重(千克)": "gross_weight",
+        "净重（千克）": "net_weight",
+        "净重(千克)": "net_weight",
+        "成交方式": "deal_mode",
+        "征免性质": "duty_nature",
+        "运抵国（地区）": "dest_country",
+        "运抵国(地区)": "dest_country",
+        "指运港": "dest_port",
+        "离境口岸": "exit_port",
+        "出境关别": "exit_customs",
+        "随附单证及编号": "attached_docs",
+        "标记唛码及备注": "marks_remarks",
+    }
+
+    spans = extract_spans_with_positions(page_info)
+    if not spans:
+        return {}
+
+    fields = {}
+    for sp in spans:
+        field_id = LABEL_MAP.get(sp["text"].strip())
+        if not field_id or field_id in fields:
+            continue
+        x, y = sp["x"], sp["y"]
+        # 在标签正下方（0 < dy < 14）找 x 最接近的非空 span 作为值
+        best, best_dx = None, 18.0
+        for cand in spans:
+            dy = cand["y"] - y
+            if 0 < dy < 14:
+                dx = abs(cand["x"] - x)
+                if dx < best_dx:
+                    val = cand["text"].strip()
+                    if val and val != "-":
+                        best, best_dx = val, dx
+        if best:
+            fields[field_id] = best
+    return fields
+
+
 def extract_horizontal_lines(page_info: PageInfo) -> list:
     """
     从 PDF 页面中提取水平线位置（用于表格行分隔）
@@ -256,8 +347,15 @@ def extract_pre_recording_fields_by_position(page_info: PageInfo) -> dict:
     spans = extract_spans_with_positions(page_info)
     fields = {}
 
-    # 检测是否为"仅供核对用"格式
-    is_hedui = "仅供核对" in page_info.text
+    # 检测是否为"仅供核对用"格式（标签底部、值上方的乱序排版）
+    is_hedui = "仅供核对" in page_info.text or "整合申报" in page_info.text
+    # 无"仅供核对"标记的核对单变体（如 0060228GDM）：核心表头标签印在页面底部
+    # (y>500)，而标准预录单的标签在顶部 (y<200)。详见 docs/memory.md #16。
+    if not is_hedui:
+        for _s in spans:
+            if _s["text"].strip() in ("境内发货人", "境外收货人", "合同协议号") and _s["y"] > 500:
+                is_hedui = True
+                break
 
     span_list = sorted(spans, key=lambda s: (s["y"], s["x"]))
 
@@ -373,8 +471,10 @@ def extract_pre_recording_fields_by_position(page_info: PageInfo) -> dict:
         y_label = label_span["y"]
 
         # 动态计算 x 搜索范围：取该标签到右侧最近标签的中点
-        # 如果没有右侧标签，使用 x_center + 35
-        x_max = x_center + 35
+        # 如果没有右侧标签，使用 x_center + 20（收窄：核对单表头值相对标签
+        # 的 x 缩进稳定在 10-12px，过宽会把相邻列值抓进来，如贸易国抓到毛重 366、
+        # 征免性质抓到运抵国加拿大）。详见 docs/memory.md #16。
+        x_max = x_center + 20
         y_label_approx = round(y_label / 3) * 3
         for other in all_spans:
             if abs(other["y"] - y_label) < 5 and other["x"] > x_center + 5:
@@ -707,7 +807,7 @@ def _extract_items_vertical_layout(spans, page_info):
     price_text = []
     for ds in sorted(col_data.get("price", []), key=lambda d: d["x"]):
         text = ds["text"].strip()
-        if re.match(r"^\d+\.\d+$", text):
+        if PRICE_RE.match(text):
             price_numbers.append(text)
         else:
             price_text.append(text)
@@ -789,6 +889,7 @@ def _extract_items_vertical_layout(spans, page_info):
         }
         items.append(item)
 
+    items = [it for it in items if not _is_empty_item(it)]
     return items
 
 
@@ -819,12 +920,316 @@ def _assign_price_fields(item: dict, price_data: list) -> None:
         item["currency"] = price_data[2].strip()
 
 
+def extract_pre_recording_items_by_grid(page_info: PageInfo) -> list:
+    """
+    核对单「字段分层 + x 列分布」商品明细提取（如 0060228GDM 这类无"仅供核对"
+    标记的核对单变体）。项号(1,2,3...)横向排列，每个商品占一个 x 列；编号/名称/
+    规格/数量/价格各自在不同 y 层，按项号的 x 区间归位。详见 docs/memory.md #16。
+    """
+    spans = extract_spans_with_positions(page_info)
+    if not spans:
+        return []
+
+    # 按 y 分行（容差 3）
+    rows = {}
+    for s in spans:
+        rows.setdefault(round(s["y"] / 3) * 3, []).append(s)
+
+    # 项号层：含从 1 起连续小整数的行
+    anchor_items = []
+    for yk in sorted(rows.keys()):
+        nums = [(s["x"], int(s["text"])) for s in rows[yk]
+                if re.match(r"^\d{1,3}$", s["text"].strip())]
+        nums.sort()
+        vals = [n for _, n in nums]
+        if len(vals) >= 2 and vals == list(range(1, len(vals) + 1)):
+            anchor_items = [{"item_no": str(n), "x": x, "y": yk} for x, n in nums]
+            break
+    if len(anchor_items) < 2:
+        return []
+
+    # 编号层：8-10 位数字密集的行（用于名称 y 锚定）
+    code_y = anchor_items[0]["y"]
+    for yk in sorted(rows.keys()):
+        if len([s for s in rows[yk] if re.match(r"^\d{8,10}$", s["text"].strip())]) >= 2:
+            code_y = yk
+            break
+
+    # 算每个 item 的 x 区间（相邻锚点中点）
+    xs = [it["x"] for it in anchor_items]
+    for i, it in enumerate(anchor_items):
+        left = (xs[i - 1] + xs[i]) / 2 if i > 0 else xs[0] - (xs[1] - xs[0]) / 2
+        right = (xs[i] + xs[i + 1]) / 2 if i < len(xs) - 1 else xs[-1] + (xs[-1] - xs[-2]) / 2
+        it["xrange"] = (left, right)
+        it["code"] = it["spec"] = ""
+        it["quantities"] = []
+        it["prices"] = []
+        it["name_cands"] = []
+
+    _labels = {
+        "境内发货人", "境外收货人", "生产销售单位", "合同协议号", "出境关别", "运输方式",
+        "监管方式", "贸易国（地区）", "贸易国(地区)", "运抵国（地区）", "运抵国(地区)", "指运港",
+        "离境口岸", "包装种类", "件数", "毛重(千克)", "毛重（千克）", "净重(千克)", "净重（千克）",
+        "成交方式", "征免性质", "随附单证及编号", "标记唛码及备注", "征免", "境内货源地",
+        "最终目的国(地区)", "最终目的国（地区）", "原产国(地区)", "原产国（地区）", "数量及单位",
+        "单价/总价/币制", "商品名称及规格型号", "商品编号", "项号", "备案号", "申报日期",
+        "出口日期", "提运单号", "运输工具名称及航次号", "许可证号", "杂费", "保费", "运费",
+        "申报单位", "报关人员", "海关编号", "预录入编号", "照章征税", "一般征税", "一般贸易",
+        "中国", "中国香港", "加拿大", "人民币", "CNY", "盐田", "先出后结", "无品牌", "N/M", "备注",
+    }
+    UNIT_RE = re.compile(r"(个|件|千克|公斤|吨|克|套|台|张|米|盒|包)$")
+
+    def _find(x):
+        for it in anchor_items:
+            if it["xrange"][0] <= x < it["xrange"][1]:
+                return it
+        return None
+
+    anchor_y = anchor_items[0]["y"]
+    for s in spans:
+        t = s["text"].strip()
+        if not t or abs(s["y"] - anchor_y) < 5:
+            continue
+        clean = re.sub(r"\([A-Za-z0-9]+\)", "", t).strip()
+        if t in _labels or clean in _labels:
+            continue
+        it = _find(s["x"])
+        if not it:
+            continue
+        if re.match(r"^\d{8,10}$", t):
+            if not it["code"]:
+                it["code"] = t
+        elif PRICE_RE.match(t) and "." in t:
+            try:
+                it["prices"].append((float(t.replace(",", "")), t))
+            except ValueError:
+                pass
+        elif UNIT_RE.search(t):
+            it["quantities"].append(t)
+        elif "|" in t:
+            it["spec"] = (it["spec"] + " " + t).strip() if it["spec"] else t
+        elif re.search(r"[一-鿿]", t) and len(t) <= 12:
+            it["name_cands"].append((abs(s["y"] - code_y), t))
+
+    result = []
+    for it in anchor_items:
+        ps = sorted(it["prices"])
+        unit_price = ps[0][1] if ps else ""
+        total_price = ps[-1][1] if ps else ""
+        name = min(it["name_cands"])[1] if it["name_cands"] else ""
+        spec = (name + "|" + it["spec"]).strip("|") if name else it["spec"]
+        result.append({
+            "item_no": it["item_no"],
+            "product_code": it["code"],
+            "product_name": name,
+            "product_name_spec": spec,
+            "quantity_unit": " / ".join(it["quantities"]),
+            "unit_price": unit_price,
+            "total_price": total_price,
+        })
+    return [r for r in result if not _is_empty_item(r)]
+
+
+def extract_pre_recording_items_horizontal(page_info: PageInfo) -> list:
+    """
+    横向倒排"仅供核对用"格式商品提取（如 0060228GDM 录入单）。
+
+    与标准预录单相反，该格式：项号(1,2,3..)印在页面底部，各字段数据印在项号
+    **上方**；每个商品横向占一**列**(x)，多列并排；列头标签纵向分散在不同 y。
+    老的 extract_pre_recording_items_by_position 假设"表头同行+数据在下"对此失效。
+    本函数：用项号数据行的 x 定列 → 上方数据按列聚合 → 列内按文本模式+y 识别字段。
+    详见 docs/memory.md #15。
+    """
+    spans = extract_spans_with_positions(page_info)
+    if not spans:
+        return []
+
+    # 1. 找项号锚点：纯小整数 spans 按 y 聚类，选"≥2 个连续整数且 y 最大(倒排底部)"的组
+    int_spans = [s for s in spans if re.match(r"^\d{1,3}$", s["text"].strip())]
+    y_clusters = []
+    for s in int_spans:
+        for c in y_clusters:
+            if abs(c["y"] - s["y"]) < 5:
+                c["spans"].append(s)
+                break
+        else:
+            y_clusters.append({"y": s["y"], "spans": [s]})
+
+    anchor = None  # [(no, x), ...] 已按 x 排序
+    for c in sorted(y_clusters, key=lambda k: -k["y"]):
+        vals = sorted((int(s["text"]), s["x"]) for s in c["spans"])
+        nums = [v[0] for v in vals]
+        if len(nums) >= 2 and all(nums[i + 1] - nums[i] in (1, 2) for i in range(len(nums) - 1)):
+            anchor = vals
+            break
+    if not anchor:
+        return []  # 不是横向倒排格式（标准预录单项号分散在不同 y，不会聚到同一簇）
+
+    centers = [a[1] for a in anchor]
+    item_y = next(s["y"] for s in int_spans
+                  if int(s["text"]) == anchor[0][0] and abs(s["x"] - anchor[0][1]) < 5)
+
+    # 2. 列边界 = 相邻列中心的中点
+    bounds = []
+    for i in range(len(centers)):
+        lo = (centers[i - 1] + centers[i]) / 2 if i > 0 else centers[i] - 25
+        hi = (centers[i] + centers[i + 1]) / 2 if i + 1 < len(centers) else centers[i] + 25
+        bounds.append((lo, hi))
+
+    # 3. 按列分组（排除项号数据行本身、列头标签 span）
+    _LABEL_SKIP = ("及规格型号", "及单位", "/总价/币制", "目的国(地区)", "目的国（地区）",
+                   "原产国(地区)", "原产国（地区）", "境内货源地", "中华人民共和国海关")
+    columns = [[] for _ in range(len(centers))]
+    for s in spans:
+        t = s["text"].strip()
+        if not t or t in ("项号", "商品编号", "征免", "页码/页数", "预录入编号：", "海关编号："):
+            continue
+        if any(k in t for k in _LABEL_SKIP):
+            continue
+        if abs(s["y"] - item_y) < 5 and re.match(r"^\d{1,3}$", t):
+            continue  # 排除项号本身
+        for i, (lo, hi) in enumerate(bounds):
+            if lo <= s["x"] < hi:
+                columns[i].append(s)
+                break
+
+    # 4. 逐列解析字段
+    _COUNTRY = {"中国", "加拿大", "美国", "日本", "韩国", "德国", "法国", "英国",
+                "澳大利亚", "越南", "印度", "意大利", "西班牙", "巴西", "墨西哥",
+                "俄罗斯", "泰国", "马来西亚", "印度尼西亚", "新加坡", "中国香港",
+                "中国台湾", "荷兰", "阿联酋", "土耳其", "波兰"}
+    _CURRENCY = {"人民币": "CNY", "CNY": "CNY", "美元": "USD", "USD": "USD",
+                 "欧元": "EUR", "EUR": "EUR", "港币": "HKD", "HKD": "HKD", "日元": "JPY"}
+    _QTY = re.compile(r"^\d+(?:\.\d+)?(个|件|套|台|张|盒|只|支|千克|公斤|吨|米)")
+    _DUTY = ("照章征税", "全免", "特案减免", "保函", "自贸协定")
+
+    items = []
+    for i, col in enumerate(columns):
+        item = {"item_no": str(anchor[i][0]), "product_code": "", "product_name": "",
+                "spec_model": "", "quantity_unit": "", "unit_price": "", "total_price": "",
+                "currency": "", "origin_country": "", "dest_country": "", "final_dest_country": "",
+                "domestic_source": "", "duty_exemption": ""}
+        col_sorted = sorted(col, key=lambda s: -s["y"])  # 从下往上
+        prices, countries, names, specs = [], [], [], []
+        code_y = None
+        for s in col_sorted:
+            t = s["text"].strip()
+            if re.match(r"^\d{8,10}$", t) and not item["product_code"]:
+                item["product_code"] = t
+                code_y = s["y"]
+                continue
+            if "|" in t:
+                specs.append(t)
+                continue
+            if _QTY.match(t):
+                continue  # 数量改由函数末尾的行级提取（横向格式 x 偏移大，列内会串列）
+            if PRICE_RE.match(t) and ("." in t or len(t) >= 4) and not re.match(r"^\d{1,3}$", t):
+                prices.append(t)
+                continue
+            if t in _CURRENCY:
+                item["currency"] = _CURRENCY[t]
+                continue
+            m = re.match(r"^\((\d+)\)(.+)$", t)  # 货源地，可能粘征免："(33029)宁波其他照章征税"
+            if m:
+                code, rest = m.group(1), m.group(2)
+                for w in _DUTY:
+                    if w in rest:
+                        if not item["duty_exemption"]:
+                            item["duty_exemption"] = w
+                        rest = rest.replace(w, "").strip()
+                        break
+                item["domestic_source"] = "({}){}".format(code, rest)
+                continue
+            if any(t.startswith(w) for w in _DUTY):
+                if not item["duty_exemption"]:
+                    item["duty_exemption"] = t
+                continue
+            if t in _COUNTRY:
+                countries.append((s["y"], t))
+                continue
+            if re.match(r"^\([A-Z]{2,4}\)$", t):  # 国家代码 (CHN)(CAN) 跳过
+                continue
+            if re.match(r"^[一-鿿]{2,8}$", t):  # 潜在商品名称
+                names.append((s["y"], t))
+                continue
+        if specs:
+            item["spec_model"] = " ".join(specs)
+        if names:
+            if code_y is not None:
+                above = [(y, n) for y, n in names if y < code_y]
+                item["product_name"] = (max(above, key=lambda x: x[0])[1] if above
+                                        else max(names, key=lambda x: x[0])[1])
+            else:
+                item["product_name"] = max(names, key=lambda x: x[0])[1]
+        if prices:  # 单价<总价（总价=单价×数量≥单价）
+            pn = []
+            for p in prices:
+                try:
+                    pn.append((float(p.replace(",", "")), p))
+                except ValueError:
+                    pass
+            if pn:
+                pn.sort(key=lambda x: x[0])
+                item["unit_price"] = pn[0][1]
+                if len(pn) >= 2:
+                    item["total_price"] = pn[-1][1]
+        if countries:  # y 大的=原产国(下方)，y 小的=目的国(上方)
+            countries.sort(key=lambda x: -x[0])
+            item["origin_country"] = countries[0][1]
+            if len(countries) >= 2:
+                item["dest_country"] = countries[1][1]
+                item["final_dest_country"] = countries[1][1]
+        items.append(item)
+
+    # 数量字段：横向格式的数量 span x 偏移大、且每列可能重复渲染（如"35个"出现两次），
+    # 按列边界分组会跨界串列。改为行级提取：分主数量(个/件)与重量(千克)两组，
+    # 按数值前缀去重（同数值保留 x 最大的，滤掉重复渲染/噪声 span），再按 x 升序分配给各列。
+    _qty_main, _qty_wt = [], []
+    for s in spans:
+        t = s["text"].strip()
+        m = _QTY.match(t)
+        if not m:
+            continue
+        num_m = re.match(r"(\d+(?:\.\d+)?)", t)
+        if not num_m:
+            continue
+        if m.group(1) in ("千克", "公斤", "吨"):
+            _qty_wt.append((s["x"], num_m.group(1), t))
+        else:
+            _qty_main.append((s["x"], num_m.group(1), t))
+
+    def _dedup_by_num(pairs):
+        best = {}
+        for x, num, t in pairs:
+            if num not in best or x > best[num][0]:
+                best[num] = (x, t)
+        return [best[k][1] for k in sorted(best, key=lambda k: best[k][0])]
+
+    _main_seq = _dedup_by_num(_qty_main)
+    _wt_seq = _dedup_by_num(_qty_wt)
+    for idx, it in enumerate(items):
+        parts = []
+        if idx < len(_main_seq):
+            parts.append(_main_seq[idx])
+        if idx < len(_wt_seq):
+            parts.append(_wt_seq[idx])
+        it["quantity_unit"] = " / ".join(parts)
+
+    return [it for it in items if not _is_empty_item(it)]
+
+
 def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
     """
     用位置感知方式从预录单中提取商品明细
     动态检测列位置：从表头行读取各列的 x 坐标，不依赖固定值
     """
     spans = extract_spans_with_positions(page_info)
+    # 横向倒排"仅供核对用"格式（项号在底部、数据在上方、每商品占一列）：
+    # 老逻辑假设"表头同行+数据在下"会完全失效。先尝试横向提取，命中则直接返回。
+    _h = extract_pre_recording_items_horizontal(page_info)
+    if _h:
+        return _h
+
 
     # ---- 第一步：找到表头行并提取列位置 ----
     # 表头关键词 → 列 ID 映射
@@ -914,7 +1319,7 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
         # 价格通常在数量列的右侧，找比 quantity x 更大且看起来像价格的 span
         price_candidates = []
         for ds in data_spans_after_header:
-            if re.match(r"^\d+\.\d{2,4}$", ds["text"].strip()):
+            if PRICE_RE.match(ds["text"].strip()):
                 # 价格数字的 x 应该大于 quantity x，且在 origin_country 之前
                 if ds["x"] > qty_x + 30:
                     price_candidates.append(ds["x"])
@@ -938,7 +1343,7 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
         _country_data_xs = []
         for ds in data_spans_after_header:
             txt = ds["text"].strip()
-            if re.match(r"^\d+\.\d{2,4}$", txt) or re.match(r"^\d+\.\d{1,2}$", txt):
+            if PRICE_RE.match(txt):
                 if ds["x"] > _merged_price_x - 5:
                     _price_data_xs.append(ds["x"])
             elif re.match(r"^[\u4e00-\u9fff]{2,3}$", txt):
@@ -1321,4 +1726,5 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
         if duty in ("(1)", "（1）"):
             item["duty_exemption"] = "照章征税(1)"
 
+    items = [it for it in items if not _is_empty_item(it)]
     return items
