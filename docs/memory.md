@@ -30,6 +30,8 @@
 | 18 | 文件传反导致整份比对错位 | `scripts/diagnose.py` 合并两 PDF 按 doc_type 自动判角色 | 2026-06-26 |
 | 19 | 录入单横向倒排(项号在底/数据在上/每商品一列)商品全错 | `pdf_parser.py::extract_pre_recording_items_horizontal()` | 2026-06-26 |
 | 20 | 报关单商品原产国/目的国/货源地漏提(CNY+照章征税全称) | `field_extractor.py::_parse_customs_item_content()` 币制行后顺序提取 | 2026-06-26 |
+| 21 | 预录单品名被规格串占据/品名规格整体颠倒 | `pdf_parser.py::_split_name_and_spec()` + `extract_pre_recording_items_by_position()` | 2026-07-16 |
+| 22 | 预录单货源地长地名误归目的国列(domestic_source空) | `pdf_parser.py::extract_pre_recording_items_by_position()` 内容特征override归source | 2026-07-16 |
 
 **架构性历史项（不在 fix-log 序列）**：
 - **A. 预录单「仅供核对用」格式必须用 span 坐标提取**——两层策略：位置感知 + 文本兜底
@@ -195,6 +197,26 @@
 - **根因**：`_parse_customs_item_content` 货源地锚点写死 `line=="人民币"` 和 `line=="照章"`，但该报关单用全称"CNY"和"照章征税"，锚点 miss；且目的国提取假设在"数量行后、价格行前"，但该格式目的国在"币制行后"
 - **修复**：改为在币制行(CNY/人民币)之后、征免行(照章*)之前，按顺序提取 tail[0]=原产国 / tail[1]=目的国 / tail[2]=货源地；锚点放宽为 `line in ("人民币","CNY")` 和 `line.startswith("照章")`；用 `not item.get()` 保护已填字段
 - **影响**：field_extractor.py::_parse_customs_item_content
+
+### #21. 预录单品名被规格串占据（品名/规格整体颠倒）
+- **日期**：2026-07-16
+- **现象**：J18632B 预录单全部 33 条商品的 `product_name` 被填成规格串（如 `1|2|家用|PET|DELAMU牌|无型号`），真品名（收纳盒/塑料线槽…）被塞进 `spec_model`；比对时表现为"预录单品名缺失/全错"，33 条商品明细全部不通过
+- **根因**：`extract_pre_recording_items_by_position` 把"商品名称及规格型号"列（同 x：品名在上 y 小、规格在下 y 大且带 `|`）的所有 span 按**列表追加顺序**分配——`[0]→product_name`、`[1:]→spec_model`。但 span 追加顺序来自 PDF 原始绘制顺序（`extract_spans_with_positions`），不可靠：该格式里规格 span 排在品名 span **前面**，导致品名/规格整体颠倒。`extract_all_fields` 第 988 行对预录单续页（unknown）也调用同一函数，所以 page0 + 续页全部商品一致出错
+- **修复**：新增 `_split_name_and_spec(name_entries)`——按 y 升序遍历，含 `|` 的归规格、不含 `|` 的第一个作品名、其余（如尺寸描述 `24MM*…`）归规格；全含 `|` 时取 y 最小兜底。两处 item 构造（row_slots 路径 + y 坐标回退路径）改为把 product_name 列 span 收集成 `(y, text)` 并调用该函数，不再依赖列表顺序
+- **关键教训**：同一单元格内跨 span 的字段（品名 vs 规格）不能用收集顺序区分——PDF span 绘制顺序不稳定，必须用 y 坐标排序 + 内容启发式（预录单申报要素规格以 `|` 分隔）定位
+- **影响**：pdf_parser.py::_split_name_and_spec（新增）、extract_pre_recording_items_by_position 两处 item 构造
+- **验证**：J18632B（33 条全修复，比对 41→8 不通过）+ 回归 20260612002.pdf、预录单-6.pdf 老格式品名仍正确
+- **关联**：#11 处理同一 span 内"编码+名称"合并；本坑处理同列内"品名+规格"跨 span 顺序。剩余 8 条不通过是货源地（如 `(33029)宁波其他`）误归目的国列的另一独立 bug，未在本坑处理（见 #22）
+
+### #22. 预录单货源地长地名误归目的国列（domestic_source 为空）
+- **日期**：2026-07-16
+- **现象**：#21 修复后剩余 8 条商品 `domestic_source` 为空，货源地（如 `(33029)宁波其他`、`(44209)中山其他`）被误拼进 `final_dest_country`（变成 `加拿大 (33029)宁波其他 (CAN)`）；短地名（台州/东莞）正常
+- **根因**：货源地列表头 x=683，列左边界按表头法 = 683−15 = **668**。但货源地 span 左对齐、城市名长度不同导致起始 x 不同：短地名（台州/东莞，2 字）x≈676.8 > 668 归列正确；长地名（宁波其他/中山其他，4 字）x≈**667.8** < 668 落入左侧的目的国列。表头 x 不代表数据起始 x，固定偏移边界对"文本宽度可变"的列不可靠
+- **修复**：两处 item 构造循环（row_slots + y 回退）的列修正段加内容特征 override——`re.match(r"^[（(]\d{4,6}[）)]", stext)` 命中即强制归 `source` 列。征免代码 `(1)` 只有 1 位数字不匹配，不会误伤
+- **关键教训**：货源地有强特征 `(4-6位数字)中文`（区域代码+城市名），比 x 坐标更可靠。列边界用表头 x ± 固定偏移对文本宽度可变的列（城市名长短不一）会漏，应用内容特征兜底
+- **影响**：pdf_parser.py::extract_pre_recording_items_by_position 两处列修正段
+- **验证**：J18632B 8 条货源地异常全消（比对 344 通过 / 0 不通过）+ 回归 20260612002.pdf、预录单-6.pdf 货源地仍正确
+- **关联**：与 #21 同次发现（#21 修复品名后暴露的剩余 8 条），独立根因（列边界 vs span 顺序）
 
 ---
 

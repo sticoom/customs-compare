@@ -920,6 +920,42 @@ def _assign_price_fields(item: dict, price_data: list) -> None:
         item["currency"] = price_data[2].strip()
 
 
+def _split_name_and_spec(name_entries):
+    """
+    从"商品名称及规格型号"列的多个 span 中分离品名与规格型号。
+
+    name_entries: [(y, text), ...] —— 同一商品在该列的所有文本 span。
+
+    预录单里品名通常在单元格上方（y 较小）、是简短中文；规格型号在下方、
+    多为以 "|" 分隔的申报要素串（如 "1|2|家用|PET|DELAMU牌|无型号"）。
+    不能依赖 span 的原始收集顺序——PDF 绘制顺序不可靠，规格 span 可能排在
+    品名 span 之前，导致品名/规格整体颠倒（见 docs/memory.md #21）。
+    改用 y 升序 + 内容启发式：
+      - 按 y 升序遍历
+      - 含 "|" 的归规格；不含 "|" 的，第一个作品名，其余（如尺寸描述）归规格
+      - 若全是含 "|" 的规格，取 y 最小的兜底作品名
+    返回 (product_name, spec_model)
+    """
+    if not name_entries:
+        return "", ""
+    ordered = sorted(name_entries, key=lambda t: t[0])
+    product_name = ""
+    spec_parts = []
+    for _y, text in ordered:
+        if not text:
+            continue
+        if "|" in text:
+            spec_parts.append(text)
+        elif not product_name:
+            product_name = text
+        else:
+            spec_parts.append(text)
+    if not product_name:
+        product_name = ordered[0][1]
+        spec_parts = [t for _y, t in ordered[1:] if t]
+    return product_name, " ".join(p for p in spec_parts if p)
+
+
 def extract_pre_recording_items_by_grid(page_info: PageInfo) -> list:
     """
     核对单「字段分层 + x 列分布」商品明细提取（如 0060228GDM 这类无"仅供核对"
@@ -1547,6 +1583,7 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
 
             # 按 x 列分组
             cols = {}
+            name_entries = []  # product_name 列的 (y, text)，按 y 排序分离品名/规格
             for s in item_spans:
                 col = get_col_id(s["x"])
                 if col:
@@ -1567,24 +1604,30 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
                         if "product_code" not in cols:
                             cols["product_code"] = []
                         cols["product_code"].append(code_name_m.group(1))
-                        if "product_name" not in cols:
-                            cols["product_name"] = []
-                        cols["product_name"].append(code_name_m.group(2))
+                        name_entries.append((s["y"], code_name_m.group(2).strip()))
                         continue
                     # 修正列分配
                     if col == "item_no" and re.match(r"^\d{6,}$", stext):
                         col = "product_code"
                     elif col == "product_code" and not re.match(r"^\d{6,}$", stext):
                         col = "product_name"
-                    if col not in cols:
-                        cols[col] = []
-                    cols[col].append(s["text"])
+                    # 货源地 "(数字)中文" 长地名 x 偏左（短地名 x≈676.8、长地名 x≈667.8），
+                    # 可能落到目的国列边界外，按内容特征强制归 source
+                    if re.match(r"^[（(]\d{4,6}[）)]", stext) and col != "source":
+                        col = "source"
+                    if col == "product_name":
+                        name_entries.append((s["y"], stext))
+                    else:
+                        if col not in cols:
+                            cols[col] = []
+                        cols[col].append(s["text"])
 
+            product_name, spec_model = _split_name_and_spec(name_entries)
             item = {
                 "item_no": str(int(cols.get("item_no", ["0"])[0])) if cols.get("item_no") and cols["item_no"][0].isdigit() else cols.get("item_no", [""])[0],
                 "product_code": (cols.get("product_code") or [""])[0],
-                "product_name": (cols.get("product_name") or [""])[0],
-                "spec_model": " ".join(cols.get("product_name", [])[1:]),
+                "product_name": product_name,
+                "spec_model": spec_model,
                 "quantity_unit": " / ".join(cols.get("quantity", [])),
                 "origin_country": " ".join(cols.get("origin_country", [])),
                 "final_dest_country": " ".join(cols.get("dest_country", [])),
@@ -1631,6 +1674,7 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
             item_spans = sorted(main_spans + above_spans, key=lambda s: (s["y"], s["x"]))
 
             cols = {}
+            name_entries = []  # product_name 列的 (y, text)，按 y 排序分离品名/规格
             for s in item_spans:
                 col = get_col_id(s["x"])
                 if col:
@@ -1651,23 +1695,29 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
                         if "product_code" not in cols:
                             cols["product_code"] = []
                         cols["product_code"].append(code_name_m.group(1))
-                        if "product_name" not in cols:
-                            cols["product_name"] = []
-                        cols["product_name"].append(code_name_m.group(2))
+                        name_entries.append((s["y"], code_name_m.group(2).strip()))
                         continue
                     if col == "item_no" and re.match(r"^\d{6,}$", stext):
                         col = "product_code"
                     elif col == "product_code" and not re.match(r"^\d{6,}$", stext):
                         col = "product_name"
-                    if col not in cols:
-                        cols[col] = []
-                    cols[col].append(s["text"])
+                    # 货源地 "(数字)中文" 长地名 x 偏左（短地名 x≈676.8、长地名 x≈667.8），
+                    # 可能落到目的国列边界外，按内容特征强制归 source
+                    if re.match(r"^[（(]\d{4,6}[）)]", stext) and col != "source":
+                        col = "source"
+                    if col == "product_name":
+                        name_entries.append((s["y"], stext))
+                    else:
+                        if col not in cols:
+                            cols[col] = []
+                        cols[col].append(s["text"])
 
+            product_name, spec_model = _split_name_and_spec(name_entries)
             item = {
                 "item_no": str(int(cols.get("item_no", ["0"])[0])) if cols.get("item_no") and cols["item_no"][0].isdigit() else cols.get("item_no", [""])[0],
                 "product_code": (cols.get("product_code") or [""])[0],
-                "product_name": (cols.get("product_name") or [""])[0],
-                "spec_model": " ".join(cols.get("product_name", [])[1:]),
+                "product_name": product_name,
+                "spec_model": spec_model,
                 "quantity_unit": " / ".join(cols.get("quantity", [])),
                 "origin_country": " ".join(cols.get("origin_country", [])),
                 "final_dest_country": " ".join(cols.get("dest_country", [])),
