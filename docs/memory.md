@@ -32,6 +32,7 @@
 | 20 | 报关单商品原产国/目的国/货源地漏提(CNY+照章征税全称) | `field_extractor.py::_parse_customs_item_content()` 币制行后顺序提取 | 2026-06-26 |
 | 21 | 预录单品名被规格串占据/品名规格整体颠倒 | `pdf_parser.py::_split_name_and_spec()` + `extract_pre_recording_items_by_position()` | 2026-07-16 |
 | 22 | 预录单货源地长地名误归目的国列(domestic_source空) | `pdf_parser.py::extract_pre_recording_items_by_position()` 内容特征override归source | 2026-07-16 |
+| 23 | 横向核对单数量跨item错位(重量对/件套错位) | `pdf_parser.py::extract_pre_recording_items_horizontal()` 项号x区间归位 | 2026-07-20 |
 
 **架构性历史项（不在 fix-log 序列）**：
 - **A. 预录单「仅供核对用」格式必须用 span 坐标提取**——两层策略：位置感知 + 文本兜底
@@ -217,6 +218,22 @@
 - **影响**：pdf_parser.py::extract_pre_recording_items_by_position 两处列修正段
 - **验证**：J18632B 8 条货源地异常全消（比对 344 通过 / 0 不通过）+ 回归 20260612002.pdf、预录单-6.pdf 货源地仍正确
 - **关联**：与 #21 同次发现（#21 修复品名后暴露的剩余 8 条），独立根因（列边界 vs span 顺序）
+
+### #23. 横向倒排核对单数量字段跨 item 错位（重量对、件/套错位）
+- **日期**：2026-07-20
+- **现象**：J18632B-DLM250833 预录单（横向倒排核对单）全部商品的 `quantity_unit` 跨 item 错位——**重量(千克)对齐正确，但主数量(件/套/个)整体向下错位一个 item**：item N 拿到真实 item N+1 的数量。比对表现为"明明对得上的数量全 fail"，如 item2 锅架 `报=25千克/36套` vs `预=204套/25千克`（204套 本属 item3）。Page0 共 6 条 item 全错位，Page1 14 条从 item10 起继续错位
+- **根因**：`extract_pre_recording_items_horizontal` 末尾的数量归位用「按数值全局去重 + idx 顺序分配」（#19 引入），两个缺陷叠加：
+  - (1) `_dedup_by_num` 按**数值**全局去重，把不同 item 的同值数量（item2 和 item6 都是"36套"，x 相距 130px）当成同一 item 的重复渲染删掉 → 主数量序列长度 < item 数，从丢失点起整体下移一位
+  - (2) idx 顺序分配强假设 `span 数 == item 数`，但同 item 可能有多 个数量 span（Page1 item10 有"30个"+"30件"两个重复渲染 span）→ 序列长度 > item 数，从多余点起整体下移
+  - 重量字段因为各 item 重量值都不同（13/25/287/50/35/75...），去重不影响，所以重量一直对——这也解释了"千克对、件套错"的不对称现象
+- **修复**：改用项号 anchor 的 x 坐标做「左闭右开」区间 `[项号x-2, 下一项号x-2)` 归位每个数量 span（文件 `pdf_parser.py::extract_pre_recording_items_horizontal`，删 `_dedup_by_num`，新增 `_qty_owner`）。同 item 的多个 span 自然归同一区间，再 in-place 保序去重滤掉重复渲染。区间宽度 = 列宽(~32) > 主数量偏移(20)，左右各减 2px 容差是因为**项号 span 的 x 比同列数据 span 的 x 略大 ~0.2px**（字符渲染起始位置差异），不减容差会让重量(x≈项号x-0.2)不满足 `cx<=x` 被推给上一个 item
+- **关键教训**：横向格式数量归位有三种方案，只有「项号 x 区间」可靠——
+  - (a) 按列边界**中点**归位 ❌：数量 x 系统性偏右(=项号x+20)，越过中点(项号x+16)落到下一 item（#19 已踩）
+  - (b) 按数值去重 + **idx 顺序**分配 ❌：跨 item 同值被误删、同 item 多 span 让序列长度对不上（本坑）
+  - (c) **项号 x 区间** `[项号x, 下一项号x)` ✓：每个 item 的数据 x 落在 [项号x, 项号x+列宽) 内（重量靠左 ±0.2、主数量靠右 +20），区间稳定覆盖。这是唯一不依赖"span 数 == item 数"假设的方案
+- **影响**：`pdf_parser.py::extract_pre_recording_items_horizontal`（数量归位段重写）；标准纵向预录单不受影响（horizontal 函数找不到项号 anchor 时返回 []，dispatch 回退到 `extract_pre_recording_items_by_position` 标准路径）
+- **验证**：J18632B-125箱 `quantity_unit` 10 fail→0 fail（汇总 202→209 pass / 10→3 fail，剩 3 fail 是 product_code 截断 + 规格串顺序的其他已知问题）；J18632B-241箱 344 pass / 0 fail；预录单-6（标准纵向）horizontal 不触发，quantity_unit 正常
+- **关联**：#19 引入横向提取时用 idx+去重 处理"重复渲染"，当时仅 0060228GDM 1 份样本验证（恰好无跨 item 同值），未覆盖"跨 item 同值"和"同 item 多 span"两种情况。本坑是 #19 的后继完善
 
 ---
 

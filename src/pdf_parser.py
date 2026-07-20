@@ -1217,39 +1217,52 @@ def extract_pre_recording_items_horizontal(page_info: PageInfo) -> list:
                 item["final_dest_country"] = countries[1][1]
         items.append(item)
 
-    # 数量字段：横向格式的数量 span x 偏移大、且每列可能重复渲染（如"35个"出现两次），
-    # 按列边界分组会跨界串列。改为行级提取：分主数量(个/件)与重量(千克)两组，
-    # 按数值前缀去重（同数值保留 x 最大的，滤掉重复渲染/噪声 span），再按 x 升序分配给各列。
-    _qty_main, _qty_wt = [], []
+    # 数量字段归位：用项号 anchor 的 x 做「左闭右开」区间 [项号x, 下一项号x) 把每个
+    # 数量 span 归到对应 item。三种方案的取舍：
+    #   (a) 按列边界中点归位——不行：数量 x 系统性偏右（=项号x+20，越过中点 项号x+16），
+    #       会落到下一 item（#19 踩过）。
+    #   (b) 按数值去重 + idx 顺序分配——不行：不同 item 可能同数量（item2 和 item6 都是
+    #       "36套"），去重会误删合法值；且同 item 多个数量 span（如 item10 的"30个"+"30件"
+    #       重复渲染）会让序列长度 ≠ item 数，从丢失点整体错位（#23）。
+    #   (c) 本方案：项号 x ≤ 数量 x < 下一项号 x —— 区间宽度=列宽(~32) > 数量偏移(20)，
+    #       稳定覆盖；同 item 的多个数量 span 都归同一 item，再 in-place 去重。
+    _anchor_by_x = sorted(anchor, key=lambda a: a[1])
+    _axs = [a[1] for a in _anchor_by_x]
+
+    def _qty_owner(x):
+        # 项号 span 的 x 比同列数据 span 略大 ~0.2px（字符渲染起始位置差异），
+        # 直接用 cx<=x 会让重量(x≈项号x-0.2)不满足条件、被推给上一个 item。
+        # 左右各减 2px 容差：分界点落在「项号x-2」，介于本 item 主数量(x≈项号x+20)
+        # 与下一 item 重量(x≈下一项号x-0.2)之间，安全容差窗 [0.2, 12]。
+        for i, cx in enumerate(_axs):
+            nxt = _axs[i + 1] if i + 1 < len(_axs) else cx + 32
+            if cx - 2 <= x < nxt - 2:
+                return str(_anchor_by_x[i][0])
+        return None
+
+    _item_by_no = {it["item_no"]: it for it in items}
+    for it in items:
+        it["_qty_main"] = []
+        it["_qty_wt"] = []
     for s in spans:
         t = s["text"].strip()
         m = _QTY.match(t)
         if not m:
             continue
-        num_m = re.match(r"(\d+(?:\.\d+)?)", t)
-        if not num_m:
+        owner = _qty_owner(s["x"])
+        if owner is None:
+            continue
+        it = _item_by_no.get(owner)
+        if not it:
             continue
         if m.group(1) in ("千克", "公斤", "吨"):
-            _qty_wt.append((s["x"], num_m.group(1), t))
+            it["_qty_wt"].append(t)
         else:
-            _qty_main.append((s["x"], num_m.group(1), t))
-
-    def _dedup_by_num(pairs):
-        best = {}
-        for x, num, t in pairs:
-            if num not in best or x > best[num][0]:
-                best[num] = (x, t)
-        return [best[k][1] for k in sorted(best, key=lambda k: best[k][0])]
-
-    _main_seq = _dedup_by_num(_qty_main)
-    _wt_seq = _dedup_by_num(_qty_wt)
-    for idx, it in enumerate(items):
-        parts = []
-        if idx < len(_main_seq):
-            parts.append(_main_seq[idx])
-        if idx < len(_wt_seq):
-            parts.append(_wt_seq[idx])
-        it["quantity_unit"] = " / ".join(parts)
+            it["_qty_main"].append(t)
+    for it in items:
+        main = list(dict.fromkeys(it.pop("_qty_main", [])))  # 保序去重：滤掉同 item 重复渲染
+        wt = list(dict.fromkeys(it.pop("_qty_wt", [])))
+        it["quantity_unit"] = " / ".join(main + wt)
 
     return [it for it in items if not _is_empty_item(it)]
 
