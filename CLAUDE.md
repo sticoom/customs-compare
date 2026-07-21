@@ -84,6 +84,7 @@ app.py → 展示结果 + excel_exporter.py 导出报告
 ### field_extractor.py — 字段提取
 
 - `extract_customs_header(text)` → 报关单表头（正则提取，排版简单）
+- `extract_customs_header_dispatch(pages, text)` → 报关单表头两层 dispatch（by_grid 优先 + 正则回退，结果导向判据）
 - `extract_customs_items(text)` → 报关单商品明细（正则提取）
 - `extract_pre_recording_header(text)` → 预录单表头（文本正则，作为位置提取的补充）
 - `_hedui_text_fallback(fields, text)` → "仅供核对用"格式的文本兜底

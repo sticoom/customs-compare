@@ -829,6 +829,31 @@ def extract_contract_buyer(text: str) -> str:
     return ""
 
 
+def extract_customs_header_dispatch(customs_decl_pages: list, customs_text: str) -> dict:
+    """报关单表头提取（两层架构：结果导向分类 + 两个提取器）。
+
+    优先用网格坐标提取（extract_customs_header_by_grid，适配 20260625001 这类
+    标签行+值行新排版），提取不到关键字段时回退到文本正则（extract_customs_header，
+    老排版）。判据是**结果导向**的（网格是否提到 sender_unit/contract_no），比预判
+    标签更稳健——新/老模板标签名差异（境内发货人 vs 发货单位）在不同批次间还有变体，
+    结果导向自动适配。详见 docs/memory.md #15。
+    """
+    from src.pdf_parser import extract_customs_header_by_grid
+    header = {}
+    for _p in customs_decl_pages:
+        for _k, _v in extract_customs_header_by_grid(_p).items():
+            if _v and not header.get(_k):
+                header[_k] = _v
+    if header.get("sender_unit") or header.get("contract_no"):
+        # 网格命中：用文本正则补遗漏字段
+        for _k, _v in extract_customs_header(customs_text).items():
+            if _v and not header.get(_k):
+                header[_k] = _v
+    else:
+        header = extract_customs_header(customs_text)
+    return header
+
+
 # ============================================================
 # 主入口：从解析后的 PDF 中提取所有字段
 # ============================================================
@@ -858,21 +883,7 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
 
     # 报关单页面用文本正则提取（排版简单，效果好）
     customs_text = "\n\n".join([p.text for p in customs_decl_pages])
-    # 优先用网格坐标提取表头（适配 20260625001 这类标签行+值行新排版），
-    # 提取不到关键字段时回退到文本正则（老排版）。详见 docs/memory.md #15。
-    from src.pdf_parser import extract_customs_header_by_grid
-    customs_header = {}
-    for _p in customs_decl_pages:
-        for _k, _v in extract_customs_header_by_grid(_p).items():
-            if _v and not customs_header.get(_k):
-                customs_header[_k] = _v
-    if customs_header.get("sender_unit") or customs_header.get("contract_no"):
-        # 网格命中：用文本正则补遗漏字段
-        for _k, _v in extract_customs_header(customs_text).items():
-            if _v and not customs_header.get(_k):
-                customs_header[_k] = _v
-    else:
-        customs_header = extract_customs_header(customs_text)
+    customs_header = extract_customs_header_dispatch(customs_decl_pages, customs_text)
     customs_items = extract_customs_items(customs_text)
 
     # Fallback: 标准提取失败时，尝试续页/核对单格式提取
