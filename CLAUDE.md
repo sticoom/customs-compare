@@ -74,7 +74,11 @@ app.py → 展示结果 + excel_exporter.py 导出报告
 - `identify_doc_type(text)` → 根据关键词识别页面类型
 - `extract_spans_with_positions(page)` → 提取带 x/y 坐标的文本 span
 - `extract_pre_recording_fields_by_position(page)` → 用 span 坐标提取预录单表头
-- `extract_pre_recording_items_by_position(page)` → 用 span 坐标提取预录单商品明细
+- `extract_pre_recording_items_by_position(page)` → 预录单商品提取主入口（classify + dispatch，两层架构）
+- `classify_pre_recording_layout(page, spans)` → 预录单格式分类器（horizontal / standard_vertical）
+- `extract_pre_recording_items_horizontal(page, spans)` → 横向倒排核对单提取器
+- `extract_pre_recording_standard_vertical(page, spans)` → 标准纵向提取器（含 vertical_layout 二级 dispatch）
+- `_find_horizontal_item_anchor(spans)` → 横向项号 anchor 检测（分类器与 horizontal 共用）
 - `extract_horizontal_lines(page)` → 提取 PDF 水平线（用于行槽位划分）
 
 ### field_extractor.py — 字段提取

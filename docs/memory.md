@@ -33,6 +33,7 @@
 | 21 | 预录单品名被规格串占据/品名规格整体颠倒 | `pdf_parser.py::_split_name_and_spec()` + `extract_pre_recording_items_by_position()` | 2026-07-16 |
 | 22 | 预录单货源地长地名误归目的国列(domestic_source空) | `pdf_parser.py::extract_pre_recording_items_by_position()` 内容特征override归source | 2026-07-16 |
 | 23 | 横向核对单数量跨item错位(重量对/件套错位) | `pdf_parser.py::extract_pre_recording_items_horizontal()` 项号x区间归位 | 2026-07-20 |
+| 24 | 预录单提取重构(分类器+独立提取器两层架构) | `pdf_parser.py::classify_pre_recording_layout` + `extract_pre_recording_standard_vertical` | 2026-07-21 |
 
 **架构性历史项（不在 fix-log 序列）**：
 - **A. 预录单「仅供核对用」格式必须用 span 坐标提取**——两层策略：位置感知 + 文本兜底
@@ -234,6 +235,24 @@
 - **影响**：`pdf_parser.py::extract_pre_recording_items_horizontal`（数量归位段重写）；标准纵向预录单不受影响（horizontal 函数找不到项号 anchor 时返回 []，dispatch 回退到 `extract_pre_recording_items_by_position` 标准路径）
 - **验证**：J18632B-125箱 `quantity_unit` 10 fail→0 fail（汇总 202→209 pass / 10→3 fail，剩 3 fail 是 product_code 截断 + 规格串顺序的其他已知问题）；J18632B-241箱 344 pass / 0 fail；预录单-6（标准纵向）horizontal 不触发，quantity_unit 正常
 - **关联**：#19 引入横向提取时用 idx+去重 处理"重复渲染"，当时仅 0060228GDM 1 份样本验证（恰好无跨 item 同值），未覆盖"跨 item 同值"和"同 item 多 span"两种情况。本坑是 #19 的后继完善
+
+### #24. 预录单商品提取重构：格式分类器 + 独立提取器（两层架构，非 bug 修复）
+- **日期**：2026-07-21
+- **现象**：（架构改进，非 bug）`extract_pre_recording_items_by_position` 525 行单函数把"格式判别 + 三种格式（横向倒排/纵向布局/标准纵向）的提取逻辑"全混在一起，开头还"尝试性"先调一次 horizontal 探路。改一种格式要通读全文确定影响面——`#19→#23`、`#21→#22` 都是改一种格式时碰了共享代码
+- **根因**：缺"格式分类"抽象层，判别与提取耦合在一个函数
+- **修复**：拆为两层架构——
+  - `classify_pre_recording_layout(page_info, spans) → "horizontal" / "standard_vertical"`（判据复用 `_find_horizontal_item_anchor`，与 horizontal 提取器共用，保证等价）
+  - `extract_pre_recording_standard_vertical(page_info, spans)`（原主逻辑整体搬入，含 vertical_layout 二级 dispatch）
+  - `extract_pre_recording_items_by_position` 瘦身为 classify + dispatch + 安全网（~12 行）
+  - `_find_horizontal_item_anchor(spans)` 从 horizontal 抽出，分类器与 horizontal 共用，消除重构前 horizontal 被白跑一次的开销
+  - 删除死代码 `extract_pre_recording_items_by_grid`（horizontal 前身，全仓库无调用）
+- **关键决策**：
+  - **保守方案**：分类器只判 horizontal（判据明确可复用），vertical_layout 保留在 standard_vertical 内部二级 dispatch——其轻量判据（同 x 找≥3 列头关键词）与现状 `col_positions<3` 的等价性在 5 样本上无法验证（样本无 vertical_layout 页面），不引入未验证判据
+  - **安全网**：分类器判 horizontal 但提取空时回退 standard_vertical，完整保留"尝试性 dispatch"语义，分类器失误时不比现状差
+  - **渐进 5 步**（每步 regress.py 全 PASS 才进下一步）：A 抽 anchor → B 抽 standard_vertical → C spans 透传 → D 接入分类器 → E 删死代码
+- **影响**：`pdf_parser.py`（新增 3 函数、改 2 函数、删 1 函数）；`field_extractor.py` 不动（4 处调用签名/行为不变）
+- **验证**：5 步全程 `tests/regress.py` 全 5 样本"无变化"，提取结果零变化——这正是"重构无回归"的证据
+- **关联**：回归基线（`tests/regress.py`，#23 同批建立）让重构可验证；回答用户"为什么总出错"的架构对策——降低单次修复爆炸半径，改一种格式只动对应提取器
 
 ---
 

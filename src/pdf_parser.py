@@ -956,131 +956,16 @@ def _split_name_and_spec(name_entries):
     return product_name, " ".join(p for p in spec_parts if p)
 
 
-def extract_pre_recording_items_by_grid(page_info: PageInfo) -> list:
+def _find_horizontal_item_anchor(spans: list):
+    """横向倒排核对单的项号 anchor 检测（分类器与 horizontal 提取器共用，保证判据等价）。
+
+    纯小整数 span 按 y 聚类(容差5)，找"≥2 个连续整数(相邻差 1 或 2)且 y 最大(倒排底部)"的簇。
+    返回 [(no_int, x), ...] 已按 num 升序；找不到返回 None。
+
+    判据不能简化为"页面底部 y>X 有连续整数"——标准纵向预录单的项号 01/02/03 也是连续
+    整数，只是分散在不同 y；必须用 y 聚类 + 同簇≥2 连续整数 才能区分。成本 O(n²) 但
+    n<500，毫秒级。详见 docs/memory.md #19。
     """
-    核对单「字段分层 + x 列分布」商品明细提取（如 0060228GDM 这类无"仅供核对"
-    标记的核对单变体）。项号(1,2,3...)横向排列，每个商品占一个 x 列；编号/名称/
-    规格/数量/价格各自在不同 y 层，按项号的 x 区间归位。详见 docs/memory.md #16。
-    """
-    spans = extract_spans_with_positions(page_info)
-    if not spans:
-        return []
-
-    # 按 y 分行（容差 3）
-    rows = {}
-    for s in spans:
-        rows.setdefault(round(s["y"] / 3) * 3, []).append(s)
-
-    # 项号层：含从 1 起连续小整数的行
-    anchor_items = []
-    for yk in sorted(rows.keys()):
-        nums = [(s["x"], int(s["text"])) for s in rows[yk]
-                if re.match(r"^\d{1,3}$", s["text"].strip())]
-        nums.sort()
-        vals = [n for _, n in nums]
-        if len(vals) >= 2 and vals == list(range(1, len(vals) + 1)):
-            anchor_items = [{"item_no": str(n), "x": x, "y": yk} for x, n in nums]
-            break
-    if len(anchor_items) < 2:
-        return []
-
-    # 编号层：8-10 位数字密集的行（用于名称 y 锚定）
-    code_y = anchor_items[0]["y"]
-    for yk in sorted(rows.keys()):
-        if len([s for s in rows[yk] if re.match(r"^\d{8,10}$", s["text"].strip())]) >= 2:
-            code_y = yk
-            break
-
-    # 算每个 item 的 x 区间（相邻锚点中点）
-    xs = [it["x"] for it in anchor_items]
-    for i, it in enumerate(anchor_items):
-        left = (xs[i - 1] + xs[i]) / 2 if i > 0 else xs[0] - (xs[1] - xs[0]) / 2
-        right = (xs[i] + xs[i + 1]) / 2 if i < len(xs) - 1 else xs[-1] + (xs[-1] - xs[-2]) / 2
-        it["xrange"] = (left, right)
-        it["code"] = it["spec"] = ""
-        it["quantities"] = []
-        it["prices"] = []
-        it["name_cands"] = []
-
-    _labels = {
-        "境内发货人", "境外收货人", "生产销售单位", "合同协议号", "出境关别", "运输方式",
-        "监管方式", "贸易国（地区）", "贸易国(地区)", "运抵国（地区）", "运抵国(地区)", "指运港",
-        "离境口岸", "包装种类", "件数", "毛重(千克)", "毛重（千克）", "净重(千克)", "净重（千克）",
-        "成交方式", "征免性质", "随附单证及编号", "标记唛码及备注", "征免", "境内货源地",
-        "最终目的国(地区)", "最终目的国（地区）", "原产国(地区)", "原产国（地区）", "数量及单位",
-        "单价/总价/币制", "商品名称及规格型号", "商品编号", "项号", "备案号", "申报日期",
-        "出口日期", "提运单号", "运输工具名称及航次号", "许可证号", "杂费", "保费", "运费",
-        "申报单位", "报关人员", "海关编号", "预录入编号", "照章征税", "一般征税", "一般贸易",
-        "中国", "中国香港", "加拿大", "人民币", "CNY", "盐田", "先出后结", "无品牌", "N/M", "备注",
-    }
-    UNIT_RE = re.compile(r"(个|件|千克|公斤|吨|克|套|台|张|米|盒|包)$")
-
-    def _find(x):
-        for it in anchor_items:
-            if it["xrange"][0] <= x < it["xrange"][1]:
-                return it
-        return None
-
-    anchor_y = anchor_items[0]["y"]
-    for s in spans:
-        t = s["text"].strip()
-        if not t or abs(s["y"] - anchor_y) < 5:
-            continue
-        clean = re.sub(r"\([A-Za-z0-9]+\)", "", t).strip()
-        if t in _labels or clean in _labels:
-            continue
-        it = _find(s["x"])
-        if not it:
-            continue
-        if re.match(r"^\d{8,10}$", t):
-            if not it["code"]:
-                it["code"] = t
-        elif PRICE_RE.match(t) and "." in t:
-            try:
-                it["prices"].append((float(t.replace(",", "")), t))
-            except ValueError:
-                pass
-        elif UNIT_RE.search(t):
-            it["quantities"].append(t)
-        elif "|" in t:
-            it["spec"] = (it["spec"] + " " + t).strip() if it["spec"] else t
-        elif re.search(r"[一-鿿]", t) and len(t) <= 12:
-            it["name_cands"].append((abs(s["y"] - code_y), t))
-
-    result = []
-    for it in anchor_items:
-        ps = sorted(it["prices"])
-        unit_price = ps[0][1] if ps else ""
-        total_price = ps[-1][1] if ps else ""
-        name = min(it["name_cands"])[1] if it["name_cands"] else ""
-        spec = (name + "|" + it["spec"]).strip("|") if name else it["spec"]
-        result.append({
-            "item_no": it["item_no"],
-            "product_code": it["code"],
-            "product_name": name,
-            "product_name_spec": spec,
-            "quantity_unit": " / ".join(it["quantities"]),
-            "unit_price": unit_price,
-            "total_price": total_price,
-        })
-    return [r for r in result if not _is_empty_item(r)]
-
-
-def extract_pre_recording_items_horizontal(page_info: PageInfo) -> list:
-    """
-    横向倒排"仅供核对用"格式商品提取（如 0060228GDM 录入单）。
-
-    与标准预录单相反，该格式：项号(1,2,3..)印在页面底部，各字段数据印在项号
-    **上方**；每个商品横向占一**列**(x)，多列并排；列头标签纵向分散在不同 y。
-    老的 extract_pre_recording_items_by_position 假设"表头同行+数据在下"对此失效。
-    本函数：用项号数据行的 x 定列 → 上方数据按列聚合 → 列内按文本模式+y 识别字段。
-    详见 docs/memory.md #15。
-    """
-    spans = extract_spans_with_positions(page_info)
-    if not spans:
-        return []
-
-    # 1. 找项号锚点：纯小整数 spans 按 y 聚类，选"≥2 个连续整数且 y 最大(倒排底部)"的组
     int_spans = [s for s in spans if re.match(r"^\d{1,3}$", s["text"].strip())]
     y_clusters = []
     for s in int_spans:
@@ -1090,20 +975,36 @@ def extract_pre_recording_items_horizontal(page_info: PageInfo) -> list:
                 break
         else:
             y_clusters.append({"y": s["y"], "spans": [s]})
-
-    anchor = None  # [(no, x), ...] 已按 x 排序
     for c in sorted(y_clusters, key=lambda k: -k["y"]):
         vals = sorted((int(s["text"]), s["x"]) for s in c["spans"])
         nums = [v[0] for v in vals]
         if len(nums) >= 2 and all(nums[i + 1] - nums[i] in (1, 2) for i in range(len(nums) - 1)):
-            anchor = vals
-            break
+            return vals
+    return None
+
+
+def extract_pre_recording_items_horizontal(page_info: PageInfo, spans: list = None) -> list:
+    """
+    横向倒排"仅供核对用"格式商品提取（如 0060228GDM 录入单）。
+
+    与标准预录单相反，该格式：项号(1,2,3..)印在页面底部，各字段数据印在项号
+    **上方**；每个商品横向占一**列**(x)，多列并排；列头标签纵向分散在不同 y。
+    老的 extract_pre_recording_items_by_position 假设"表头同行+数据在下"对此失效。
+    本函数：用项号数据行的 x 定列 → 上方数据按列聚合 → 列内按文本模式+y 识别字段。
+    详见 docs/memory.md #15。
+    """
+    if spans is None:
+        spans = extract_spans_with_positions(page_info)
+    if not spans:
+        return []
+
+    anchor = _find_horizontal_item_anchor(spans)
     if not anchor:
         return []  # 不是横向倒排格式（标准预录单项号分散在不同 y，不会聚到同一簇）
 
     centers = [a[1] for a in anchor]
-    item_y = next(s["y"] for s in int_spans
-                  if int(s["text"]) == anchor[0][0] and abs(s["x"] - anchor[0][1]) < 5)
+    item_y = next(s["y"] for s in spans
+                  if s["text"].strip() == str(anchor[0][0]) and abs(s["x"] - anchor[0][1]) < 5)
 
     # 2. 列边界 = 相邻列中心的中点
     bounds = []
@@ -1267,17 +1168,16 @@ def extract_pre_recording_items_horizontal(page_info: PageInfo) -> list:
     return [it for it in items if not _is_empty_item(it)]
 
 
-def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
+def extract_pre_recording_standard_vertical(page_info: PageInfo, spans: list = None) -> list:
     """
-    用位置感知方式从预录单中提取商品明细
-    动态检测列位置：从表头行读取各列的 x 坐标，不依赖固定值
+    标准纵向预录单商品提取（原 extract_pre_recording_items_by_position 主逻辑）。
+
+    排版：表头行横向排列（项号/商品编号/商品名称...同一 y），数据在下方按行排列。
+    含内部 vertical_layout 二级 dispatch（col_positions<3 时回退
+    _extract_items_vertical_layout）。改某种格式时只动对应提取器，不碰别的。
     """
-    spans = extract_spans_with_positions(page_info)
-    # 横向倒排"仅供核对用"格式（项号在底部、数据在上方、每商品占一列）：
-    # 老逻辑假设"表头同行+数据在下"会完全失效。先尝试横向提取，命中则直接返回。
-    _h = extract_pre_recording_items_horizontal(page_info)
-    if _h:
-        return _h
+    if spans is None:
+        spans = extract_spans_with_positions(page_info)
 
 
     # ---- 第一步：找到表头行并提取列位置 ----
@@ -1791,3 +1691,39 @@ def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
 
     items = [it for it in items if not _is_empty_item(it)]
     return items
+
+
+def classify_pre_recording_layout(page_info: PageInfo, spans: list = None) -> str:
+    """预录单格式分类器（两层架构的"格式判别"层）。
+
+    返回 "horizontal" / "standard_vertical"。判据复用 _find_horizontal_item_anchor
+    （与 horizontal 提取器共用，保证分类器判据与提取器完全等价）。判据不能简化为
+    "页面底部 y>X 有连续整数"——标准纵向项号 01/02/03 也是连续整数，必须 y 聚类
+    区分（详见 docs/memory.md #19）。
+
+    vertical_layout 不进分类器：其轻量判据（同 x 找≥3 列头关键词）与现状
+    col_positions<3 的等价性在现有 5 样本上无法验证（样本里可能没有 vertical_layout
+    页面）。保留在 standard_vertical 内部二级 dispatch，零回归风险。
+    """
+    if spans is None:
+        spans = extract_spans_with_positions(page_info)
+    if _find_horizontal_item_anchor(spans) is not None:
+        return "horizontal"
+    return "standard_vertical"
+
+
+def extract_pre_recording_items_by_position(page_info: PageInfo) -> list:
+    """
+    预录单商品提取主入口（格式分类器 + 独立提取器两层架构）。
+
+    classify_pre_recording_layout 判格式 → dispatch 到对应提取器；分类器判错时
+    安全网回退 standard_vertical（最坏情况和重构前一致）。横向走
+    extract_pre_recording_items_horizontal，其余走 extract_pre_recording_standard_vertical
+    （内含 vertical_layout 二级 dispatch）。
+    """
+    spans = extract_spans_with_positions(page_info)
+    if classify_pre_recording_layout(page_info, spans) == "horizontal":
+        items = extract_pre_recording_items_horizontal(page_info, spans)
+        if items:  # 安全网：分类器误判（判 horizontal 但提取空）时回退 standard_vertical
+            return items
+    return extract_pre_recording_standard_vertical(page_info, spans)
