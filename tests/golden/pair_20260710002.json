@@ -1,0 +1,2276 @@
+{
+  "contract_no": {
+    "customs": "20260710002",
+    "pre": "20260710002",
+    "matched": true
+  },
+  "summary": {
+    "pass_count": 344,
+    "fail_count": 0,
+    "fuzzy_count": 0,
+    "manual_count": 5
+  },
+  "header_fields": [
+    {
+      "field_id": "sender_unit",
+      "customs_value": "深圳市德拉姆供应链有限公司",
+      "pre_value": "深圳市德拉姆供应链有限公司",
+      "status": "pass"
+    },
+    {
+      "field_id": "buyer",
+      "customs_value": "DELAMU (HONG KONG) LIMITED",
+      "pre_value": "DELAMU (HONG KONG) LIMITED",
+      "status": "pass"
+    },
+    {
+      "field_id": "business_unit",
+      "customs_value": "深圳市德拉姆供应链有限公司",
+      "pre_value": "深圳市德拉姆供应链有限公司",
+      "status": "pass"
+    },
+    {
+      "field_id": "contract_no",
+      "customs_value": "20260710002",
+      "pre_value": "20260710002",
+      "status": "pass"
+    },
+    {
+      "field_id": "package_type",
+      "customs_value": "纸制或纤维板制盒/箱",
+      "pre_value": "(22)纸制或纤维板制盒/箱",
+      "status": "pass"
+    },
+    {
+      "field_id": "transport_mode",
+      "customs_value": "海卡",
+      "pre_value": "水路运输",
+      "status": "manual"
+    },
+    {
+      "field_id": "trade_mode",
+      "customs_value": "一般贸易",
+      "pre_value": "(0110)一般贸易",
+      "status": "pass"
+    },
+    {
+      "field_id": "trade_country",
+      "customs_value": "(地区)",
+      "pre_value": "(HKG)中国香港",
+      "status": "pass"
+    },
+    {
+      "field_id": "quantity",
+      "customs_value": "241",
+      "pre_value": "241",
+      "status": "pass"
+    },
+    {
+      "field_id": "gross_weight",
+      "customs_value": "3210",
+      "pre_value": "3210",
+      "status": "pass"
+    },
+    {
+      "field_id": "net_weight",
+      "customs_value": "2969",
+      "pre_value": "2969",
+      "status": "pass"
+    },
+    {
+      "field_id": "deal_mode",
+      "customs_value": "FOB",
+      "pre_value": "(3)FOB",
+      "status": "pass"
+    },
+    {
+      "field_id": "duty_nature",
+      "customs_value": "一般征税",
+      "pre_value": "(101)一般征税",
+      "status": "pass"
+    },
+    {
+      "field_id": "dest_country",
+      "customs_value": "加拿大",
+      "pre_value": "加拿大",
+      "status": "pass"
+    },
+    {
+      "field_id": "dest_port",
+      "customs_value": "加拿大",
+      "pre_value": "加拿大",
+      "status": "pass"
+    },
+    {
+      "field_id": "exit_customs",
+      "customs_value": "",
+      "pre_value": "大鹏海关",
+      "status": "manual"
+    },
+    {
+      "field_id": "exit_port",
+      "customs_value": "",
+      "pre_value": "盐田",
+      "status": "manual"
+    },
+    {
+      "field_id": "attached_docs",
+      "customs_value": "",
+      "pre_value": "随附单证1:",
+      "status": "manual"
+    },
+    {
+      "field_id": "marks_remarks",
+      "customs_value": "备注:",
+      "pre_value": "- N/M",
+      "status": "manual"
+    }
+  ],
+  "items": [
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3924900000",
+          "pre_value": "3924900000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "收纳盒|境内自主品牌|不确定是否享惠|家用|PET|DELAMU 牌|无型号",
+          "pre_value": "收纳盒|1|2|家用|PET|DELAMU牌|无型号",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "44千克 / 28套",
+          "pre_value": "44千克 / 28套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "39.0700",
+          "pre_value": "39.0700",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "1093.96",
+          "pre_value": "1093.96",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "台州照章征税",
+          "pre_value": "台州",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3926909090",
+          "pre_value": "3926909090",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：24MM*12MM*36CM，4 根装",
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||规格: 24MM*12MM*36CM，4根装",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "60千克 / 216套",
+          "pre_value": "60千克 / 216套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "5.6400",
+          "pre_value": "5.6400",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "1218.24",
+          "pre_value": "1218.24",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3924900000",
+          "pre_value": "3924900000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用 |50%PET+40%ABS+10%铝合金|DELAMU牌|无型号",
+          "pre_value": "置物架|1|2|家用|50%PET+40%ABS+10%铝合金|DELAMU牌|无型号",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "61千克 / 30件",
+          "pre_value": "61千克 / 30件",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "42.7600",
+          "pre_value": "42.7600",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "1282.80",
+          "pre_value": "1282.80",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "宁波其他照章征税",
+          "pre_value": "宁波其他",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3926909090",
+          "pre_value": "3926909090",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：24MM*14MM*40CM，",
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||规格: 24MM*14MM*40CM，15根装",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "15根装 / 15千克 / 15套",
+          "pre_value": "15千克 / 15套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "21.0400",
+          "pre_value": "21.0400",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "315.60",
+          "pre_value": "315.60",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "9403200000",
+          "pre_value": "9403200000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|99%铁+1%塑 料|DELAMU牌|规格:91.7*42.3*18.2CM",
+          "pre_value": "置物架|1|2|家用|99%铁+1%塑料|DELAMU牌|91.7*42.3*18.2CM",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "340千克 / 100件",
+          "pre_value": "100件 / 100件 / 340千克",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "78.1300",
+          "pre_value": "78.1300",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "7813.00",
+          "pre_value": "7813.00",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "中山其他照章征税",
+          "pre_value": "中山其他",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "7323990000",
+          "pre_value": "7323990000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "锅架|境内自主品牌|不确定是否享惠|厨房收纳用|铁|未 搪瓷|ORDORA牌",
+          "pre_value": "锅架|1|2|厨房收纳用|铁|未搪瓷|ORDORA牌",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "36千克 / 48套",
+          "pre_value": "36千克 / 48套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "18.9100",
+          "pre_value": "18.9100",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "907.68",
+          "pre_value": "907.68",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3924900000",
+          "pre_value": "3924900000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|PET+ABS+铁 |DELAMU牌|无型号",
+          "pre_value": "置物架|1|2|家用|PET+ABS+铁|DELAMU牌|无型号",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "25千克 / 12件",
+          "pre_value": "25千克 / 12件",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "32.4100",
+          "pre_value": "32.4100",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "388.92",
+          "pre_value": "388.92",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "台州照章征税",
+          "pre_value": "台州",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "收纳箱|境内自主品牌|不确定是否享惠|收纳箱|牛津布+铁 +塑料|YECAYE牌|无款号|3个装",
+          "pre_value": "收纳箱|1|2|收纳箱|牛津布+铁+塑料|YECAYE牌|无款号|||3个装",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "244千克 / 75件",
+          "pre_value": "244千克 / 75件 / 75个",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "55.1800",
+          "pre_value": "55.1800",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "4138.50",
+          "pre_value": "4138.50",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "金华照章征税",
+          "pre_value": "金华",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3926909090",
+          "pre_value": "3926909090",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：17mm*30mm*40cm，",
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||规格: 17mm*30mm*40cm，10根装",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "10根装 / 20千克 / 21套",
+          "pre_value": "20千克 / 21套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "17.9000",
+          "pre_value": "17.9000",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "375.90",
+          "pre_value": "375.90",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3926909090",
+          "pre_value": "3926909090",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "锅架|境内自主品牌|不确定是否享惠|厨房收纳用|ABS+ 不锈钢|ORDORA牌|无型号",
+          "pre_value": "锅架|1|2|厨房收纳用|ABS+不锈钢|ORDORA牌|无型号",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "37千克 / 44套",
+          "pre_value": "37千克 / 44套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "20.8400",
+          "pre_value": "20.8400",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "916.96",
+          "pre_value": "916.96",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "温州其他照章征税",
+          "pre_value": "温州其他",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "7323990000",
+          "pre_value": "7323990000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "锅架|境内自主品牌|不确定是否享惠|厨房收纳用|97%铁 +3%塑料|未搪瓷|ORDORA牌",
+          "pre_value": "锅架|1|2|厨房收纳用|97%铁+3%塑料|未搪瓷|ORDORA牌",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "99千克 / 48套",
+          "pre_value": "99千克 / 48套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "26.3300",
+          "pre_value": "26.3300",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "1263.84",
+          "pre_value": "1263.84",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3926909090",
+          "pre_value": "3926909090",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：24MM*14MM*36CM，6 根装",
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||规格: 24MM*14MM*36CM，6根装",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "77千克 / 210套",
+          "pre_value": "77千克 / 210套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "9.4000",
+          "pre_value": "9.4000",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "1974.00",
+          "pre_value": "1974.00",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "8215200000",
+          "pre_value": "8215200000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "烧烤夹|境内自主品牌|不确定是否享惠|烧烤用|95%不锈钢 +5%木制把手|不是镀贵金属|成套|ORDORA牌|无型 号",
+          "pre_value": "烧烤夹|1|2|烧烤用|95%不锈钢+5%木制把手|不是镀贵金属|成套 |ORDORA牌|无型号",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "122千克 / 150套",
+          "pre_value": "122千克 / 150套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "24.7900",
+          "pre_value": "24.7900",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "3718.50",
+          "pre_value": "3718.50",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "金华照章征税",
+          "pre_value": "金华",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3926909090",
+          "pre_value": "3926909090",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：17MM*30MM*36CM，2 根装",
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||规格: 17MM*30MM*36CM，2根装",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "10千克 / 72套",
+          "pre_value": "10千克 / 72套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "3.6100",
+          "pre_value": "3.6100",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "259.92",
+          "pre_value": "259.92",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3926909090",
+          "pre_value": "3926909090",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：14mm*24mm*40cm，",
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||规格: 14mm*24mm*40cm，10根装",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "10根装 / 322千克 / 475套",
+          "pre_value": "322千克 / 475套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "13.5100",
+          "pre_value": "13.5100",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "6417.25",
+          "pre_value": "6417.25",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "7323930000",
+          "pre_value": "7323930000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "碗碟架|境内自主品牌|不确定是否享惠|厨房用|80%不锈钢 +20%PP|未搪瓷|Pantasia牌",
+          "pre_value": "碗碟架|1|2|厨房用|80%不锈钢+20%PP|未搪瓷|Pantasia牌",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "91千克 / 42件",
+          "pre_value": "91千克 / 42件",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "54.5000",
+          "pre_value": "54.5000",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "2289.00",
+          "pre_value": "2289.00",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "7323990000",
+          "pre_value": "7323990000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "锅架|境内自主品牌|不确定是否享惠|厨房收纳用|95%铁 +5%塑料|未搪瓷|ORDORA牌",
+          "pre_value": "锅架|1|2|厨房收纳用|95%铁+5%塑料|未搪瓷|ORDORA牌",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "121千克 / 63套",
+          "pre_value": "121千克 / 63套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "34.7300",
+          "pre_value": "34.7300",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "2187.99",
+          "pre_value": "2187.99",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "金华照章征税",
+          "pre_value": "金华",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3926909090",
+          "pre_value": "3926909090",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：30MM*17MM*40CM，",
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||规格: 30MM*17MM*40CM，15根装",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "15根装 / 16千克 / 12套",
+          "pre_value": "16千克 / 12套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "25.4200",
+          "pre_value": "25.4200",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "305.04",
+          "pre_value": "305.04",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3924900000",
+          "pre_value": "3924900000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|PET+铝 |DELAMU牌|无型号",
+          "pre_value": "置物架|1|2|家用|PET+铝|DELAMU牌|无型号",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "71千克 / 24件",
+          "pre_value": "71千克 / 24件",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "65.5400",
+          "pre_value": "65.5400",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "1572.96",
+          "pre_value": "1572.96",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "宁波其他照章征税",
+          "pre_value": "宁波其他",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "7323990000",
+          "pre_value": "7323990000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "锅架|境内自主品牌|不确定是否享惠|厨房收纳用|97%铁 +3%塑料|未搪瓷|ORDORA牌",
+          "pre_value": "锅架|1|2|厨房收纳用|97%铁+3%塑料|未搪瓷|ORDORA牌",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "376千克 / 174套",
+          "pre_value": "376千克 / 174套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "25.6600",
+          "pre_value": "25.6600",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "4464.84",
+          "pre_value": "4464.84",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "金华照章征税",
+          "pre_value": "金华",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3926909090",
+          "pre_value": "3926909090",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：14MM*24MM*40CM，",
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||规格: 14MM*24MM*40CM，10根装",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "10根装 / 17千克 / 25套",
+          "pre_value": "17千克 / 25套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "16.4200",
+          "pre_value": "16.4200",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "410.50",
+          "pre_value": "410.50",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3926909090",
+          "pre_value": "3926909090",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：12MM*8MM*36CM，9 根装",
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||规格: 12MM*8MM*36CM，9根装",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "35千克 / 150套",
+          "pre_value": "35千克 / 150套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "5.0600",
+          "pre_value": "5.0600",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "759.00",
+          "pre_value": "759.00",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3924900000",
+          "pre_value": "3924900000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|PET+铝 |DELAMU牌|无型号",
+          "pre_value": "置物架|1|2|家用|PET+铝|DELAMU牌|无型号",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "62千克 / 20件",
+          "pre_value": "62千克 / 20件",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "62.2200",
+          "pre_value": "62.2200",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "1244.40",
+          "pre_value": "1244.40",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "宁波其他照章征税",
+          "pre_value": "宁波其他",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "9403200000",
+          "pre_value": "9403200000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|铁+塑料 |LAMU牌|规格:30.4*30.4*5.4CM",
+          "pre_value": "置物架|1|2|家用|铁+塑料|LAMU牌|30.4*30.4*5.4CM",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "26千克 / 18件",
+          "pre_value": "18件 / 18件 / 26千克",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "36.1800",
+          "pre_value": "36.1800",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "651.24",
+          "pre_value": "651.24",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3924900000",
+          "pre_value": "3924900000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|PET+铝 |DELAMU牌|无型号",
+          "pre_value": "置物架|1|2|家用|PET+铝|DELAMU牌|无型号",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "62千克 / 20件",
+          "pre_value": "62千克 / 20件",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "62.2200",
+          "pre_value": "62.2200",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "1244.40",
+          "pre_value": "1244.40",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "宁波其他照章征税",
+          "pre_value": "宁波其他",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3924900000",
+          "pre_value": "3924900000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用 |50%PET+40%ABS+10%铝合金|DELAMU牌|无型号",
+          "pre_value": "置物架|1|2|家用|50%PET+40%ABS+10%铝合金|DELAMU牌|无型号",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "120千克 / 30件",
+          "pre_value": "120千克 / 30件",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "86.4900",
+          "pre_value": "86.4900",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "2594.70",
+          "pre_value": "2594.70",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "宁波其他照章征税",
+          "pre_value": "宁波其他",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3918109000",
+          "pre_value": "3918109000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "地板垫|境内自主品牌|不确定是否享惠|PVC|YECAYE牌|无 型号|保护地板|91.44*121.92*0.17cm",
+          "pre_value": "地板垫|1|2|PVC|YECAYE牌|无型号|保护地板|||规格: 91.44*121.92*0.17cm",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "130千克 / 60个",
+          "pre_value": "130千克 / 60个",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "32.7000",
+          "pre_value": "32.7000",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "1962.00",
+          "pre_value": "1962.00",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "佛山其他照章征税",
+          "pre_value": "佛山其他",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "7323990000",
+          "pre_value": "7323990000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|厨房收纳用|铁|未 搪瓷|ORDORA牌",
+          "pre_value": "置物架|1|2|厨房收纳用|铁|未搪瓷|ORDORA牌",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "32千克 / 20件",
+          "pre_value": "32千克 / 20件",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "23.3500",
+          "pre_value": "23.3500",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "467.00",
+          "pre_value": "467.00",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "金华照章征税",
+          "pre_value": "金华",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3926909090",
+          "pre_value": "3926909090",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：40CM*3CM*1.7CM，",
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||规格: 40CM*3CM*1.7CM，10根装",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "10根装 / 20千克 / 21套",
+          "pre_value": "20千克 / 21套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "18.0800",
+          "pre_value": "18.0800",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "379.68",
+          "pre_value": "379.68",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "3926909090",
+          "pre_value": "3926909090",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "锅架|境内自主品牌|不确定是否享惠|厨房收纳用|ABS+ 不锈钢|Pantasia牌|无型号",
+          "pre_value": "锅架|1|2|厨房收纳用|ABS+不锈钢|Pantasia牌|无型号",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "20千克 / 24套",
+          "pre_value": "20千克 / 24套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "18.7200",
+          "pre_value": "18.7200",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "449.28",
+          "pre_value": "449.28",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "台州照章征税",
+          "pre_value": "台州",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "7323930000",
+          "pre_value": "7323930000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "碗碟架|境内自主品牌|不确定是否享惠|厨房用|80%不锈钢 +20%PP|未搪瓷|Pantasia牌",
+          "pre_value": "碗碟架|1|2|厨房用|80%不锈钢+20%PP|未搪瓷|Pantasia牌",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "176千克 / 81件",
+          "pre_value": "176千克 / 81件",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "54.5000",
+          "pre_value": "54.5000",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "4414.50",
+          "pre_value": "4414.50",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "东莞照章征税",
+          "pre_value": "东莞",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "7323990000",
+          "pre_value": "7323990000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "锅架|境内自主品牌|不确定是否享惠|厨房收纳用|铁|未 搪瓷|ORDORA牌",
+          "pre_value": "锅架|1|2|厨房收纳用|铁|未搪瓷|ORDORA牌",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "33千克 / 80套",
+          "pre_value": "33千克 / 80套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "10.6100",
+          "pre_value": "10.6100",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "848.80",
+          "pre_value": "848.80",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "金华照章征税",
+          "pre_value": "金华",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "item_no": "",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "7323990000",
+          "pre_value": "7323990000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "锅架|境内自主品牌|不确定是否享惠|厨房收纳用|铁|未 搪瓷|ORDORA牌",
+          "pre_value": "锅架|1|2|厨房收纳用|铁|未搪瓷|ORDORA牌",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "49千克 / 60套",
+          "pre_value": "49千克 / 60套",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "19.7700",
+          "pre_value": "19.7700",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "1186.20",
+          "pre_value": "1186.20",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国 (CHN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "加拿大",
+          "pre_value": "加拿大 (CAN)",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "金华照章征税",
+          "pre_value": "金华",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税 (1)",
+          "status": "pass"
+        }
+      ]
+    }
+  ]
+}

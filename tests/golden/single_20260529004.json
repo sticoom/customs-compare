@@ -1,0 +1,26 @@
+{
+  "doc_types": [
+    "customs_declaration",
+    "contract",
+    "packing_list",
+    "invoice",
+    "unknown"
+  ],
+  "items": [
+    {
+      "item_no": "1",
+      "product_code": "7323930000",
+      "product_name": "碗碟架",
+      "spec_model": "境内自主品牌|不确定是否享惠|厨房用|不锈钢+PP|未 搪瓷|Pantasia牌",
+      "quantity_unit": "18件 / 50千克",
+      "dest_country": "澳大利亚",
+      "unit_price": "66.65",
+      "total_price": "1199.7",
+      "currency": "人民币",
+      "domestic_source": "",
+      "duty_exemption": "照章",
+      "final_dest_country": "澳大利亚",
+      "origin_country": "东莞"
+    }
+  ]
+}
