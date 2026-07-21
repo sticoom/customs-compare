@@ -292,8 +292,11 @@ def _parse_customs_item_content(item_no: str, product_code: str, content: str) -
         if len(tail) >= 2 and not item.get("dest_country"):
             item["dest_country"] = tail[1]
             item["final_dest_country"] = tail[1]
-        if len(tail) >= 3 and not item.get("domestic_source"):
-            item["domestic_source"] = tail[2]
+        # 货源地总在征免行紧前（tail 最后一个元素），不依赖固定位置——
+        # 不同报关单格式币制行后字段数不同：20260625 是 [原产国,目的国,货源地]（3 行），
+        # 20260612 是 [货源地]（1 行，目的国"美国"在 CNY 之前单独成行）。tail[-1] 统一覆盖。
+        if tail and not item.get("domestic_source"):
+            item["domestic_source"] = tail[-1]
 
     # 提取征免
     if "照章" in content:

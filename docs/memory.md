@@ -34,6 +34,7 @@
 | 22 | 预录单货源地长地名误归目的国列(domestic_source空) | `pdf_parser.py::extract_pre_recording_items_by_position()` 内容特征override归source | 2026-07-16 |
 | 23 | 横向核对单数量跨item错位(重量对/件套错位) | `pdf_parser.py::extract_pre_recording_items_horizontal()` 项号x区间归位 | 2026-07-20 |
 | 24 | 预录单提取重构(分类器+独立提取器两层架构) | `pdf_parser.py::classify_pre_recording_layout` + `extract_pre_recording_standard_vertical` | 2026-07-21 |
+| 25 | 报关单货源地漏提(币制行后字段数不固定) | `field_extractor.py::_parse_customs_item_content` tail[-1] | 2026-07-21 |
 
 **架构性历史项（不在 fix-log 序列）**：
 - **A. 预录单「仅供核对用」格式必须用 span 坐标提取**——两层策略：位置感知 + 文本兜底
@@ -253,6 +254,15 @@
 - **影响**：`pdf_parser.py`（新增 3 函数、改 2 函数、删 1 函数）；`field_extractor.py` 不动（4 处调用签名/行为不变）
 - **验证**：5 步全程 `tests/regress.py` 全 5 样本"无变化"，提取结果零变化——这正是"重构无回归"的证据
 - **关联**：回归基线（`tests/regress.py`，#23 同批建立）让重构可验证；回答用户"为什么总出错"的架构对策——降低单次修复爆炸半径，改一种格式只动对应提取器
+
+### #25. 报关单境内货源地漏提（币制行后字段数不固定）
+- **日期**：2026-07-21
+- **现象**：pair_20260612002 报关单全部 48 条商品 `domestic_source` 为空（预录单有"东莞"），比对 fail。是回归基线 `pair_20260612002` golden 里 fail=50 的主要成分（48/50）
+- **根因**：`_parse_customs_item_content` 用 `tail[2]` 取货源地，假设币制行（人民币/CNY）后固定 3 行 `[原产国, 目的国, 货源地]`（#20 的 20260625 格式）。但 20260612 报关单币制行后只有 `[货源地]` 1 行（目的国"美国"在 CNY 之前单独成行），`tail[2]` 越界 → 货源地空；同时 `tail[0]="东莞"` 被错塞进 `origin_country`
+- **修复**：货源地改用 `tail[-1]`（征免行紧前最后一个元素），不依赖固定位置。#20 的 3 行格式 `tail[-1]=tail[2]` 等价、20260612 的 1 行格式 `tail[-1]=tail[0]` 命中。两格式统一覆盖
+- **影响**：`field_extractor.py::_parse_customs_item_content`
+- **验证**：pair_20260612002 fail 50→2（48 货源地全修，剩 2 是表头 package_type/dest_port 另一类问题）；single_20260529004 货源地顺带修复；其他 3 样本无变化（#20 格式 `tail[-1]=tail[2]` 等价）
+- **关联**：#20 同函数同字段（货源地锚点），#20 假设固定 3 行 tail，本坑暴露字段数可变，改用 `tail[-1]` 更稳健。回归基线首次拦截到"已知格式的未覆盖变体"
 
 ---
 

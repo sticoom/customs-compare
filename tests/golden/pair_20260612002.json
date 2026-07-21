@@ -5,8 +5,8 @@
     "matched": true
   },
   "summary": {
-    "pass_count": 401,
-    "fail_count": 50,
+    "pass_count": 449,
+    "fail_count": 2,
     "fuzzy_count": 43,
     "manual_count": 5
   },
@@ -180,9 +180,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -245,9 +245,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -310,9 +310,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -375,9 +375,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -440,9 +440,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -505,9 +505,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -570,9 +570,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -635,9 +635,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -700,9 +700,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -765,9 +765,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -830,9 +830,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -895,9 +895,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -960,9 +960,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1025,9 +1025,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1090,9 +1090,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1155,9 +1155,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1220,9 +1220,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1285,9 +1285,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1350,9 +1350,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1415,9 +1415,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1480,9 +1480,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1545,9 +1545,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1610,9 +1610,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1675,9 +1675,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1740,9 +1740,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1805,9 +1805,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1870,9 +1870,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -1935,9 +1935,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2000,9 +2000,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2065,9 +2065,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2130,9 +2130,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2195,9 +2195,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2260,9 +2260,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2325,9 +2325,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2390,9 +2390,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2455,9 +2455,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2520,9 +2520,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2585,9 +2585,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2650,9 +2650,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2715,9 +2715,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2780,9 +2780,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2845,9 +2845,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2910,9 +2910,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -2975,9 +2975,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -3040,9 +3040,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -3105,9 +3105,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -3170,9 +3170,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
@@ -3235,9 +3235,9 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "",
+          "customs_value": "东莞",
           "pre_value": "东莞",
-          "status": "fail"
+          "status": "pass"
         },
         {
           "field_id": "duty_exemption",
