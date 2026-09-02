@@ -295,8 +295,15 @@ def _parse_customs_item_content(item_no: str, product_code: str, content: str) -
         # 货源地总在征免行紧前（tail 最后一个元素），不依赖固定位置——
         # 不同报关单格式币制行后字段数不同：20260625 是 [原产国,目的国,货源地]（3 行），
         # 20260612 是 [货源地]（1 行，目的国"美国"在 CNY 之前单独成行）。tail[-1] 统一覆盖。
+        # 20260902003 变体：货源地与征免同 span 渲染（如"合肥其他照章征税"），
+        # 剥离尾部征免词，否则比对时预录单"合肥其他" 对不上。
         if tail and not item.get("domestic_source"):
-            item["domestic_source"] = tail[-1]
+            src = tail[-1]
+            for w in ("照章征税", "照章", "全免", "特案减免", "保函", "自贸协定"):
+                if src.endswith(w):
+                    src = src[: -len(w)].strip()
+                    break
+            item["domestic_source"] = src
 
     # 提取征免
     if "照章" in content:

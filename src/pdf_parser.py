@@ -965,8 +965,19 @@ def _find_horizontal_item_anchor(spans: list):
     判据不能简化为"页面底部 y>X 有连续整数"——标准纵向预录单的项号 01/02/03 也是连续
     整数，只是分散在不同 y；必须用 y 聚类 + 同簇≥2 连续整数 才能区分。成本 O(n²) 但
     n<500，毫秒级。详见 docs/memory.md #19。
+
+    同 x 否决（#26）：标准纵向的项号全部在同一 x 列；横向倒排各项号各占一列、x 互不
+    相同（同列重量与项号 x 仅差 ~0.2px，每列最多 2 个同 x）。若 ≥3 个整数 span 聚在
+    同一 x，必是纵向项号列，直接判非横向——否则"项号与同 y 的单价整数巧合聚类（数值
+    恰相邻）"会误判为横向（20260902003 批次：项号 18 与单价 20 同 y=407.6）。
     """
     int_spans = [s for s in spans if re.match(r"^\d{1,3}$", s["text"].strip())]
+    xs = sorted(s["x"] for s in int_spans)
+    run = 1
+    for i in range(1, len(xs)):
+        run = run + 1 if xs[i] - xs[i - 1] < 2 else 1
+        if run >= 3:
+            return None
     y_clusters = []
     for s in int_spans:
         for c in y_clusters:

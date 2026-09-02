@@ -194,7 +194,7 @@ def diagnose(customs_path: str, pre_path: str) -> dict:
     # 商品明细比对结果
     for item in result.get("item_results", []):
         entry = {
-            "item_no": item.get("customs_item_no", item.get("pre_item_no", "")),
+            "item_no": item.get("item_no", ""),
             "fields": [],
         }
         for field in item.get("fields", []):

@@ -35,6 +35,9 @@
 | 23 | 横向核对单数量跨item错位(重量对/件套错位) | `pdf_parser.py::extract_pre_recording_items_horizontal()` 项号x区间归位 | 2026-07-20 |
 | 24 | 预录单提取重构(分类器+独立提取器两层架构) | `pdf_parser.py::classify_pre_recording_layout` + `extract_pre_recording_standard_vertical` | 2026-07-21 |
 | 25 | 报关单货源地漏提(币制行后字段数不固定) | `field_extractor.py::_parse_customs_item_content` tail[-1] | 2026-07-21 |
+| 26 | 标准纵向页被误判横向(项号与同y单价整数巧合聚类) | `pdf_parser.py::_find_horizontal_item_anchor` 同x否决 | 2026-09-02 |
+| 27 | diagnose 报告商品项号全空 | `scripts/diagnose.py` item_no 键名 | 2026-09-02 |
+| 28 | 报关单货源地粘连征免词("合肥其他照章征税") | `field_extractor.py::_parse_customs_item_content` 尾部征免剥离 | 2026-09-02 |
 
 **架构性历史项（不在 fix-log 序列）**：
 - **A. 预录单「仅供核对用」格式必须用 span 坐标提取**——两层策略：位置感知 + 文本兜底
@@ -263,6 +266,33 @@
 - **影响**：`field_extractor.py::_parse_customs_item_content`
 - **验证**：pair_20260612002 fail 50→2（48 货源地全修，剩 2 是表头 package_type/dest_port 另一类问题）；single_20260529004 货源地顺带修复；其他 3 样本无变化（#20 格式 `tail[-1]=tail[2]` 等价）
 - **关联**：#20 同函数同字段（货源地锚点），#20 假设固定 3 行 tail，本坑暴露字段数可变，改用 `tail[-1]` 更稳健。回归基线首次拦截到"已知格式的未覆盖变体"
+
+### #26. 标准纵向预录单页被误判横向（项号与同 y 单价整数巧合聚类）
+- **日期**：2026-09-02
+- **现象**：20260902003 批次预录单 4 页（1 页表头 + 3 页续页），续页 Page1（项号 8-21，标准纵向）被 `classify_pre_recording_layout` 误判为 horizontal，`extract_pre_recording_items_horizontal` 只产出 2 条残缺 item（项号 18/20：税号 3926909090 被当成单价、25 个商品的数量拼接成一坨）。比对 62 fail：项号 8-17/19/21 共 12 条商品在预录单侧永久缺失。
+- **根因**：`_find_horizontal_item_anchor` 的"y 聚类(容差5) + 同簇≥2 连续整数"判据存在巧合通道——Page1 项号 `18`(x=46.3) 与该行单价 `20`(x=437.0，"20.00" 的整数部分独立 span) **恰好同 y=407.6**，聚类成簇 [(18,46.3),(20,437.0)]，数值差 2 满足"相邻差 1 或 2"，且其余项号各自单 span 簇不成簇，该簇成为 y 最大候选 → 误返回 anchor。横向提取器按 2 个 anchor 建 2 列，产出 2 条垃圾 item；安全网只判"提取空才回退"，2 条非空直接被采用。Page2 同位置是 `822`（与项号 32 差 790 不连续）未触发——纯属侥幸。
+- **修复**：`_find_horizontal_item_anchor` 开头加**同 x 否决**——标准纵向的项号全部在同一 x 列（本例 14/16 个整数 span 都在 x=46.3），而横向倒排各项号各占一列、x 互不相同（同列重量与项号 x 仅差 ~0.2px，每列最多 2 个同 x）。整数 span 按 x 排序线性扫描，容差 2px 连续段 ≥3 即返回 None（非横向）。
+- **关键教训**： y 聚类判据隐含假设"同 y 的纯小整数 = 同一数据行的项号序列"，但标准纵向里**单价/数量行的整数部分**也会以纯小整数 span 出现，且与项号同 y。几何判据永远可能巧合，需要加一个**布局级否决条件**（同 x 多数聚集 = 纵向项号列）兜底。"提取非空"不等于"提取正确"——安全网判空挡不住残缺结果，但对本坑分类器判对后自然绕开。
+- **影响**：`pdf_parser.py::_find_horizontal_item_anchor`（+8 行否决段）；`classify_pre_recording_layout` 与 `extract_pre_recording_items_horizontal` 共用此函数，分类器与提取器同时受益。
+- **验证**：5 fixture 回归零变化（含 2 个真实横向主验证样本 J18632B pass=209/344，同 x 否决不误伤）；20260902003 Page1 正确分类 standard_vertical，14 条（项号 8-21）全部提取正确，比对 fail 62→5。
+- **关联**：#19 引入横向判据、#24 建立分类器两层架构，本坑是判据的首个巧合误判实例。
+
+### #27. diagnose 报告商品项号全空
+- **日期**：2026-09-02
+- **现象**：diagnose 文本报告商品明细异常条目全部显示"项号 :"（空），无法定位是哪条商品出错。
+- **根因**：`scripts/diagnose.py` 构建报告时取 `item.get("customs_item_no", item.get("pre_item_no", ""))`，但 `comparator.py::compare_items` 输出的键名是 `item_no`，两级 fallback 都取空。
+- **修复**：改为 `item.get("item_no", "")`。
+- **影响**：`scripts/diagnose.py`（1 行）。golden 基线里固化的空 item_no 展示值随修复更新为真实项号（summary 不变）。
+- **关联**：#18 时 diagnose 改按 doc_type 自动归类，本坑是当时遗留的展示层键名不一致。
+
+### #28. 报关单货源地粘连征免词（"合肥其他照章征税"）
+- **日期**：2026-09-02
+- **现象**：20260902003 报关单 43 条商品中 3 条（项号 21/32/39，货源地均为"合肥其他"）`domestic_source` 提取为"合肥其他照章征税"，与预录单"合肥其他"比对 fail。
+- **根因**：#25 用 `tail[-1]`（征免行紧前最后元素）取货源地，但该批次 PDF 把货源地与征免渲染在**同一 span**（"合肥其他照章征税"），独立征免行不存在 → `duty_idx=None`，`tail[-1]` 整串入 domestic_source。
+- **修复**：`tail[-1]` 赋值前剥离尾部征免词（照章征税/照章/全免/特案减免/保函/自贸协定，与 `pdf_parser._DUTY` 同集合）。中国地名不含这些词，无误伤面。
+- **影响**：`field_extractor.py::_parse_customs_item_content`。
+- **验证**：20260902003 这 3 条 fail 清零（总 fail 5→2，剩 2 是 package_type/dest_port 历史遗留，同 #25 记录）；回归 2 样本的 customs_value 从"金华照章征税"类粘连值变为干净地名，**summary 完全不变**（此前靠 fuzzy 关键词匹配容忍了粘连，现在精确匹配）。
+- **关联**：#25 的姊妹坑——#25 修"取哪一行"，本坑修"取到的行可能粘着征免"。
 
 ---
 

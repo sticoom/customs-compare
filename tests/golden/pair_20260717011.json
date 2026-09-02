@@ -128,7 +128,7 @@
   ],
   "items": [
     {
-      "item_no": "",
+      "item_no": "1",
       "fields": [
         {
           "field_id": "product_code",
@@ -180,7 +180,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "宁波其他照章征税",
+          "customs_value": "宁波其他",
           "pre_value": "(33029)宁波其他",
           "status": "pass"
         },
@@ -193,7 +193,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "2",
       "fields": [
         {
           "field_id": "product_code",
@@ -245,7 +245,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "宁波其他照章征税",
+          "customs_value": "宁波其他",
           "pre_value": "(33029)宁波其他",
           "status": "pass"
         },
@@ -258,7 +258,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "3",
       "fields": [
         {
           "field_id": "product_code",
@@ -310,7 +310,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞照章征税",
+          "customs_value": "东莞",
           "pre_value": "(44199)东莞",
           "status": "pass"
         },
@@ -323,7 +323,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "4",
       "fields": [
         {
           "field_id": "product_code",
@@ -375,7 +375,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞照章征税",
+          "customs_value": "东莞",
           "pre_value": "(44199)东莞",
           "status": "pass"
         },
@@ -388,7 +388,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "5",
       "fields": [
         {
           "field_id": "product_code",
@@ -440,7 +440,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞照章征税",
+          "customs_value": "东莞",
           "pre_value": "(44199)东莞",
           "status": "pass"
         },
@@ -453,7 +453,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "6",
       "fields": [
         {
           "field_id": "product_code",
@@ -505,7 +505,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞照章征税",
+          "customs_value": "东莞",
           "pre_value": "(44199)东莞",
           "status": "pass"
         },
@@ -518,7 +518,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "7",
       "fields": [
         {
           "field_id": "product_code",
@@ -570,7 +570,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞照章征税",
+          "customs_value": "东莞",
           "pre_value": "(44199)东莞",
           "status": "pass"
         },
@@ -583,7 +583,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "8",
       "fields": [
         {
           "field_id": "product_code",
@@ -635,7 +635,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "佛山其他照章征税",
+          "customs_value": "佛山其他",
           "pre_value": "(44069)佛山其他",
           "status": "pass"
         },
@@ -648,7 +648,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "9",
       "fields": [
         {
           "field_id": "product_code",
@@ -700,7 +700,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞照章征税",
+          "customs_value": "东莞",
           "pre_value": "(44199)东莞",
           "status": "pass"
         },
@@ -713,7 +713,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "10",
       "fields": [
         {
           "field_id": "product_code",
@@ -765,7 +765,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "金华照章征税",
+          "customs_value": "金华",
           "pre_value": "(33079)金华",
           "status": "pass"
         },
@@ -778,7 +778,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "11",
       "fields": [
         {
           "field_id": "product_code",
@@ -830,7 +830,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "宁波其他照章征税",
+          "customs_value": "宁波其他",
           "pre_value": "(33029)宁波其他",
           "status": "pass"
         },
@@ -843,7 +843,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "12",
       "fields": [
         {
           "field_id": "product_code",
@@ -895,7 +895,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "金华照章征税",
+          "customs_value": "金华",
           "pre_value": "(33079)金华",
           "status": "pass"
         },
@@ -908,7 +908,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "13",
       "fields": [
         {
           "field_id": "product_code",
@@ -960,7 +960,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞照章征税",
+          "customs_value": "东莞",
           "pre_value": "(44199)东莞",
           "status": "pass"
         },
@@ -973,7 +973,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "14",
       "fields": [
         {
           "field_id": "product_code",
@@ -1025,7 +1025,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "宁波其他照章征税",
+          "customs_value": "宁波其他",
           "pre_value": "(33029)宁波其他",
           "status": "pass"
         },
@@ -1038,7 +1038,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "15",
       "fields": [
         {
           "field_id": "product_code",
@@ -1090,7 +1090,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "金华照章征税",
+          "customs_value": "金华",
           "pre_value": "(33079)金华",
           "status": "pass"
         },
@@ -1103,7 +1103,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "16",
       "fields": [
         {
           "field_id": "product_code",
@@ -1155,7 +1155,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞照章征税",
+          "customs_value": "东莞",
           "pre_value": "(44199)东莞",
           "status": "pass"
         },
@@ -1168,7 +1168,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "17",
       "fields": [
         {
           "field_id": "product_code",
@@ -1220,7 +1220,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "台州照章征税",
+          "customs_value": "台州",
           "pre_value": "(33119)台州",
           "status": "pass"
         },
@@ -1233,7 +1233,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "18",
       "fields": [
         {
           "field_id": "product_code",
@@ -1285,7 +1285,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "台州照章征税",
+          "customs_value": "台州",
           "pre_value": "(33119)台州",
           "status": "pass"
         },
@@ -1298,7 +1298,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "19",
       "fields": [
         {
           "field_id": "product_code",
@@ -1350,7 +1350,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞照章征税",
+          "customs_value": "东莞",
           "pre_value": "(44199)东莞",
           "status": "pass"
         },
@@ -1363,7 +1363,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "20",
       "fields": [
         {
           "field_id": "product_code",
@@ -1415,7 +1415,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞照章征税",
+          "customs_value": "东莞",
           "pre_value": "(44199)东莞",
           "status": "pass"
         },
@@ -1428,7 +1428,7 @@
       ]
     },
     {
-      "item_no": "",
+      "item_no": "21",
       "fields": [
         {
           "field_id": "product_code",
@@ -1480,7 +1480,7 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "金华照章征税",
+          "customs_value": "金华",
           "pre_value": "(33079)金华",
           "status": "pass"
         },
