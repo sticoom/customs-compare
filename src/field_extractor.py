@@ -59,8 +59,11 @@ def extract_customs_header(text: str) -> dict:
     fields["trade_mode"] = m.group(1).strip() if m else ""
 
     # 贸易国
+    # 网格排版下标签后一行可能仍是标签（"贸易国(地区)\n运抵国(地区)"），
+    # 捕获到 "(地区)"/"运抵国(地区)" 这类标签碎片时放弃，宁可留空交给 grid
     m = re.search(r"贸易国\s*\n?\s*(.+?)(?:\n|$)", text)
-    fields["trade_country"] = m.group(1).strip() if m else ""
+    if m and "地区" not in m.group(1):
+        fields["trade_country"] = m.group(1).strip()
 
     # 件数
     m = re.search(r"件数\s*\n?\s*(\d+)", text)
@@ -322,8 +325,11 @@ def _extract_items_from_continuation(text: str) -> list:
     items = []
     # 匹配: 项号(1-3位) + 8-10位商品编码 + 可选商品名称 + 内容直到下一个项号
     # 核对单格式中编码和名称在同一行，如 "3924900000 置物架"
+    # 编码组带 (?!\d) 右边界：11 位数字（合同协议号 20260904008 等）不能被
+    # 截断成前 10 位冒充商品编码——核对单头部"件数\n合同号"相邻会被误配成
+    # "项号\n编码"，产生幻影商品（详见 docs/memory.md #29）
     item_pattern = re.compile(
-        r"(?:^|\n)\s*(\d{1,3})\s*\n\s*(\d{8,10})\s*(.*?)\s*\n(.+?)(?=\n\s*\d{1,3}\s*\n\s*\d{8,10}|\Z)",
+        r"(?:^|\n)\s*(\d{1,3})\s*\n\s*(\d{8,10})(?!\d)\s*(.*?)\s*\n(.+?)(?=\n\s*\d{1,3}\s*\n\s*\d{8,10}(?!\d)|\Z)",
         re.DOTALL,
     )
     for match in item_pattern.finditer(text):

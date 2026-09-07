@@ -55,7 +55,7 @@
     },
     {
       "field_id": "trade_country",
-      "customs_value": "(地区)",
+      "customs_value": "中国香港",
       "pre_value": "中国香港",
       "status": "pass"
     },

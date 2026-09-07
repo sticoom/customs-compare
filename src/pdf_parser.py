@@ -258,6 +258,7 @@ def extract_customs_header_by_grid(page_info: PageInfo) -> dict:
         "监管方式": "trade_mode",
         "贸易国": "trade_country",
         "贸易国（地区）": "trade_country",
+        "贸易国(地区)": "trade_country",
         "件数": "quantity",
         "毛重（千克）": "gross_weight",
         "毛重(千克)": "gross_weight",
