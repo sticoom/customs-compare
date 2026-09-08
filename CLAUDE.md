@@ -92,6 +92,13 @@ app.py → 展示结果 + excel_exporter.py 导出报告
 - `_extract_items_from_continuation(text)` → 续页商品提取（通用文本解析）
 - `extract_all_fields(customs_pages, pre_pages, contract_pages)` → 主提取入口
 
+### table_crosscheck.py — 表格交叉校验层（第二意见）
+
+- `crosscheck_extraction(customs_pages, pre_pages, extracted)` → warnings 列表
+- 用 PyMuPDF `find_tables` 单元格（独立于主提取的路径）交叉核对：C1 总价=单价×任一数量、C2 商品编码须在单元格中、C3 合同号、C4 件毛净重
+- **只报警不改变 pass/fail**；结果挂 `extract_all_fields` 返回值的 `warnings` 键，diagnose/app 各有展示段
+- 详见 docs/memory.md #31——校验层比提取层更怕误报，改核对逻辑前先读教训
+
 ### comparator.py — 比对引擎
 
 - `compare_exact(val1, val2)` → 精确匹配（规范化后比较）

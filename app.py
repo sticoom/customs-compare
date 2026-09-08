@@ -250,6 +250,14 @@ def render_comparison_result(result, idx):
                         f'<div style="font-size:24px;font-weight:700;">{count}</div>'
                         f'<div style="font-size:12px;">{label}</div></div>', unsafe_allow_html=True)
 
+    # ---- 交叉校验告警（表格单元格第二意见）----
+    warnings = result.get("warnings") or []
+    if warnings:
+        st.warning(
+            "🚨 交叉校验告警（提取结果与表格单元格不一致，疑提取错位，请人工核对）：\n\n"
+            + "\n".join(f"- [{w.get('check', '?')}] {w.get('message', '')}" for w in warnings)
+        )
+
     # 文件来源 + 导出
     c_files = result.get("customs_filenames", [])
     p_files = result.get("pre_filenames", [])
@@ -465,6 +473,8 @@ with tab_compare:
                     pair["contract_pages"], pair["pre_continuation_pages"],
                 )
                 result = run_comparison(extracted)
+                # 交叉校验告警（find_tables 第二意见，docs/memory.md #31）
+                result["warnings"] = extracted.get("warnings", [])
                 result["contract_no"] = pair["contract_no"]
                 result["customs_filenames"] = pair["customs_filenames"]
                 result["pre_filenames"] = pair["pre_filenames"]

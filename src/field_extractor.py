@@ -1047,6 +1047,15 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
     if result["buyer"]:
         result["customs_header"]["buyer"] = result["buyer"]
 
+    # 表格交叉校验（第二意见，docs/memory.md #31）：find_tables 单元格核对提取
+    # 结果，产出 warning 列表。只报警不改变比对结果；异常时静默跳过，
+    # 校验层任何问题都不允许破坏主提取流程。
+    try:
+        from src.table_crosscheck import crosscheck_extraction
+        result["warnings"] = crosscheck_extraction(customs_pages, pre_pages, result)
+    except Exception:
+        result["warnings"] = []
+
     return result
 
 

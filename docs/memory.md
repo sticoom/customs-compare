@@ -40,6 +40,7 @@
 | 28 | 报关单货源地粘连征免词("合肥其他照章征税") | `field_extractor.py::_parse_customs_item_content` 尾部征免剥离 | 2026-09-02 |
 | 29 | 预录单幻影商品(件数+合同号被当项号+编码,如项号428) | `field_extractor.py::_extract_items_from_continuation` 编码组 `(?!\d)` 右边界 | 2026-09-07 |
 | 30 | 报关单贸易国提取为"(地区)"(半角标签变体漏映射) | `pdf_parser.py::extract_customs_header_by_grid` LABEL_MAP + `extract_customs_header` 正则防御 | 2026-09-07 |
+| 31 | 架构：表格交叉校验层(find_tables第二意见,错误当场显形) | `src/table_crosscheck.py::crosscheck_extraction` | 2026-09-08 |
 
 **架构性历史项（不在 fix-log 序列）**：
 - **A. 预录单「仅供核对用」格式必须用 span 坐标提取**——两层策略：位置感知 + 文本兜底
@@ -315,6 +316,22 @@
 - **影响**：`pdf_parser.py::extract_customs_header_by_grid`（LABEL_MAP +1 行）、`field_extractor.py::extract_customs_header`（trade_country 防御）。
 - **验证**：20260904008 trade_country=中国香港（与预录单 (HKG)中国香港 正常匹配）；回归 pair_20260717011/20260710002 的 customs_value 从"(地区)"修正为"中国香港"（这两份历史样本带同一潜在坑，此前靠 fuzzy 蒙混），summary 完全不变；golden 已重建。
 - **关联**：#15（grid 表头架构）——本坑是 LABEL_MAP 变体覆盖不全的首例。
+
+### #31. 架构：表格交叉校验层（find_tables 第二意见，错误当场显形，非 bug 修复）
+- **日期**：2026-09-08
+- **背景**：2026-09-07 试点"PDF 转 MD 规避渲染层"后决策：不换提取引擎（30 坑免疫力 + golden 是资产），改为给现有引擎加独立校验源。试点结论见 pilot_md/（MinerU 列漂移+依赖重不进生产；find_tables 单元格零依赖且结构规整）。
+- **方案**：新增 `src/table_crosscheck.py::crosscheck_extraction(customs_pages, pre_pages, extracted) → warnings`——用与主提取**完全独立**的表格识别路径（PyMuPDF `find_tables`，有框线 lines_strict/无边框 text 双策略）核对提取结果，只报警不改变 pass/fail：
+  - C1 总价 ≈ 单价 × 任一数量（±1 或 0.5% 容差）→ 拦 #1/#2/#13/#23 类价格错位
+  - C2 商品编码须能在全部表格单元格中找到（词边界匹配）→ 拦 #29 类幻影商品/漏提
+  - C3 合同协议号须在单元格中出现 → 表头错位
+  - C4 件数/毛重/净重数值须在单元格中出现（含"标签+值同 cell"二次确认）→ 表头数值错
+- **接线**：`field_extractor.extract_all_fields` 末尾 try/except 调用，结果挂 `result["warnings"]`（校验层崩溃也不影响主流程）；diagnose 报告、app 界面各加告警展示段。
+- **关键教训**：
+  - **校验层比提取层更怕误报**——报警若在正确数据上触发，用户会习惯性忽略，整层失效。C1 首版取 quantity_unit 首个数量（法定第一数量 6677千克）配单价，在 20260904008 正确数据上误报；单价实际对应成交数量（1712件），必须对**所有数量候选**尝试配对，任一匹配即通过。
+  - C2 的词边界 `\b{code}\b` 天然拦住"11 位合同号截断成 10 位编码"（\b 在数字中间不成立），与 #29 的正则右边界双保险。
+  - 交叉校验必须用**独立实现路径**（find_tables vs span 数学）——共用代码会把同一坑的盲区带进校验层。
+- **验证**：5 fixture 回归零变化；20260904008 与 48 条样本正常提取均 0 告警；注入"总价篡改 + 幻影商品"两个历史坑，C1/C2 双双命中。
+- **关联**：#29/#30 暴露的"fuzzy 蒙混导致 bug 沉默化"是本层的直接动因；试点记录（MinerU/PyMuPDF4LLM 三方对比）在 pilot_md/。
 
 ---
 

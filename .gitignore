@@ -10,3 +10,5 @@ build/
 *.log
 .claude/
 debug_output/
+pilot_md/
+.venv-mineru/

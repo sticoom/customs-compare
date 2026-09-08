@@ -178,6 +178,7 @@ def diagnose(customs_path: str, pre_path: str) -> dict:
         "summary": result.get("summary", {}),
         "header_results": [],
         "item_results": [],
+        "warnings": extracted.get("warnings", []),
     }
 
     # 表头比对结果
@@ -263,6 +264,13 @@ def format_report(report: dict) -> str:
 
     if not header_issues and not item_issues:
         lines.append("\n✅ 所有字段比对通过，未发现异常！")
+
+    # 交叉校验告警（表格单元格第二意见，docs/memory.md #31）
+    warnings = report.get("warnings") or []
+    if warnings:
+        lines.append(f"\n🚨 交叉校验告警 ({len(warnings)} 条):")
+        for w in warnings:
+            lines.append(f"  ⚠️ [{w.get('check', '?')}] {w.get('message', '')}")
 
     lines.append("\n" + "=" * 60)
     return "\n".join(lines)
