@@ -1047,12 +1047,14 @@ def extract_all_fields(customs_pages: list, pre_pages: list, contract_pages: lis
     if result["buyer"]:
         result["customs_header"]["buyer"] = result["buyer"]
 
-    # 表格交叉校验（第二意见，docs/memory.md #31）：find_tables 单元格核对提取
-    # 结果，产出 warning 列表。只报警不改变比对结果；异常时静默跳过，
-    # 校验层任何问题都不允许破坏主提取流程。
+    # 表格交叉校验（第二意见，docs/memory.md #31/#33）：find_tables 单元格核对
+    # 提取结果，产出 warning 列表。只报警不改变比对结果；异常时静默跳过，
+    # 校验层任何问题都不允许破坏主提取流程。预录单续页一并传入——商品常分布在
+    # 续页上（如 20260909001 项号 8 只在续页），漏传会让 C2/C5 对这些项失明。
     try:
         from src.table_crosscheck import crosscheck_extraction
-        result["warnings"] = crosscheck_extraction(customs_pages, pre_pages, result)
+        result["warnings"] = crosscheck_extraction(
+            customs_pages, list(pre_pages) + list(pre_continuation_pages or []), result)
     except Exception:
         result["warnings"] = []
 

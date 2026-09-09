@@ -1,13 +1,13 @@
 {
   "contract_no": {
-    "customs": "20260612002",
-    "pre": "20260612002",
+    "customs": "20260902003",
+    "pre": "20260902003",
     "matched": true
   },
   "summary": {
-    "pass_count": 449,
+    "pass_count": 434,
     "fail_count": 2,
-    "fuzzy_count": 43,
+    "fuzzy_count": 8,
     "manual_count": 5
   },
   "warnings": [],
@@ -32,13 +32,13 @@
     },
     {
       "field_id": "contract_no",
-      "customs_value": "20260612002",
-      "pre_value": "20260612002",
+      "customs_value": "20260902003",
+      "pre_value": "20260902003",
       "status": "pass"
     },
     {
       "field_id": "package_type",
-      "customs_value": "纸箱",
+      "customs_value": "纸制或纤维板制盒/箱",
       "pre_value": "(22)纸制或纤维板制盒",
       "status": "fail"
     },
@@ -62,20 +62,20 @@
     },
     {
       "field_id": "quantity",
-      "customs_value": "303",
-      "pre_value": "303",
+      "customs_value": "1014",
+      "pre_value": "1014",
       "status": "pass"
     },
     {
       "field_id": "gross_weight",
-      "customs_value": "5093",
-      "pre_value": "5093",
+      "customs_value": "14876",
+      "pre_value": "14876",
       "status": "pass"
     },
     {
       "field_id": "net_weight",
-      "customs_value": "4790",
-      "pre_value": "4790",
+      "customs_value": "13862",
+      "pre_value": "13862",
       "status": "pass"
     },
     {
@@ -117,13 +117,13 @@
     {
       "field_id": "attached_docs",
       "customs_value": "",
-      "pre_value": "随附单证2:合同;装箱单;发票",
+      "pre_value": "随附单证2:装箱单;发票;合同",
       "status": "manual"
     },
     {
       "field_id": "marks_remarks",
-      "customs_value": "",
-      "pre_value": "备注: 合计RMB99647.14 2拼 N/M 集装箱标箱数及号码：2;ECMU7207050",
+      "customs_value": "备注:",
+      "pre_value": "备注: 合计RMB295950.39 N/M 集装箱标箱数及号码：2;CAAU8065521",
       "status": "manual"
     }
   ],
@@ -133,32 +133,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|YECAYE 牌|无型号|规格：40MM*20MM*40CM ，3根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|YECAYE牌|无型号|||3根装",
-          "status": "fuzzy"
+          "customs_value": "收纳挂袋|境内自主品牌|不确定是否享惠|收纳挂袋|78%无纺 布+20%纸板+2%铁|YECAYE牌|无款号",
+          "pre_value": "收纳挂袋|1|2|收纳挂袋|78%无纺布+20%纸板+2%铁|YECAYE牌| 无款号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "120套 / 50千克",
-          "pre_value": "50千克 / - / 120套",
+          "customs_value": "52千克 / 72个",
+          "pre_value": "52千克 / 72个 / 72个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "7.12",
-          "pre_value": "7.12",
+          "customs_value": "25.3600",
+          "pre_value": "25.36",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "854.4",
-          "pre_value": "854.4",
+          "customs_value": "1825.92",
+          "pre_value": "1825.92",
           "status": "pass"
         },
         {
@@ -169,7 +169,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -181,8 +181,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "金华",
+          "pre_value": "金华",
           "status": "pass"
         },
         {
@@ -198,32 +198,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "3924900000",
+          "pre_value": "3924900000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：24MM*12MM*36CM ，4根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||4根装",
-          "status": "fuzzy"
+          "customs_value": "收纳盒|境内自主品牌|不确定是否享惠|家用|PET|DELAMU 牌|无型号",
+          "pre_value": "收纳盒|1|2|家用|PET|DELAMU牌|无型号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "270套 / 70千克",
-          "pre_value": "70千克 / - / 270套",
+          "customs_value": "206千克 / 132套",
+          "pre_value": "206千克 / - / 132套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "5.69",
-          "pre_value": "5.69",
+          "customs_value": "39.5500",
+          "pre_value": "39.55",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "1536.3",
-          "pre_value": "1536.3",
+          "customs_value": "5220.60",
+          "pre_value": "5220.6",
           "status": "pass"
         },
         {
@@ -234,7 +234,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -246,8 +246,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "台州",
+          "pre_value": "台州",
           "status": "pass"
         },
         {
@@ -263,32 +263,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "3924900000",
+          "pre_value": "3924900000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：24MM*12MM*36CM ，4根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||4根装",
-          "status": "fuzzy"
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|PET+不锈钢 |LAMU牌|无型号",
+          "pre_value": "置物架|1|2|家用|PET+不锈钢|LAMU牌|无型号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "162套 / 45千克",
-          "pre_value": "45千克 / - / 162套",
+          "customs_value": "61千克 / 80件",
+          "pre_value": "61千克 / - / 80件",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "5.69",
-          "pre_value": "5.69",
+          "customs_value": "15.1400",
+          "pre_value": "15.14",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "921.78",
-          "pre_value": "921.78",
+          "customs_value": "1211.20",
+          "pre_value": "1211.2",
           "status": "pass"
         },
         {
@@ -299,7 +299,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -311,8 +311,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "宁波其他",
+          "pre_value": "宁波其他",
           "status": "pass"
         },
         {
@@ -328,32 +328,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：17MM*30MM*40cm ，20根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||20根装",
-          "status": "fuzzy"
+          "customs_value": "收纳挂袋|境内自主品牌|不确定是否享惠|收纳挂袋|90%无纺 布+5%纸板+4%铁+1%PVC|YECAYE牌|无款号",
+          "pre_value": "收纳挂袋|1|2|收纳挂袋|90%无纺布+5%纸板+4%铁+1%PVC|YECA YE牌|无款号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "250套 / 449千克",
-          "pre_value": "449千克 / - / 250套",
+          "customs_value": "46千克 / 48个",
+          "pre_value": "46千克 / 48个 / 48个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "33.35",
-          "pre_value": "33.35",
+          "customs_value": "30.0000",
+          "pre_value": "30",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "8337.5",
-          "pre_value": "8337.5",
+          "customs_value": "1440.00",
+          "pre_value": "1440",
           "status": "pass"
         },
         {
@@ -364,7 +364,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -376,8 +376,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "金华",
+          "pre_value": "金华",
           "status": "pass"
         },
         {
@@ -393,32 +393,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "3924900000",
+          "pre_value": "3924900000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：30mm*16mm*40cm ，15根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||15根装",
-          "status": "fuzzy"
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|90%PET+10% 不锈钢|DELAMU牌|无型号",
+          "pre_value": "置物架|1|2|家用|90%PET+10%不锈钢|DELAMU牌|无型号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "108套 / 167千克",
-          "pre_value": "167千克 / - / 108套",
+          "customs_value": "12千克 / 16件",
+          "pre_value": "12千克 / - / 16件",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "27.61",
-          "pre_value": "27.61",
+          "customs_value": "18.1400",
+          "pre_value": "18.14",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "2981.88",
-          "pre_value": "2981.88",
+          "customs_value": "290.24",
+          "pre_value": "290.24",
           "status": "pass"
         },
         {
@@ -429,7 +429,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -441,8 +441,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "宁波其他",
+          "pre_value": "宁波其他",
           "status": "pass"
         },
         {
@@ -458,32 +458,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料盖板|境内自主品牌|不确定是否享惠|收纳线缆|45%塑料+15% 橡胶+40%铁|DELAMU牌|无型号",
-          "pre_value": "塑料盖板|1|2|盖板|45%塑料+15%橡胶+40%铁|DELAMU牌|无型 号",
-          "status": "fuzzy"
+          "customs_value": "收纳箱|境内自主品牌|不确定是否享惠|收纳箱|45%牛津布 +30%铁+10%PP+10%PVC+5%PU皮|YECAYE牌|2个装",
+          "pre_value": "收纳箱|1|2|收纳箱|45%牛津布+30%铁+10%PP+10%PVC+5%PU 皮|YECAYE牌|无款号|||2个装",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "200套 / 66千克",
-          "pre_value": "66千克 / - / 200套",
+          "customs_value": "1157千克 / 372件",
+          "pre_value": "1157千克 / 744个 / 372件",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "9.31",
-          "pre_value": "9.31",
+          "customs_value": "81.8900",
+          "pre_value": "81.89",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "1862",
-          "pre_value": "1862",
+          "customs_value": "30463.08",
+          "pre_value": "30463.08",
           "status": "pass"
         },
         {
@@ -494,7 +494,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -506,8 +506,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "金华",
+          "pre_value": "金华",
           "status": "pass"
         },
         {
@@ -523,32 +523,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：25MM*13MM*36CM ，6根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||6根装",
-          "status": "fuzzy"
+          "customs_value": "收纳挂袋|境内自主品牌|不确定是否享惠|收纳挂袋|75%无纺 布+20%PVC+3%纸板+2%铁|YECAYE牌|无款号",
+          "pre_value": "收纳挂袋|1|2|收纳挂袋|75%无纺布+20%PVC+3%纸板+2%铁|YEC AYE牌|无款号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "56套 / 20千克",
-          "pre_value": "20千克 / - / 56套",
+          "customs_value": "51千克 / 90个",
+          "pre_value": "51千克 / 90个 / 90个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "9.77",
-          "pre_value": "9.77",
+          "customs_value": "22.9100",
+          "pre_value": "22.91",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "547.12",
-          "pre_value": "547.12",
+          "customs_value": "2061.90",
+          "pre_value": "2061.9",
           "status": "pass"
         },
         {
@@ -559,7 +559,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -594,26 +594,26 @@
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|YECAYE 牌|无型号|规格：30MM*17MM*36CM ，3根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|YECAYE牌|无型号|||3根装",
+          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：24MM*14MM*36CM，8 根装",
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||8根装",
           "status": "fuzzy"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "1638套 / 336千克",
-          "pre_value": "336千克 / - / 1638套",
+          "customs_value": "74千克 / 160套",
+          "pre_value": "74千克 / - / 160套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "4.74",
-          "pre_value": "4.74",
+          "customs_value": "11.4800",
+          "pre_value": "11.48",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "7764.12",
-          "pre_value": "7764.12",
+          "customs_value": "1836.80",
+          "pre_value": "1836.8",
           "status": "pass"
         },
         {
@@ -624,7 +624,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -653,32 +653,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|Wuitaouy 牌|规格：24MM*14MM*36CM ，无型号|15 根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|Wuitaouy牌|无型号|||15根装",
-          "status": "fuzzy"
+          "customs_value": "收纳挂袋|境内自主品牌|不确定是否享惠|收纳挂袋|85%无纺 布+10%PVC+3%纸板+2%铁|YECAYE牌|无款号",
+          "pre_value": "收纳挂袋|1|2|收纳挂袋|85%无纺布+10%PVC+3%纸板+2%铁|YEC AYE牌|无款号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "90套 / 75千克",
-          "pre_value": "75千克 / - / 90套",
+          "customs_value": "65千克 / 64个",
+          "pre_value": "65千克 / 64个 / 64个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "19.09",
-          "pre_value": "19.09",
+          "customs_value": "42.8500",
+          "pre_value": "42.85",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "1718.1",
-          "pre_value": "1718.1",
+          "customs_value": "2742.40",
+          "pre_value": "2742.4",
           "status": "pass"
         },
         {
@@ -689,7 +689,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -724,26 +724,26 @@
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：10MM*15MM*40CM ，20根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||20根装",
+          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：24MM*14MM*36CM，7 根装",
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||7根装",
           "status": "fuzzy"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "80套 / 68千克",
-          "pre_value": "68千克 / - / 80套",
+          "customs_value": "32千克 / 80套",
+          "pre_value": "32千克 / - / 80套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "19.42",
-          "pre_value": "19.42",
+          "customs_value": "9.9400",
+          "pre_value": "9.94",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "1553.6",
-          "pre_value": "1553.6",
+          "customs_value": "795.20",
+          "pre_value": "795.2",
           "status": "pass"
         },
         {
@@ -754,7 +754,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -783,32 +783,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "7326909000",
+          "pre_value": "7326909000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：30MM*16MM*36CM ，4根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||4根装",
-          "status": "fuzzy"
+          "customs_value": "收纳箱|境内自主品牌|不确定是否享惠|非工业用|97%铁 +3%塑料|冲压+弯形+焊接+喷粉|YECAYE牌",
+          "pre_value": "收纳箱|1|2|非工业用|97%铁+3%塑料|冲压+弯形+焊接+喷粉 |||YECAYE牌",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "30套 / 9千克",
-          "pre_value": "9千克 / - / 30套",
+          "customs_value": "2533千克 / 660件",
+          "pre_value": "2533千克 / - / 660件",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "6.67",
-          "pre_value": "6.67",
+          "customs_value": "75.6700",
+          "pre_value": "75.67",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "200.1",
-          "pre_value": "200.1",
+          "customs_value": "49942.20",
+          "pre_value": "49942.2",
           "status": "pass"
         },
         {
@@ -819,7 +819,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -831,8 +831,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "江门",
+          "pre_value": "江门",
           "status": "pass"
         },
         {
@@ -854,26 +854,26 @@
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：17mm*30mm*40cm ，10根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||10根装",
-          "status": "fuzzy"
+          "customs_value": "锅架|境内自主品牌|不确定是否享惠|厨房收纳用|ABS+ 不锈钢|ORDORA牌|无型号",
+          "pre_value": "锅架|1|2|厨房收纳用|ABS+不锈钢|ORDORA牌|无型号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "336套 / 315千克",
-          "pre_value": "315千克 / - / 336套",
+          "customs_value": "1304千克 / 828套",
+          "pre_value": "1304千克 / - / 828套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "17.9",
-          "pre_value": "17.9",
+          "customs_value": "42.0200",
+          "pre_value": "42.02",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "6014.4",
-          "pre_value": "6014.4",
+          "customs_value": "34792.56",
+          "pre_value": "34792.56",
           "status": "pass"
         },
         {
@@ -884,7 +884,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -896,8 +896,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "温州其他",
+          "pre_value": "温州其他",
           "status": "pass"
         },
         {
@@ -913,32 +913,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：10MM*15MM*40cm ，10根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||10根装",
-          "status": "fuzzy"
+          "customs_value": "收纳箱|境内自主品牌|不确定是否享惠|收纳箱|45%牛津布 +30%铁+10%PP+10%PVC+5%PU皮|YECAYE牌|无款号|2 个装",
+          "pre_value": "收纳箱|1|2|收纳箱|45%牛津布+30%铁+10%PP+10%PVC+5%PU 皮|YECAYE牌|无款号|||2个装",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "200套 / 90千克",
-          "pre_value": "90千克 / - / 200套",
+          "customs_value": "74千克 / 28件",
+          "pre_value": "74千克 / 56个 / 28件",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "11.76",
-          "pre_value": "11.76",
+          "customs_value": "50.6400",
+          "pre_value": "50.64",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "2352",
-          "pre_value": "2352",
+          "customs_value": "1417.92",
+          "pre_value": "1417.92",
           "status": "pass"
         },
         {
@@ -949,7 +949,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -984,26 +984,26 @@
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|规格：24MM*14MM*36CM ，无型号|6根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||6根装",
-          "status": "fuzzy"
+          "customs_value": "插座收纳盒|境内自主品牌|不确定是否享惠|收纳插座|塑料 |YECAYE牌|无型号",
+          "pre_value": "插座收纳盒|1|2|收纳插座|塑料|YECAYE牌|无型号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "60套 / 22千克",
-          "pre_value": "22千克 / - / 60套",
+          "customs_value": "426千克 / 396套",
+          "pre_value": "426千克 / - / 396套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "11.86",
-          "pre_value": "11.86",
+          "customs_value": "29.9000",
+          "pre_value": "29.9",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "711.6",
-          "pre_value": "711.6",
+          "customs_value": "11840.40",
+          "pre_value": "11840.4",
           "status": "pass"
         },
         {
@@ -1014,7 +1014,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1043,32 +1043,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：10MM*15MM*40cm ，10根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||10根装",
-          "status": "fuzzy"
+          "customs_value": "收纳网|境内自主品牌|不确定是否享惠|收纳网|97%棉绳 +3%铁|YECAYE牌|无款号",
+          "pre_value": "收纳网|1|2|收纳网|97%棉绳+3%铁|YECAYE牌|无款号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "40套 / 19千克",
-          "pre_value": "19千克 / - / 40套",
+          "customs_value": "14千克 / 50个",
+          "pre_value": "14千克 / 50个 / 50个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "11.76",
-          "pre_value": "11.76",
+          "customs_value": "12.7300",
+          "pre_value": "12.73",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "470.4",
-          "pre_value": "470.4",
+          "customs_value": "636.50",
+          "pre_value": "636.5",
           "status": "pass"
         },
         {
@@ -1079,20 +1079,20 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
         {
           "field_id": "final_dest_country",
-          "customs_value": "美国",
+          "customs_value": "美国山东省滨州其他照章征税",
           "pre_value": "美国 (USA)",
           "status": "pass"
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "美国山东省滨州其他",
+          "pre_value": "山东省滨州其他",
           "status": "pass"
         },
         {
@@ -1114,26 +1114,26 @@
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：24MM*14MM*36CM ，6根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||6根装",
-          "status": "fuzzy"
+          "customs_value": "插座盒|境内自主品牌|不确定是否享惠|收纳插座|塑料 |YECAYE牌|无型号",
+          "pre_value": "插座盒|1|2|收纳插座|塑料|YECAYE牌|无型号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "240套 / 88千克",
-          "pre_value": "88千克 / - / 240套",
+          "customs_value": "79千克 / 59套",
+          "pre_value": "79千克 / - / 59套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "9.4",
-          "pre_value": "9.4",
+          "customs_value": "32.1200",
+          "pre_value": "32.12",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "2256",
-          "pre_value": "2256",
+          "customs_value": "1895.08",
+          "pre_value": "1895.08",
           "status": "pass"
         },
         {
@@ -1144,7 +1144,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1156,8 +1156,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "菏泽",
+          "pre_value": "菏泽",
           "status": "pass"
         },
         {
@@ -1173,32 +1173,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "7323990000",
+          "pre_value": "7323990000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：10MM*15MM*40cm ，10根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||10根装",
-          "status": "fuzzy"
+          "customs_value": "锅架|境内自主品牌|不确定是否享惠|厨房收纳用|97%铁 +3%塑料|未搪瓷|MUDEELA牌",
+          "pre_value": "锅架|1|2|厨房收纳用|97%铁+3%塑料|未搪瓷|MUDEELA牌| ||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "80套 / 41千克",
-          "pre_value": "41千克 / - / 80套",
+          "customs_value": "215千克 / 168套",
+          "pre_value": "215千克 / - / 168套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "11.76",
-          "pre_value": "11.76",
+          "customs_value": "19.5800",
+          "pre_value": "19.58",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "940.8",
-          "pre_value": "940.8",
+          "customs_value": "3289.44",
+          "pre_value": "3289.44",
           "status": "pass"
         },
         {
@@ -1209,7 +1209,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1221,8 +1221,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "金华",
+          "pre_value": "金华",
           "status": "pass"
         },
         {
@@ -1244,26 +1244,26 @@
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：24MM*14MM*36CM ，6根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||6根装",
+          "customs_value": "套管|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|规格：13mm*9m，无型号|1根装",
+          "pre_value": "套管|1|2|收纳线缆|PVC|DELAMU牌|无型号|||1根装",
           "status": "fuzzy"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "90套 / 33千克",
-          "pre_value": "33千克 / - / 90套",
+          "customs_value": "6千克 / 30套",
+          "pre_value": "6千克 / - / 30套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "9.4",
-          "pre_value": "9.4",
+          "customs_value": "20.0000",
+          "pre_value": "20",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "846",
-          "pre_value": "846",
+          "customs_value": "600.00",
+          "pre_value": "600",
           "status": "pass"
         },
         {
@@ -1274,7 +1274,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1309,26 +1309,26 @@
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：24MM*14MM*36CM ，6根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||6根装",
+          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：24MM*14MM*36CM，7 根装",
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||7根装",
           "status": "fuzzy"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "60套 / 22千克",
-          "pre_value": "22千克 / - / 60套",
+          "customs_value": "64千克 / 160套",
+          "pre_value": "64千克 / - / 160套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "9.4",
-          "pre_value": "9.4",
+          "customs_value": "9.4200",
+          "pre_value": "9.42",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "564",
-          "pre_value": "564",
+          "customs_value": "1507.20",
+          "pre_value": "1507.2",
           "status": "pass"
         },
         {
@@ -1339,7 +1339,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1374,26 +1374,26 @@
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|YECAYE 牌|无型号|规格：40MM*20MM*40CM,3 根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|YECAYE牌|无型号|||3根装",
+          "customs_value": "套管|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|规格：13mm*9m，无型号|1根装",
+          "pre_value": "套管|1|2|收纳线缆|PVC|DELAMU牌|无型号|||1根装",
           "status": "fuzzy"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "420套 / 180千克",
-          "pre_value": "180千克 / - / 420套",
+          "customs_value": "13千克 / 60套",
+          "pre_value": "13千克 / - / 60套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "5.58",
-          "pre_value": "5.58",
+          "customs_value": "22.2400",
+          "pre_value": "22.24",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "2343.6",
-          "pre_value": "2343.6",
+          "customs_value": "1334.40",
+          "pre_value": "1334.4",
           "status": "pass"
         },
         {
@@ -1404,7 +1404,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1433,32 +1433,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：17MM*30MM*36CM ，4根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||4根装",
-          "status": "fuzzy"
+          "customs_value": "收纳挂袋|境内自主品牌|不确定是否享惠|收纳挂袋|95%无纺 布+3%纸板+2%合金挂钩|YECAYE牌|无款号",
+          "pre_value": "收纳挂袋|1|2|收纳挂袋|95%无纺布+3%纸板+2%合金挂钩|YECA YE牌|无款号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "30套 / 8千克",
-          "pre_value": "8千克 / - / 30套",
+          "customs_value": "36千克 / 60个",
+          "pre_value": "36千克 / 60个 / 60个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "6.31",
-          "pre_value": "6.31",
+          "customs_value": "36.0700",
+          "pre_value": "36.07",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "189.3",
-          "pre_value": "189.3",
+          "customs_value": "2164.20",
+          "pre_value": "2164.2",
           "status": "pass"
         },
         {
@@ -1469,7 +1469,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1481,8 +1481,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "合肥其他",
+          "pre_value": "合肥其他",
           "status": "pass"
         },
         {
@@ -1504,26 +1504,26 @@
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|YECAYE 牌|无型号|6根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|YECAYE牌|无型号|||6根装",
-          "status": "pass"
+          "customs_value": "套管|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|规格：13mm*3m，无型号|1根装",
+          "pre_value": "套管|1|2|收纳线缆|PVC|DELAMU牌|无型号|||1根装",
+          "status": "fuzzy"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "950套 / 692千克",
-          "pre_value": "692千克 / - / 950套",
+          "customs_value": "5千克 / 44套",
+          "pre_value": "5千克 / - / 44套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "14.55",
-          "pre_value": "14.55",
+          "customs_value": "8.2300",
+          "pre_value": "8.23",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "13822.5",
-          "pre_value": "13822.5",
+          "customs_value": "362.12",
+          "pre_value": "362.12",
           "status": "pass"
         },
         {
@@ -1534,7 +1534,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1563,32 +1563,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|YECAYE 牌|无型号|6根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|YECAYE牌|无型号|||6根装",
+          "customs_value": "收纳挂袋|境内自主品牌|不确定是否享惠|收纳挂袋|85%无纺 布+10%PVC+3%纸板+2%铁|YECAYE牌|无款号",
+          "pre_value": "收纳挂袋|1|2|收纳挂袋|85%无纺布+10%PVC+3%纸板+2%铁|YEC AYE牌|无款号|||",
           "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "175套 / 128千克",
-          "pre_value": "128千克 / - / 175套",
+          "customs_value": "48千克 / 24个",
+          "pre_value": "48千克 / 24个 / 24个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "14.36",
-          "pre_value": "14.36",
+          "customs_value": "84.6400",
+          "pre_value": "84.64",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "2513",
-          "pre_value": "2513",
+          "customs_value": "2031.36",
+          "pre_value": "2031.36",
           "status": "pass"
         },
         {
@@ -1599,7 +1599,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1628,32 +1628,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "7323990000",
+          "pre_value": "7323990000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：12MM*8MM*36cm ，9根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||9根装",
-          "status": "fuzzy"
+          "customs_value": "锅架|境内自主品牌|不确定是否享惠|厨房收纳用|97%铁 +3%塑料|未搪瓷|MUDEELA牌",
+          "pre_value": "锅架|1|2|厨房收纳用|97%铁+3%塑料|未搪瓷|MUDEELA牌| ||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "225套 / 51千克",
-          "pre_value": "51千克 / - / 225套",
+          "customs_value": "39千克 / 28套",
+          "pre_value": "39千克 / - / 28套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "5.06",
-          "pre_value": "5.06",
+          "customs_value": "21.4200",
+          "pre_value": "21.42",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "1138.5",
-          "pre_value": "1138.5",
+          "customs_value": "599.76",
+          "pre_value": "599.76",
           "status": "pass"
         },
         {
@@ -1664,7 +1664,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1676,8 +1676,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "金华",
+          "pre_value": "金华",
           "status": "pass"
         },
         {
@@ -1693,32 +1693,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|Wuitaouy 牌|规格：24MM*12MM*36CM ，无型号|5根 装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|Wuitaouy牌|无型号|||5根装",
-          "status": "fuzzy"
+          "customs_value": "收纳挂袋|境内自主品牌|不确定是否享惠|收纳挂袋|无纺布+ 纸板+铁|YECAYE牌|无款号",
+          "pre_value": "收纳挂袋|1|2|收纳挂袋|无纺布+纸板+铁|YECAYE牌|无款号|| |",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "117套 / 36千克",
-          "pre_value": "36千克 / - / 117套",
+          "customs_value": "39千克 / 54个",
+          "pre_value": "39千克 / 54个 / 54个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "7.15",
-          "pre_value": "7.15",
+          "customs_value": "22.1800",
+          "pre_value": "22.18",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "836.55",
-          "pre_value": "836.55",
+          "customs_value": "1197.72",
+          "pre_value": "1197.72",
           "status": "pass"
         },
         {
@@ -1729,7 +1729,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1741,8 +1741,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "金华",
+          "pre_value": "金华",
           "status": "pass"
         },
         {
@@ -1758,32 +1758,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "3924100000",
+          "pre_value": "3924100000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：15MM*10MM*36CM ，6根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||6根装",
-          "status": "fuzzy"
+          "customs_value": "调料架|境内自主品牌|不确定是否享惠|厨房用|聚苯乙烯 |MUDEELA牌|无型号",
+          "pre_value": "调料架|1|2|厨房用|聚苯乙烯|MUDEELA牌|无型号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "210套 / 42千克",
-          "pre_value": "42千克 / - / 210套",
+          "customs_value": "660千克 / 720件",
+          "pre_value": "660千克 / - / 720件",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "7.88",
-          "pre_value": "7.88",
+          "customs_value": "20.4800",
+          "pre_value": "20.48",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "1654.8",
-          "pre_value": "1654.8",
+          "customs_value": "14745.60",
+          "pre_value": "14745.6",
           "status": "pass"
         },
         {
@@ -1794,7 +1794,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1806,8 +1806,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "金华",
+          "pre_value": "金华",
           "status": "pass"
         },
         {
@@ -1823,32 +1823,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "3924100000",
+          "pre_value": "3924100000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：30MM*17MM*36CM ，6根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||6根装",
-          "status": "fuzzy"
+          "customs_value": "调料架|境内自主品牌|不确定是否享惠|厨房用|聚苯乙烯 |MUDEELA牌|无型号",
+          "pre_value": "调料架|1|2|厨房用|聚苯乙烯|MUDEELA牌|无型号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "72套 / 27千克",
-          "pre_value": "27千克 / - / 72套",
+          "customs_value": "310千克 / 600件",
+          "pre_value": "310千克 / - / 600件",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "8.39",
-          "pre_value": "8.39",
+          "customs_value": "11.4600",
+          "pre_value": "11.46",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "604.08",
-          "pre_value": "604.08",
+          "customs_value": "6876.00",
+          "pre_value": "6876",
           "status": "pass"
         },
         {
@@ -1859,7 +1859,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1871,8 +1871,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "金华",
+          "pre_value": "金华",
           "status": "pass"
         },
         {
@@ -1888,32 +1888,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：15MM*10MM*36CM ，6根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||6根装",
-          "status": "fuzzy"
+          "customs_value": "收纳挂袋|境内自主品牌|不确定是否享惠|收纳挂袋|75%无纺 布+20%PVC+3%纸板+2%铁|YECAYE牌|无款号",
+          "pre_value": "收纳挂袋|1|2|收纳挂袋|75%无纺布+20%PVC+3%纸板+2%铁|YEC AYE牌|无款号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "150套 / 30千克",
-          "pre_value": "30千克 / - / 150套",
+          "customs_value": "34千克 / 60个",
+          "pre_value": "34千克 / 60个 / 60个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "7.88",
-          "pre_value": "7.88",
+          "customs_value": "22.4400",
+          "pre_value": "22.44",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "1182",
-          "pre_value": "1182",
+          "customs_value": "1346.40",
+          "pre_value": "1346.4",
           "status": "pass"
         },
         {
@@ -1924,7 +1924,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -1953,32 +1953,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "7323990000",
+          "pre_value": "7323990000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：24mm*12mm*40cm ，9根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||9根装",
-          "status": "fuzzy"
+          "customs_value": "收纳架|境内自主品牌|不确定是否享惠|厨房收纳用|97%铁 +2%塑料+1%木质把手|未搪瓷|DELAMU牌",
+          "pre_value": "收纳架|1|2|厨房收纳用|97%铁+2%塑料+1%木质把手|未搪瓷 |DELAMU牌|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "50套 / 37千克",
-          "pre_value": "37千克 / - / 50套",
+          "customs_value": "3120千克 / 800件",
+          "pre_value": "3120千克 / - / 800件",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "12.55",
-          "pre_value": "12.55",
+          "customs_value": "59.8100",
+          "pre_value": "59.81",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "627.5",
-          "pre_value": "627.5",
+          "customs_value": "47848.00",
+          "pre_value": "47848",
           "status": "pass"
         },
         {
@@ -1989,7 +1989,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2001,8 +2001,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "中山其他",
+          "pre_value": "中山其他",
           "status": "pass"
         },
         {
@@ -2024,26 +2024,26 @@
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：15MM*10MM*36CM ，4根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||4根装",
-          "status": "fuzzy"
+          "customs_value": "插座收纳盒|境内自主品牌|不确定是否享惠|收纳插座|塑料 |YECAYE牌|无型号",
+          "pre_value": "插座收纳盒|1|2|收纳插座|塑料|YECAYE牌|无型号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "58套 / 7千克",
-          "pre_value": "7千克 / - / 58套",
+          "customs_value": "329千克 / 297套",
+          "pre_value": "329千克 / - / 297套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "5",
-          "pre_value": "5",
+          "customs_value": "27.0100",
+          "pre_value": "27.01",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "290",
-          "pre_value": "290",
+          "customs_value": "8021.97",
+          "pre_value": "8021.97",
           "status": "pass"
         },
         {
@@ -2054,7 +2054,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2066,8 +2066,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "深圳特区",
+          "pre_value": "深圳特区",
           "status": "pass"
         },
         {
@@ -2083,32 +2083,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "7323990000",
+          "pre_value": "7323990000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：20MM*40MM*40CM,4 根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||4根装",
-          "status": "fuzzy"
+          "customs_value": "锅架|境内自主品牌|不确定是否享惠|厨房收纳用|铁|未 搪瓷|ORDORA牌",
+          "pre_value": "锅架|1|2|厨房收纳用|铁|未搪瓷|ORDORA牌|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "33套 / 19千克",
-          "pre_value": "19千克 / - / 33套",
+          "customs_value": "58千克 / 36套",
+          "pre_value": "58千克 / - / 36套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "6.37",
-          "pre_value": "6.37",
+          "customs_value": "29.1400",
+          "pre_value": "29.14",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "210.21",
-          "pre_value": "210.21",
+          "customs_value": "1049.04",
+          "pre_value": "1049.04",
           "status": "pass"
         },
         {
@@ -2119,7 +2119,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2148,32 +2148,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：30MM*17MM*40CM ，15根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||15根装",
-          "status": "fuzzy"
+          "customs_value": "收纳挂袋|境内自主品牌|不确定是否享惠|收纳挂袋|无纺布 80%+PVC10%+网布5%+纸板3%+不锈钢2%|LAMU牌|无 款号",
+          "pre_value": "收纳挂袋|1|2|收纳挂袋|无纺布80%+PVC10%+网布5%+纸板3%+ 不锈钢2%|LAMU牌|无款号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "216套 / 293千克",
-          "pre_value": "293千克 / - / 216套",
+          "customs_value": "18千克 / 40个",
+          "pre_value": "18千克 / 40个 / 40个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "25.42",
-          "pre_value": "25.42",
+          "customs_value": "20.5500",
+          "pre_value": "20.55",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "5490.72",
-          "pre_value": "5490.72",
+          "customs_value": "822.00",
+          "pre_value": "822",
           "status": "pass"
         },
         {
@@ -2184,7 +2184,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2196,8 +2196,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "合肥其他",
+          "pre_value": "合肥其他",
           "status": "pass"
         },
         {
@@ -2213,32 +2213,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "9403200000",
+          "pre_value": "9403200000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：30MM*17MM*40CM ，15根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||15根装",
-          "status": "fuzzy"
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|铁+塑料 |DELAMU牌|规格：67.6*38.5*28.5CM",
+          "pre_value": "置物架|1|2|家用|铁+塑料|DELAMU牌|67.6*38.5*28.5CM|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "276套 / 390千克",
-          "pre_value": "390千克 / - / 276套",
+          "customs_value": "459千克 / 90件",
+          "pre_value": "90件 / 459千克 / 90件",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "25.17",
-          "pre_value": "25.17",
+          "customs_value": "86.3300",
+          "pre_value": "86.33",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "6946.92",
-          "pre_value": "6946.92",
+          "customs_value": "7769.70",
+          "pre_value": "7769.7",
           "status": "pass"
         },
         {
@@ -2249,7 +2249,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2261,8 +2261,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "惠州其他",
+          "pre_value": "惠州其他",
           "status": "pass"
         },
         {
@@ -2278,32 +2278,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：24mm*12mm*40cm ，9根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||9根装",
-          "status": "fuzzy"
+          "customs_value": "收纳箱|境内自主品牌|不确定是否享惠|收纳箱|45%牛津布 +30%铁+10%PP+10%PVC+5%PU皮|YECAYE牌|无款号|2 个装",
+          "pre_value": "收纳箱|1|2|收纳箱|45%牛津布+30%铁+10%PP+10%PVC+5%PU 皮|YECAYE牌|无款号|||2个装",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "25套 / 19千克",
-          "pre_value": "19千克 / - / 25套",
+          "customs_value": "1040千克 / 320件",
+          "pre_value": "1040千克 / 640个 / 320件",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "12.55",
-          "pre_value": "12.55",
+          "customs_value": "60.7700",
+          "pre_value": "60.77",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "313.75",
-          "pre_value": "313.75",
+          "customs_value": "19446.40",
+          "pre_value": "19446.4",
           "status": "pass"
         },
         {
@@ -2314,7 +2314,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2343,32 +2343,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "7323930000",
+          "pre_value": "7323930000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：10MM*15MM*36CM ，4根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||4根装",
-          "status": "fuzzy"
+          "customs_value": "碗碟架|境内自主品牌|不确定是否享惠|厨房用|80%不锈钢 +20%塑料|未搪瓷|DELAMU牌",
+          "pre_value": "碗碟架|1|2|厨房用|80%不锈钢+20%塑料|未搪瓷|DELAMU牌| ||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "92套 / 12千克",
-          "pre_value": "12千克 / - / 92套",
+          "customs_value": "242千克 / 168件",
+          "pre_value": "242千克 / - / 168件",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "4.96",
-          "pre_value": "4.96",
+          "customs_value": "32.0700",
+          "pre_value": "32.07",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "456.32",
-          "pre_value": "456.32",
+          "customs_value": "5387.76",
+          "pre_value": "5387.76",
           "status": "pass"
         },
         {
@@ -2379,7 +2379,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2408,32 +2408,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "3924900000",
+          "pre_value": "3924900000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|YECAYE 牌|无型号|规格：24MM*14MM*36CM ，8根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|YECAYE牌|无型号|||8根装",
-          "status": "fuzzy"
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|亚克力 |DELAMU牌|无型号",
+          "pre_value": "置物架|1|2|家用|亚克力|DELAMU牌|无型号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "266套 / 138千克",
-          "pre_value": "138千克 / - / 266套",
+          "customs_value": "56千克 / 78件",
+          "pre_value": "56千克 / - / 78件",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "11.51",
-          "pre_value": "11.51",
+          "customs_value": "27.0100",
+          "pre_value": "27.01",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "3061.66",
-          "pre_value": "3061.66",
+          "customs_value": "2106.78",
+          "pre_value": "2106.78",
           "status": "pass"
         },
         {
@@ -2444,7 +2444,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2456,8 +2456,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "广州其他",
+          "pre_value": "广州其他",
           "status": "pass"
         },
         {
@@ -2479,26 +2479,26 @@
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "收纳箱|境内自主品牌|不确定是否享惠|收纳箱|45%牛津布+30% 铁+10%PP+10%PVC+5%PU 皮|YECAYE牌|无款号|4个装",
-          "pre_value": "收纳箱|1|2|收纳箱|45%牛津布+30%铁+10%PP+10%PVC+5%PU 皮|YECAYE牌|无款号|||4个装",
+          "customs_value": "收纳挂袋|境内自主品牌|不确定是否享惠|收纳挂袋|无纺布 +PVC+纸板+合金挂钩|YECAYE牌|无款号",
+          "pre_value": "收纳挂袋|1|2|收纳挂袋|无纺布+PVC+ 纸板+合金挂钩|YECAYE 牌|无款号|||",
           "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "16件 / 82千克",
-          "pre_value": "82千克 / 64个 / 16件",
+          "customs_value": "62千克 / 64个",
+          "pre_value": "62千克 / 64个 / 64个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "101.28",
-          "pre_value": "101.28",
+          "customs_value": "32.5000",
+          "pre_value": "32.5",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "1620.48",
-          "pre_value": "1620.48",
+          "customs_value": "2080.00",
+          "pre_value": "2080",
           "status": "pass"
         },
         {
@@ -2509,7 +2509,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2521,8 +2521,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "金华",
+          "pre_value": "金华",
           "status": "pass"
         },
         {
@@ -2538,32 +2538,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "3924100000",
+          "pre_value": "3924100000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：30MM*11MM*36cm ，3根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||3根装",
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|厨房用 |80%PET+20%楠竹|DELAMU牌|无型号",
+          "pre_value": "置物架|1|2|厨房用|80%Pet+20%毛竹|DELAMU牌|无型号|||",
           "status": "fuzzy"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "90套 / 18千克",
-          "pre_value": "18千克 / - / 90套",
+          "customs_value": "328千克 / 204套",
+          "pre_value": "328千克 / - / 204套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "4.31",
-          "pre_value": "4.31",
+          "customs_value": "30.4400",
+          "pre_value": "30.44",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "387.9",
-          "pre_value": "387.9",
+          "customs_value": "6209.76",
+          "pre_value": "6209.76",
           "status": "pass"
         },
         {
@@ -2574,7 +2574,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2586,8 +2586,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "台州",
+          "pre_value": "台州",
           "status": "pass"
         },
         {
@@ -2603,32 +2603,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：10MM*15MM*40cm ，10根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||10根装",
-          "status": "fuzzy"
+          "customs_value": "收纳挂袋|境内自主品牌|不确定是否享惠|收纳挂袋|无纺布 80%+PVC10%+网布5%+纸板3%+不锈钢2%|LAMU牌|无 款号",
+          "pre_value": "收纳挂袋|1|2|收纳挂袋|无纺布80%+PVC10%+网布5%+纸板3%+ 不锈钢2%|LAMU牌|无款号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "40套 / 19千克",
-          "pre_value": "19千克 / - / 40套",
+          "customs_value": "22千克 / 40个",
+          "pre_value": "22千克 / 40个 / 40个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "11.76",
-          "pre_value": "11.76",
+          "customs_value": "23.6900",
+          "pre_value": "23.69",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "470.4",
-          "pre_value": "470.4",
+          "customs_value": "947.60",
+          "pre_value": "947.6",
           "status": "pass"
         },
         {
@@ -2639,7 +2639,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2651,8 +2651,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "合肥其他",
+          "pre_value": "合肥其他",
           "status": "pass"
         },
         {
@@ -2668,32 +2668,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "3924100000",
+          "pre_value": "3924100000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|YECAYE 牌|无型号|10根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|YECAYE牌|无型号|||10根装",
-          "status": "pass"
+          "customs_value": "收纳盒|境内自主品牌|不确定是否享惠|厨房用 |80%PET+20%楠竹|DELAMU牌|无型号",
+          "pre_value": "收纳盒|1|2|厨房用|80%Pet+20%毛竹|DELAMU牌|无型号|||",
+          "status": "fuzzy"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "75套 / 90千克",
-          "pre_value": "90千克 / - / 75套",
+          "customs_value": "375千克 / 105套",
+          "pre_value": "375千克 / - / 105套",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "28.07",
-          "pre_value": "28.07",
+          "customs_value": "62.9900",
+          "pre_value": "62.99",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "2105.25",
-          "pre_value": "2105.25",
+          "customs_value": "6613.95",
+          "pre_value": "6613.95",
           "status": "pass"
         },
         {
@@ -2704,7 +2704,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2716,8 +2716,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "台州",
+          "pre_value": "台州",
           "status": "pass"
         },
         {
@@ -2733,32 +2733,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|2根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||2根装",
+          "customs_value": "收纳挂袋|境内自主品牌|不确定是否享惠|收纳挂袋|78%无纺 布+20%纸板+2%铁|YECAYE牌|无款号",
+          "pre_value": "收纳挂袋|1|2|收纳挂袋|78%无纺布+20%纸板+2%铁|YECAYE牌| 无款号|||",
           "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "72套 / 19千克",
-          "pre_value": "19千克 / - / 72套",
+          "customs_value": "39千克 / 54个",
+          "pre_value": "39千克 / 54个 / 54个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "7",
-          "pre_value": "7",
+          "customs_value": "21.0500",
+          "pre_value": "21.05",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "504",
-          "pre_value": "504",
+          "customs_value": "1136.70",
+          "pre_value": "1136.7",
           "status": "pass"
         },
         {
@@ -2769,7 +2769,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2781,8 +2781,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "金华",
+          "pre_value": "金华",
           "status": "pass"
         },
         {
@@ -2798,32 +2798,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "4202920000",
+          "pre_value": "4202920000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|Wuitaouy 牌|无型号|规格：10MM*15MM*36CM ，8根 装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|Wuitaouy牌|无型号|||8根装",
-          "status": "fuzzy"
+          "customs_value": "收纳挂袋|境内自主品牌|不确定是否享惠|收纳挂袋|75%无纺 布+15%PVC+5%网布+3%纸板+2%铁|YECAYE牌|无款号",
+          "pre_value": "收纳挂袋|1|2|收纳挂袋|75%无纺布+15%PVC+5%网布+3%纸板+2 %铁|YECAYE牌|无款号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "100套 / 32千克",
-          "pre_value": "32千克 / - / 100套",
+          "customs_value": "44千克 / 63个",
+          "pre_value": "44千克 / 63个 / 63个",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "9.77",
-          "pre_value": "9.77",
+          "customs_value": "26.9100",
+          "pre_value": "26.91",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "977",
-          "pre_value": "977",
+          "customs_value": "1695.33",
+          "pre_value": "1695.33",
           "status": "pass"
         },
         {
@@ -2834,7 +2834,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2846,8 +2846,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "金华",
+          "pre_value": "金华",
           "status": "pass"
         },
         {
@@ -2863,32 +2863,32 @@
       "fields": [
         {
           "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
+          "customs_value": "3924900000",
+          "pre_value": "3924900000",
           "status": "pass"
         },
         {
           "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：15MM*10MM*36CM ，6根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||6根装",
-          "status": "fuzzy"
+          "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|PET+201不锈 钢|LAMU牌|无型号",
+          "pre_value": "置物架|1|2|家用|PET+201不锈钢|LAMU牌|无型号|||",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
-          "customs_value": "30套 / 7千克",
-          "pre_value": "7千克 / - / 30套",
+          "customs_value": "15千克 / 10件",
+          "pre_value": "15千克 / - / 10件",
           "status": "pass"
         },
         {
           "field_id": "unit_price",
-          "customs_value": "7.98",
-          "pre_value": "7.98",
+          "customs_value": "34.9200",
+          "pre_value": "34.92",
           "status": "pass"
         },
         {
           "field_id": "total_price",
-          "customs_value": "239.4",
-          "pre_value": "239.4",
+          "customs_value": "349.20",
+          "pre_value": "349.2",
           "status": "pass"
         },
         {
@@ -2899,7 +2899,7 @@
         },
         {
           "field_id": "origin_country",
-          "customs_value": "东莞",
+          "customs_value": "中国",
           "pre_value": "中国 (CHN)",
           "status": "pass"
         },
@@ -2911,333 +2911,8 @@
         },
         {
           "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
-          "status": "pass"
-        },
-        {
-          "field_id": "duty_exemption",
-          "customs_value": "照章",
-          "pre_value": "照章征税 (1)",
-          "status": "pass"
-        }
-      ]
-    },
-    {
-      "item_no": "44",
-      "fields": [
-        {
-          "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
-          "status": "pass"
-        },
-        {
-          "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：40CM*3CM*1.7CM ，10根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||10根装",
-          "status": "fuzzy"
-        },
-        {
-          "field_id": "quantity_unit",
-          "customs_value": "105套 / 100千克",
-          "pre_value": "100千克 / - / 105套",
-          "status": "pass"
-        },
-        {
-          "field_id": "unit_price",
-          "customs_value": "18.08",
-          "pre_value": "18.08",
-          "status": "pass"
-        },
-        {
-          "field_id": "total_price",
-          "customs_value": "1898.4",
-          "pre_value": "1898.4",
-          "status": "pass"
-        },
-        {
-          "field_id": "currency",
-          "customs_value": "人民币",
-          "pre_value": "人民币",
-          "status": "pass"
-        },
-        {
-          "field_id": "origin_country",
-          "customs_value": "东莞",
-          "pre_value": "中国 (CHN)",
-          "status": "pass"
-        },
-        {
-          "field_id": "final_dest_country",
-          "customs_value": "美国",
-          "pre_value": "美国 (USA)",
-          "status": "pass"
-        },
-        {
-          "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
-          "status": "pass"
-        },
-        {
-          "field_id": "duty_exemption",
-          "customs_value": "照章",
-          "pre_value": "照章征税 (1)",
-          "status": "pass"
-        }
-      ]
-    },
-    {
-      "item_no": "45",
-      "fields": [
-        {
-          "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
-          "status": "pass"
-        },
-        {
-          "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：15MM*10MM*36CM ，6根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||6根装",
-          "status": "fuzzy"
-        },
-        {
-          "field_id": "quantity_unit",
-          "customs_value": "60套 / 14千克",
-          "pre_value": "14千克 / - / 60套",
-          "status": "pass"
-        },
-        {
-          "field_id": "unit_price",
-          "customs_value": "7.98",
-          "pre_value": "7.98",
-          "status": "pass"
-        },
-        {
-          "field_id": "total_price",
-          "customs_value": "478.8",
-          "pre_value": "478.8",
-          "status": "pass"
-        },
-        {
-          "field_id": "currency",
-          "customs_value": "人民币",
-          "pre_value": "人民币",
-          "status": "pass"
-        },
-        {
-          "field_id": "origin_country",
-          "customs_value": "东莞",
-          "pre_value": "中国 (CHN)",
-          "status": "pass"
-        },
-        {
-          "field_id": "final_dest_country",
-          "customs_value": "美国",
-          "pre_value": "美国 (USA)",
-          "status": "pass"
-        },
-        {
-          "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
-          "status": "pass"
-        },
-        {
-          "field_id": "duty_exemption",
-          "customs_value": "照章",
-          "pre_value": "照章征税 (1)",
-          "status": "pass"
-        }
-      ]
-    },
-    {
-      "item_no": "46",
-      "fields": [
-        {
-          "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
-          "status": "pass"
-        },
-        {
-          "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：40CM*3CM*1.7CM ，10根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||10根装",
-          "status": "fuzzy"
-        },
-        {
-          "field_id": "quantity_unit",
-          "customs_value": "105套 / 100千克",
-          "pre_value": "100千克 / - / 105套",
-          "status": "pass"
-        },
-        {
-          "field_id": "unit_price",
-          "customs_value": "18.08",
-          "pre_value": "18.08",
-          "status": "pass"
-        },
-        {
-          "field_id": "total_price",
-          "customs_value": "1898.4",
-          "pre_value": "1898.4",
-          "status": "pass"
-        },
-        {
-          "field_id": "currency",
-          "customs_value": "人民币",
-          "pre_value": "人民币",
-          "status": "pass"
-        },
-        {
-          "field_id": "origin_country",
-          "customs_value": "东莞",
-          "pre_value": "中国 (CHN)",
-          "status": "pass"
-        },
-        {
-          "field_id": "final_dest_country",
-          "customs_value": "美国",
-          "pre_value": "美国 (USA)",
-          "status": "pass"
-        },
-        {
-          "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
-          "status": "pass"
-        },
-        {
-          "field_id": "duty_exemption",
-          "customs_value": "照章",
-          "pre_value": "照章征税 (1)",
-          "status": "pass"
-        }
-      ]
-    },
-    {
-      "item_no": "47",
-      "fields": [
-        {
-          "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
-          "status": "pass"
-        },
-        {
-          "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆|PVC|DELAMU 牌|无型号|规格：10MM*15MM*40cm ，20根装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号|||20根装",
-          "status": "fuzzy"
-        },
-        {
-          "field_id": "quantity_unit",
-          "customs_value": "120套 / 113千克",
-          "pre_value": "113千克 / - / 120套",
-          "status": "pass"
-        },
-        {
-          "field_id": "unit_price",
-          "customs_value": "21.08",
-          "pre_value": "21.08",
-          "status": "pass"
-        },
-        {
-          "field_id": "total_price",
-          "customs_value": "2529.6",
-          "pre_value": "2529.6",
-          "status": "pass"
-        },
-        {
-          "field_id": "currency",
-          "customs_value": "人民币",
-          "pre_value": "人民币",
-          "status": "pass"
-        },
-        {
-          "field_id": "origin_country",
-          "customs_value": "东莞",
-          "pre_value": "中国 (CHN)",
-          "status": "pass"
-        },
-        {
-          "field_id": "final_dest_country",
-          "customs_value": "美国",
-          "pre_value": "美国 (USA)",
-          "status": "pass"
-        },
-        {
-          "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
-          "status": "pass"
-        },
-        {
-          "field_id": "duty_exemption",
-          "customs_value": "照章",
-          "pre_value": "照章征税 (1)",
-          "status": "pass"
-        }
-      ]
-    },
-    {
-      "item_no": "48",
-      "fields": [
-        {
-          "field_id": "product_code",
-          "customs_value": "3926909090",
-          "pre_value": "3926909090",
-          "status": "pass"
-        },
-        {
-          "field_id": "product_name_spec",
-          "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|Wuitaouy 牌|无型号|规格：24MM*14MM*36CM ，4根 装",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|Wuitaouy牌|无型号|||4根装",
-          "status": "fuzzy"
-        },
-        {
-          "field_id": "quantity_unit",
-          "customs_value": "480套 / 102千克",
-          "pre_value": "102千克 / - / 480套",
-          "status": "pass"
-        },
-        {
-          "field_id": "unit_price",
-          "customs_value": "5.05",
-          "pre_value": "5.05",
-          "status": "pass"
-        },
-        {
-          "field_id": "total_price",
-          "customs_value": "2424",
-          "pre_value": "2424",
-          "status": "pass"
-        },
-        {
-          "field_id": "currency",
-          "customs_value": "人民币",
-          "pre_value": "人民币",
-          "status": "pass"
-        },
-        {
-          "field_id": "origin_country",
-          "customs_value": "东莞",
-          "pre_value": "中国 (CHN)",
-          "status": "pass"
-        },
-        {
-          "field_id": "final_dest_country",
-          "customs_value": "美国",
-          "pre_value": "美国 (USA)",
-          "status": "pass"
-        },
-        {
-          "field_id": "domestic_source",
-          "customs_value": "东莞",
-          "pre_value": "东莞",
+          "customs_value": "宁波其他",
+          "pre_value": "宁波其他",
           "status": "pass"
         },
         {

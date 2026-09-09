@@ -1,0 +1,197 @@
+{
+  "contract_no": {
+    "customs": "20260904008",
+    "pre": "20260904008",
+    "matched": true
+  },
+  "summary": {
+    "pass_count": 24,
+    "fail_count": 0,
+    "fuzzy_count": 0,
+    "manual_count": 5
+  },
+  "warnings": [],
+  "header_fields": [
+    {
+      "field_id": "sender_unit",
+      "customs_value": "深圳市德拉姆供应链有限公司",
+      "pre_value": "深圳市德拉姆供应链有限公司",
+      "status": "pass"
+    },
+    {
+      "field_id": "buyer",
+      "customs_value": "DELAMU (HONG KONG) LIMITED",
+      "pre_value": "DELAMU (HONG KONG) LIMITED",
+      "status": "pass"
+    },
+    {
+      "field_id": "business_unit",
+      "customs_value": "深圳市德拉姆供应链有限公司",
+      "pre_value": "深圳市德拉姆供应链有限公司",
+      "status": "pass"
+    },
+    {
+      "field_id": "contract_no",
+      "customs_value": "20260904008",
+      "pre_value": "20260904008",
+      "status": "pass"
+    },
+    {
+      "field_id": "package_type",
+      "customs_value": "纸制或纤维板制盒/箱",
+      "pre_value": "(22)纸制或纤维板制盒/箱",
+      "status": "pass"
+    },
+    {
+      "field_id": "transport_mode",
+      "customs_value": "海卡",
+      "pre_value": "/水路运输",
+      "status": "manual"
+    },
+    {
+      "field_id": "trade_mode",
+      "customs_value": "一般贸易",
+      "pre_value": "(0110)一般贸易",
+      "status": "pass"
+    },
+    {
+      "field_id": "trade_country",
+      "customs_value": "中国香港",
+      "pre_value": "(HKG)中国香港",
+      "status": "pass"
+    },
+    {
+      "field_id": "quantity",
+      "customs_value": "428",
+      "pre_value": "428",
+      "status": "pass"
+    },
+    {
+      "field_id": "gross_weight",
+      "customs_value": "7105",
+      "pre_value": "7105",
+      "status": "pass"
+    },
+    {
+      "field_id": "net_weight",
+      "customs_value": "6677",
+      "pre_value": "6677",
+      "status": "pass"
+    },
+    {
+      "field_id": "deal_mode",
+      "customs_value": "FOB",
+      "pre_value": "(3)FOB",
+      "status": "pass"
+    },
+    {
+      "field_id": "duty_nature",
+      "customs_value": "一般征税",
+      "pre_value": "(101)一般征税",
+      "status": "pass"
+    },
+    {
+      "field_id": "dest_country",
+      "customs_value": "美国",
+      "pre_value": "美国",
+      "status": "pass"
+    },
+    {
+      "field_id": "dest_port",
+      "customs_value": "美国",
+      "pre_value": "美国",
+      "status": "pass"
+    },
+    {
+      "field_id": "exit_customs",
+      "customs_value": "",
+      "pre_value": "北仑海关",
+      "status": "manual"
+    },
+    {
+      "field_id": "exit_port",
+      "customs_value": "",
+      "pre_value": "宁波北仑港港区",
+      "status": "manual"
+    },
+    {
+      "field_id": "attached_docs",
+      "customs_value": "",
+      "pre_value": "随附单证2:发票;代理报关委托协议（电子）",
+      "status": "manual"
+    },
+    {
+      "field_id": "marks_remarks",
+      "customs_value": "备注:",
+      "pre_value": "备注:自拼 N/M",
+      "status": "manual"
+    }
+  ],
+  "items": [
+    {
+      "item_no": "1",
+      "fields": [
+        {
+          "field_id": "product_code",
+          "customs_value": "7323990000",
+          "pre_value": "7323990000",
+          "status": "pass"
+        },
+        {
+          "field_id": "product_name_spec",
+          "customs_value": "收纳架|境内自主品牌|不确定是否享惠|厨房收纳用|97%铁 +2%塑料+1%木质把手|未搪瓷|DELAMU牌",
+          "pre_value": "收纳架|1|2|厨房收纳用|97%铁+2%塑料+1%木质把手|未 搪瓷|DELAMU牌",
+          "status": "pass"
+        },
+        {
+          "field_id": "quantity_unit",
+          "customs_value": "6677千克 / 1712件",
+          "pre_value": "6677千克 / 1712件",
+          "status": "pass"
+        },
+        {
+          "field_id": "unit_price",
+          "customs_value": "59.8100",
+          "pre_value": "59.8100",
+          "status": "pass"
+        },
+        {
+          "field_id": "total_price",
+          "customs_value": "102394.72",
+          "pre_value": "102394.72",
+          "status": "pass"
+        },
+        {
+          "field_id": "currency",
+          "customs_value": "人民币",
+          "pre_value": "人民币",
+          "status": "pass"
+        },
+        {
+          "field_id": "origin_country",
+          "customs_value": "中国",
+          "pre_value": "中国",
+          "status": "pass"
+        },
+        {
+          "field_id": "final_dest_country",
+          "customs_value": "美国",
+          "pre_value": "美国",
+          "status": "pass"
+        },
+        {
+          "field_id": "domestic_source",
+          "customs_value": "中山其他",
+          "pre_value": "中山其他",
+          "status": "pass"
+        },
+        {
+          "field_id": "duty_exemption",
+          "customs_value": "照章",
+          "pre_value": "照章征税(1)",
+          "status": "pass"
+        }
+      ]
+    }
+  ]
+}

@@ -10,6 +10,7 @@ warning——把「静默出错」变成「当场显形」。
 - C2 商品编码：提取到的编码须能在表格单元格中找到     → #29 幻影商品、整条漏提
 - C3 合同协议号与单元格一致                          → 表头错位
 - C4 件数/毛重/净重与单元格一致（数值比较）           → #8 类
+- C5 两侧镜像：项号集合对称 + 同项号价格字段对称      → #26/#32 类单侧漏提/错位
 
 只报 warning，不参与 pass/fail 判定，不改变比对结果。
 """
@@ -72,16 +73,29 @@ def crosscheck_extraction(customs_pages, pre_pages, extracted):
             cells_by_page.append((p, _cell_texts(p)))
     all_cells = " \n ".join(t for _, ts in cells_by_page for t in ts)
 
-    # ---- C2: 商品编码都应能在表格单元格中找到（幻影/漏提） ----
-    for side, items_key in (("报关单", "customs_items"), ("预录单", "pre_items")):
+    # ---- C2: 商品编码须能在「本侧」单元格或页面文本中找到（幻影/漏提/跨侧污染） ----
+    # V1 把两侧单元格合并成一个池：本侧提取错的编码只要在另一侧出现就能蒙混
+    # （#33）。V2 按侧分池；但 find_tables 对部分预录单格式抓不到编码列
+    # （20260909001 实测 4/4 编码不在本侧单元格），故再兜底本侧页面原始文本
+    # （词边界匹配）——幻影/截断编码（#29 的 2026090400、#23 残留的 732399000）
+    # 在本侧长数字串中间取不到词边界，仍会报警，真值则放行。
+    for side, items_key, pages in (("报关单", "customs_items", customs_pages),
+                                   ("预录单", "pre_items", pre_pages)):
+        side_cells = " \n ".join(t for p, ts in cells_by_page if p in list(pages)
+                                 for t in ts)
+        side_text = "\n".join(getattr(p, "text", "") or "" for p in pages)
         for it in extracted.get(items_key, []):
             code = str(it.get("product_code") or "")
             item_no = it.get("item_no", "?")
-            if code and not re.search(rf"\b{re.escape(code)}\b", all_cells):
-                warnings.append({
-                    "source": "crosscheck", "check": "C2",
-                    "message": f"{side}项号{item_no} 商品编码{code}未在任何表格单元格中出现（疑幻影或编码错）",
-                })
+            if not code:
+                continue
+            if re.search(rf"\b{re.escape(code)}\b", side_cells) or \
+               re.search(rf"\b{re.escape(code)}\b", side_text):
+                continue
+            warnings.append({
+                "source": "crosscheck", "check": "C2",
+                "message": f"{side}项号{item_no} 商品编码{code}未在本侧表格单元格或页面文本中出现（疑幻影或跨侧污染）",
+            })
 
     # ---- C1: 总价 ≈ 单价 × 某一数量 ----
     # quantity_unit 可能含多个数量（法定第一数量"6677千克"+成交数量"1712件"），
@@ -133,5 +147,50 @@ def crosscheck_extraction(customs_pages, pre_pages, extracted):
                 "source": "crosscheck", "check": "C4",
                 "message": f"{side}{label}={val:g}未在任何表格单元格数值中出现（疑提取错位或报关单侧未填）",
             })
+
+    # ---- C5: 两侧镜像——项号集合对称 + 同项号价格字段对称（#33） ----
+    # 动机：提取层的安全网只判"结果非空"，单侧整条漏提/字段被吞（#26 丢 12 条、
+    # #32 单商品续页价格被吞进数量列）在单侧视角下完全合法，只有拿另一侧做
+    # 镜像才显形。C1 对"无价格"的 item 直接跳过，恰好放过了这类错——C5 补位。
+    def _has_price(it):
+        return _num(it.get("unit_price")) is not None or _num(it.get("total_price")) is not None
+
+    cus_map = {str(it.get("item_no") or "").strip(): it
+               for it in extracted.get("customs_items", [])
+               if str(it.get("item_no") or "").strip()}
+    pre_map = {str(it.get("item_no") or "").strip(): it
+               for it in extracted.get("pre_items", [])
+               if str(it.get("item_no") or "").strip()}
+
+    def _no_sort_key(no):
+        try:
+            return (0, int(no), "")
+        except ValueError:
+            return (1, 0, no)
+
+    for no in sorted(set(cus_map) | set(pre_map), key=_no_sort_key):
+        in_c, in_p = no in cus_map, no in pre_map
+        if in_c and not in_p:
+            warnings.append({
+                "source": "crosscheck", "check": "C5",
+                "message": f"项号{no}仅报关单侧存在，预录单侧缺失（疑预录单漏提）",
+            })
+        elif in_p and not in_c:
+            warnings.append({
+                "source": "crosscheck", "check": "C5",
+                "message": f"项号{no}仅预录单侧存在，报关单侧缺失（疑幻影商品或报关单漏提）",
+            })
+        else:
+            c_price, p_price = _has_price(cus_map[no]), _has_price(pre_map[no])
+            if c_price and not p_price:
+                warnings.append({
+                    "source": "crosscheck", "check": "C5",
+                    "message": f"预录单项号{no}价格字段缺失，报关单侧有单价/总价（疑漏提或错位）",
+                })
+            elif p_price and not c_price:
+                warnings.append({
+                    "source": "crosscheck", "check": "C5",
+                    "message": f"报关单项号{no}价格字段缺失，预录单侧有单价/总价（疑漏提或错位）",
+                })
 
     return warnings

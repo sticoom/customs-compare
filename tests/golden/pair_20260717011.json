@@ -10,6 +10,13 @@
     "fuzzy_count": 12,
     "manual_count": 5
   },
+  "warnings": [
+    {
+      "source": "crosscheck",
+      "check": "C2",
+      "message": "预录单项号21 商品编码732399000未在本侧表格单元格或页面文本中出现（疑幻影或跨侧污染）"
+    }
+  ],
   "header_fields": [
     {
       "field_id": "sender_unit",

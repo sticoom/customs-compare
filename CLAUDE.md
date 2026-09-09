@@ -94,10 +94,10 @@ app.py → 展示结果 + excel_exporter.py 导出报告
 
 ### table_crosscheck.py — 表格交叉校验层（第二意见）
 
-- `crosscheck_extraction(customs_pages, pre_pages, extracted)` → warnings 列表
-- 用 PyMuPDF `find_tables` 单元格（独立于主提取的路径）交叉核对：C1 总价=单价×任一数量、C2 商品编码须在单元格中、C3 合同号、C4 件毛净重
-- **只报警不改变 pass/fail**；结果挂 `extract_all_fields` 返回值的 `warnings` 键，diagnose/app 各有展示段
-- 详见 docs/memory.md #31——校验层比提取层更怕误报，改核对逻辑前先读教训
+- `crosscheck_extraction(customs_pages, pre_pages, extracted)` → warnings 列表（调用点会把预录单续页一并传入）
+- 用 PyMuPDF `find_tables` 单元格（独立于主提取的路径）交叉核对：C1 总价=单价×任一数量、C2 商品编码须在**本侧**单元格或页面文本中（按侧分池，防跨侧污染）、C3 合同号、C4 件毛净重、C5 两侧镜像（项号集合对称 + 同项号价格字段对称）
+- **只报警不改变 pass/fail**；结果挂 `extract_all_fields` 返回值的 `warnings` 键，diagnose/app 各有展示段；warnings 已固化进回归 golden
+- 详见 docs/memory.md #31（防误报教训）/#33（按侧分池与镜像校验的盲区教训），改核对逻辑前先读
 
 ### comparator.py — 比对引擎
 

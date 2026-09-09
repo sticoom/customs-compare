@@ -58,6 +58,27 @@ PAIRS = [
         "formats": ["报关资料综合包", "标准预录单"],
         "notes": "20260612002 批次，4列网格/综合包格式",
     },
+    {
+        "id": "pair_20260902003",
+        "customs_pdf": "tests/fixtures/pair_20260902003_customs.pdf",
+        "pre_pdf": "tests/fixtures/pair_20260902003_pre.pdf",
+        "formats": ["报关资料综合包", "标准纵向预录单+续页"],
+        "notes": "#26 分类器误判横向 / #28 货源地粘连征免 故障批次（1014箱）",
+    },
+    {
+        "id": "pair_20260904008",
+        "customs_pdf": "tests/fixtures/pair_20260904008_customs.pdf",
+        "pre_pdf": "tests/fixtures/pair_20260904008_pre.pdf",
+        "formats": ["报关资料综合包", "仿报关单版式核对单"],
+        "notes": "#29 幻影商品 / #30 半角标签 / #31 C1 容差教训 故障批次（428箱）",
+    },
+    {
+        "id": "pair_20260909001",
+        "customs_pdf": "tests/fixtures/pair_20260909001_customs.pdf",
+        "pre_pdf": "tests/fixtures/pair_20260909001_pre.pdf",
+        "formats": ["报关资料综合包", "标准纵向预录单+单商品续页"],
+        "notes": "#32 页脚数字污染价格列中位数 故障批次（935箱）；表头含真实单据差异（运输方式/指运港）",
+    },
 ]
 
 SINGLES = [
@@ -88,6 +109,9 @@ def snapshot_pair(reg):
     return {
         "contract_no": report["contract_no"],
         "summary": report["summary"],
+        # 交叉校验告警一并固化（#33）：校验层自身也要回归——告警的意外增减
+        # 都会显形，防止校验层悄悄失效或开始误报
+        "warnings": report.get("warnings", []),
         "header_fields": [
             {
                 "field_id": h["field_id"],

@@ -10,6 +10,7 @@
     "fuzzy_count": 0,
     "manual_count": 5
   },
+  "warnings": [],
   "header_fields": [
     {
       "field_id": "sender_unit",

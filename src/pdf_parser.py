@@ -1255,6 +1255,21 @@ def extract_pre_recording_standard_vertical(page_info: PageInfo, spans: list = N
                         col_positions["product_code"] = s["x"] + 30
                     break
 
+    # 页脚检测提前到这里：下方"价格列推断/修正"的候选池必须排除页脚区域。
+    # 页脚的表体总金额/总净重/总毛重/总件数（x≈614-615）是纯数字 span，
+    # 会混进价格列候选；单商品续页里真实价格 span 只有 2 个，页脚数字反超后
+    # 中位数被拉到页脚 x 上，价格列推断到目的国/货源地之间，全行列错位（#32）。
+    # 主提取的 data_spans 页脚过滤复用此 footer_y。
+    footer_keywords = ["特殊关系确认", "申报单位", "报关人员", "兹申明", "自报自缴", "自缴自报"]
+    footer_y = 9999
+    for s in spans:
+        if s["y"] > header_y + 5:
+            for kw in footer_keywords:
+                if kw in s["text"]:
+                    if s["y"] < footer_y:
+                        footer_y = s["y"]
+                    break
+
     # 检测价格列是分开的还是合并的（同一 x 坐标）
     _price_x_vals = set()
     for _k in ("unit_price_col", "total_price_col", "currency_col"):
@@ -1275,14 +1290,19 @@ def extract_pre_recording_standard_vertical(page_info: PageInfo, spans: list = N
     _price_col_name = "unit_price_col" if _separate_price_cols else "price"
     if _price_col_name not in col_positions and "quantity" in col_positions:
         # 找数据中看起来像价格的 span（纯数字带小数点，如 60.2900）
-        data_spans_after_header = [sp for sp in spans if sp["y"] > header_y + 5]
+        # 候选池排除页脚（footer_y），且上界不超过原产国列（#32）
+        data_spans_after_header = [sp for sp in spans
+                                   if header_y + 5 < sp["y"] < footer_y - 2]
         qty_x = col_positions["quantity"]
+        _origin_ub = col_positions.get("origin_country")
+        if _origin_ub is not None and _origin_ub <= qty_x + 30:
+            _origin_ub = None  # 原产国列不在数量列右侧时不能作上界
         # 价格通常在数量列的右侧，找比 quantity x 更大且看起来像价格的 span
         price_candidates = []
         for ds in data_spans_after_header:
             if PRICE_RE.match(ds["text"].strip()):
                 # 价格数字的 x 应该大于 quantity x，且在 origin_country 之前
-                if ds["x"] > qty_x + 30:
+                if ds["x"] > qty_x + 30 and (_origin_ub is None or ds["x"] < _origin_ub - 10):
                     price_candidates.append(ds["x"])
         if price_candidates:
             # 取中位数作为 price 列位置
@@ -1297,15 +1317,22 @@ def extract_pre_recording_standard_vertical(page_info: PageInfo, spans: list = N
     _data_refined_cols = set()  # 记录由数据驱动修正的列
     _merged_price_x = col_positions.get("price") or col_positions.get("unit_price_col")
     if _merged_price_x is not None:
-        data_spans_after_header = [sp for sp in spans if sp["y"] > header_y + 5]
+        # 候选池排除页脚；价格候选加原产国列上界——真实价格列必在原产国列
+        # 左侧，页脚汇总数字（x≈614-615）在原产国右侧，天然被排除（#32）。
+        # 原产国列与价格列共享表头 x 时（abs<10）不作上界，否则上下界矛盾。
+        data_spans_after_header = [sp for sp in spans
+                                   if header_y + 5 < sp["y"] < footer_y - 2]
         _source_x = col_positions.get("source", 690)
+        _origin_x_ub = col_positions.get("origin_country")
+        if _origin_x_ub is not None and abs(_origin_x_ub - _merged_price_x) < 10:
+            _origin_x_ub = None
         # 找数据中价格和国家名的 x 分布
         _price_data_xs = []
         _country_data_xs = []
         for ds in data_spans_after_header:
             txt = ds["text"].strip()
             if PRICE_RE.match(txt):
-                if ds["x"] > _merged_price_x - 5:
+                if ds["x"] > _merged_price_x - 5 and (_origin_x_ub is None or ds["x"] < _origin_x_ub - 10):
                     _price_data_xs.append(ds["x"])
             elif re.match(r"^[\u4e00-\u9fff]{2,3}$", txt):
                 # 只收集在 price 和 source 列之间的中文词（排除货源地）
@@ -1383,17 +1410,7 @@ def extract_pre_recording_standard_vertical(page_info: PageInfo, spans: list = N
     if not data_spans:
         return []
 
-    # 检测页脚位置（遇到以下文字停止提取）
-    footer_keywords = ["特殊关系确认", "申报单位", "报关人员", "兹申明", "自报自缴", "自缴自报"]
-    footer_y = 9999
-    for s in data_spans:
-        for kw in footer_keywords:
-            if kw in s["text"]:
-                if s["y"] < footer_y:
-                    footer_y = s["y"]
-                break
-
-    # 过滤掉页脚区域
+    # 过滤掉页脚区域（footer_y 已在列推断前统一算好，见上方页脚检测块）
     data_spans = [s for s in data_spans if s["y"] < footer_y - 2]
     if not data_spans:
         return []
