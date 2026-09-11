@@ -971,14 +971,31 @@ def _find_horizontal_item_anchor(spans: list):
     相同（同列重量与项号 x 仅差 ~0.2px，每列最多 2 个同 x）。若 ≥3 个整数 span 聚在
     同一 x，必是纵向项号列，直接判非横向——否则"项号与同 y 的单价整数巧合聚类（数值
     恰相邻）"会误判为横向（20260902003 批次：项号 18 与单价 20 同 y=407.6）。
+    同 x 否决须同时满足"值呈连续序号"（#34）：表头汇总值（毛重/净重/件数如 247/228/19）
+    也会聚在同一 x 形成三连，但值互不连续——它们不是项号列，不能触发否决
+    （20260910006 批次 Page0 因此被误否决，真横向页走了纵向提取，全批错位）。
     """
     int_spans = [s for s in spans if re.match(r"^\d{1,3}$", s["text"].strip())]
-    xs = sorted(s["x"] for s in int_spans)
-    run = 1
-    for i in range(1, len(xs)):
-        run = run + 1 if xs[i] - xs[i - 1] < 2 else 1
-        if run >= 3:
-            return None
+
+    def _is_item_no_column(run_spans):
+        if len(run_spans) < 3:
+            return False
+        vals = sorted({int(s["text"]) for s in run_spans})
+        return len(vals) >= 3 and all(vals[i + 1] - vals[i] in (1, 2)
+                                      for i in range(len(vals) - 1))
+
+    run = []
+    prev_x = None
+    for s in sorted(int_spans, key=lambda k: k["x"]):
+        if prev_x is not None and s["x"] - prev_x < 2:
+            run.append(s)
+        else:
+            if _is_item_no_column(run):
+                return None
+            run = [s]
+        prev_x = s["x"]
+    if _is_item_no_column(run):
+        return None
     y_clusters = []
     for s in int_spans:
         for c in y_clusters:
@@ -1059,7 +1076,7 @@ def extract_pre_recording_items_horizontal(page_info: PageInfo, spans: list = No
                 "currency": "", "origin_country": "", "dest_country": "", "final_dest_country": "",
                 "domestic_source": "", "duty_exemption": ""}
         col_sorted = sorted(col, key=lambda s: -s["y"])  # 从下往上
-        prices, countries, names, specs = [], [], [], []
+        prices, countries, names = [], [], []
         code_y = None
         for s in col_sorted:
             t = s["text"].strip()
@@ -1068,8 +1085,7 @@ def extract_pre_recording_items_horizontal(page_info: PageInfo, spans: list = No
                 code_y = s["y"]
                 continue
             if "|" in t:
-                specs.append(t)
-                continue
+                continue  # 规格改由函数末尾页宽重归位处理（续段 x 偏移会穿列，见 #34）
             if _QTY.match(t):
                 continue  # 数量改由函数末尾的行级提取（横向格式 x 偏移大，列内会串列）
             if PRICE_RE.match(t) and ("." in t or len(t) >= 4) and not re.match(r"^\d{1,3}$", t):
@@ -1101,8 +1117,6 @@ def extract_pre_recording_items_horizontal(page_info: PageInfo, spans: list = No
             if re.match(r"^[一-鿿]{2,8}$", t):  # 潜在商品名称
                 names.append((s["y"], t))
                 continue
-        if specs:
-            item["spec_model"] = " ".join(specs)
         if names:
             if code_y is not None:
                 above = [(y, n) for y, n in names if y < code_y]
@@ -1154,6 +1168,23 @@ def extract_pre_recording_items_horizontal(page_info: PageInfo, spans: list = No
         return None
 
     _item_by_no = {it["item_no"]: it for it in items}
+
+    # 规格重归位（#34）：规格续段与数量一样带 +20px 系统性 x 右偏（项号x+20.5，
+    # 穿过列中点边界=项号x+16 落到下一列），主规格只偏 +10 不穿列。复用数量的
+    # 项号 x 区间 [cx-2, next_cx-2) 重归位，只影响含 "|" 的 span；多段按 y 升序
+    # （自上而下阅读序）拼接，主段在前、续段在后。
+    _spec_by_item = {it["item_no"]: [] for it in items}
+    for s in spans:
+        if "|" not in s["text"]:
+            continue
+        owner = _qty_owner(s["x"])
+        if owner and owner in _spec_by_item:
+            _spec_by_item[owner].append((s["y"], s["text"].strip()))
+    for it in items:
+        parts = sorted(_spec_by_item[it["item_no"]], key=lambda p: p[0])
+        if parts:
+            it["spec_model"] = " ".join(p[1] for p in parts)
+
     for it in items:
         it["_qty_main"] = []
         it["_qty_wt"] = []

@@ -5,9 +5,9 @@
     "matched": true
   },
   "summary": {
-    "pass_count": 209,
+    "pass_count": 220,
     "fail_count": 3,
-    "fuzzy_count": 12,
+    "fuzzy_count": 1,
     "manual_count": 5
   },
   "warnings": [
@@ -276,8 +276,8 @@
         {
           "field_id": "product_name_spec",
           "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：30MM*17MM*40CM，",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号",
-          "status": "fuzzy"
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号 |||30MM*17MM*40CM，15根装",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
@@ -341,8 +341,8 @@
         {
           "field_id": "product_name_spec",
           "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|98%铁+2%PP| 未搪瓷|DELAMU牌",
-          "pre_value": "置物架||||30MM*17MM*40CM，15根装 1|2|家用|98%铁+2%PP|未搪瓷|DELAMU牌",
-          "status": "fuzzy"
+          "pre_value": "置物架|1|2|家用|98%铁+2%PP|未搪瓷|DELAMU牌",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
@@ -471,8 +471,8 @@
         {
           "field_id": "product_name_spec",
           "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：25MM*13MM*40CM，",
-          "pre_value": "塑料线槽||||25MM*13MM*40CM，30根装 1|2|收纳线缆|PVC|DELAMU牌|无型号",
-          "status": "fuzzy"
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号 |||25MM*13MM*40CM，30根装",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
@@ -601,7 +601,7 @@
         {
           "field_id": "product_name_spec",
           "customs_value": "地板垫|境内自主品牌|不确定是否享惠|PVC|DELAMU牌|无 型号|保护地板|121.92*91.44*0.17cm",
-          "pre_value": "境内自主品牌|1|2|PVC|DELAMU牌|无型号|保护地板",
+          "pre_value": "境内自主品牌|1|2|PVC|DELAMU牌|无型号|保护地板 |||121.92*91.44*0.17cm",
           "status": "fail"
         },
         {
@@ -666,8 +666,8 @@
         {
           "field_id": "product_name_spec",
           "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：24MM*14MM*40CM，",
-          "pre_value": "塑料线槽||||121.92*91.44*0.17cm 1|2|收纳线缆|PVC|DELAMU牌|无型号",
-          "status": "fuzzy"
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号 |||24MM*14MM*40CM，15根装",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
@@ -731,8 +731,8 @@
         {
           "field_id": "product_name_spec",
           "customs_value": "收纳箱|境内自主品牌|不确定是否享惠|收纳箱|牛津布 85%+金属铁5%+密度板5%+EVA5%|YECAYE牌|3个装",
-          "pre_value": "收纳箱||||24MM*14MM*40CM，15根装 1|2|收纳箱|牛津布85%+金属铁5%+密度板",
-          "status": "fuzzy"
+          "pre_value": "收纳箱|1|2|收纳箱|牛津布85%+金属铁5%+密度板 5%+EVA5%|YECAYE牌|无款号|||3个装",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
@@ -796,8 +796,8 @@
         {
           "field_id": "product_name_spec",
           "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|98%PET+2%不 锈钢|LAMU牌|无型号",
-          "pre_value": "置物架|5%+EVA5%|YECAYE牌|无款号|||3个装 1|2|家用|98%PET+2%不锈钢|LAMU牌|无型号",
-          "status": "fuzzy"
+          "pre_value": "置物架|1|2|家用|98%PET+2%不锈钢|LAMU牌|无型号",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
@@ -861,8 +861,8 @@
         {
           "field_id": "product_name_spec",
           "customs_value": "收纳箱|境内自主品牌|不确定是否享惠|收纳箱|牛津布 85%+金属铁5%+密度板5%+EVA5%|YECAYE牌|3个装",
-          "pre_value": "收纳箱|1|2|收纳箱|牛津布85%+金属铁5%+密度板",
-          "status": "fuzzy"
+          "pre_value": "收纳箱|1|2|收纳箱|牛津布85%+金属铁5%+密度板 5%+EVA5%|YECAYE牌|无款号|||3个装",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
@@ -926,8 +926,8 @@
         {
           "field_id": "product_name_spec",
           "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：25MM*13MM*40CM，",
-          "pre_value": "塑料线槽|5%+EVA5%|YECAYE牌|无款号|||3个装 1|2|收纳线缆|PVC|DELAMU牌|无型号",
-          "status": "fuzzy"
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号 |||25MM*13MM*40CM，40根装",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
@@ -991,8 +991,8 @@
         {
           "field_id": "product_name_spec",
           "customs_value": "置物架|境内自主品牌|不确定是否享惠|家用|98%PET+2%不 锈钢|LAMU牌|无型号",
-          "pre_value": "置物架||||25MM*13MM*40CM，40根装 1|2|家用|98%PET+2%不锈钢|LAMU牌|无型号",
-          "status": "fuzzy"
+          "pre_value": "置物架|1|2|家用|98%PET+2%不锈钢|LAMU牌|无型号",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
@@ -1316,8 +1316,8 @@
         {
           "field_id": "product_name_spec",
           "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：30MM*17MM*40CM，",
-          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号",
-          "status": "fuzzy"
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号 |||30MM*17MM*40CM，40根装",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",
@@ -1381,8 +1381,8 @@
         {
           "field_id": "product_name_spec",
           "customs_value": "塑料线槽|境内自主品牌|不确定是否享惠|收纳线缆 |PVC|DELAMU牌|无型号|规格：30MM*17MM*40CM，",
-          "pre_value": "塑料线槽||||30MM*17MM*40CM，40根装 |||30MM*17MM*40CM，30根装 1|2|收纳线缆|PVC|DELAMU牌|无型号",
-          "status": "fuzzy"
+          "pre_value": "塑料线槽|1|2|收纳线缆|PVC|DELAMU牌|无型号 |||30MM*17MM*40CM，30根装",
+          "status": "pass"
         },
         {
           "field_id": "quantity_unit",

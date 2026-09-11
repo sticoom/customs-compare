@@ -79,6 +79,13 @@ PAIRS = [
         "formats": ["报关资料综合包", "标准纵向预录单+单商品续页"],
         "notes": "#32 页脚数字污染价格列中位数 故障批次（935箱）；表头含真实单据差异（运输方式/指运港）",
     },
+    {
+        "id": "pair_20260910006",
+        "customs_pdf": "tests/fixtures/pair_20260910006_customs.pdf",
+        "pre_pdf": "tests/fixtures/pair_20260910006_pre.pdf",
+        "formats": ["报关资料综合包", "横向倒排核对单+申报要素续表"],
+        "notes": "#34 同x否决误触发(表头毛净重/件数同x三连)+规格续段+20px穿列 故障批次（19箱 DLM250901+DLM250904）",
+    },
 ]
 
 SINGLES = [
